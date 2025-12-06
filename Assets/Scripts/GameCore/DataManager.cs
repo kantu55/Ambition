@@ -7,18 +7,18 @@ using Cysharp.Threading.Tasks;
 namespace Ambition.GameCore
 {
     /// <summary>
-    /// ƒQ[ƒ€‚Åg—p‚·‚é‘S‚Ä‚ÌÃ“Iƒf[ƒ^iCSVƒf[ƒ^‚È‚Çj‚ğŠÇ—E•Û‚·‚éƒNƒ‰ƒX
+    /// ã‚²ãƒ¼ãƒ ã§ä½¿ç”¨ã™ã‚‹å…¨ã¦ã®é™çš„ãƒ‡ãƒ¼ã‚¿ï¼ˆCSVãƒ‡ãƒ¼ã‚¿ãªã©ï¼‰ã‚’ç®¡ç†ãƒ»ä¿æŒã™ã‚‹ã‚¯ãƒ©ã‚¹
     /// </summary>
     public class DataManager : MonoBehaviour
     {
-        // ƒf[ƒ^‚ğƒLƒƒƒbƒVƒ…‚·‚é«‘
+        // ãƒ‡ãƒ¼ã‚¿ã‚’ã‚­ãƒ£ãƒƒã‚·ãƒ¥ã™ã‚‹è¾æ›¸
         private readonly Dictionary<System.Type, object> dataCache = new Dictionary<System.Type, object>();
 
-        // CSVƒtƒ@ƒCƒ‹‚ªŠi”[‚³‚ê‚Ä‚¢‚éResourcesƒtƒHƒ‹ƒ_ˆÈ‰º‚ÌƒpƒX
+        // CSVãƒ•ã‚¡ã‚¤ãƒ«ãŒæ ¼ç´ã•ã‚Œã¦ã„ã‚‹Resourcesãƒ•ã‚©ãƒ«ãƒ€ä»¥ä¸‹ã®ãƒ‘ã‚¹
         private const string BASE_CSV_PATH = "CsvData";
 
         /// <summary>
-        /// ƒf[ƒ^ƒ‚ƒfƒ‹‚ÌŒ^‚ÆA‚»‚ê‚É‘Î‰‚·‚éCSVƒtƒ@ƒCƒ‹–¼‚Ìƒ}ƒbƒsƒ“ƒOB
+        /// ãƒ‡ãƒ¼ã‚¿ãƒ¢ãƒ‡ãƒ«ã®å‹ã¨ã€ãã‚Œã«å¯¾å¿œã™ã‚‹CSVãƒ•ã‚¡ã‚¤ãƒ«åã®ãƒãƒƒãƒ”ãƒ³ã‚°ã€‚
         /// </summary>
         private readonly Dictionary<System.Type, string> csvModelMap = new Dictionary<System.Type, string>()
         {
@@ -26,7 +26,7 @@ namespace Ambition.GameCore
         };
 
         /// <summary>
-        /// ŠO•”‚©‚çƒAƒNƒZƒX‚·‚é‚½‚ß‚ÌƒCƒ“ƒXƒ^ƒ“ƒX
+        /// å¤–éƒ¨ã‹ã‚‰ã‚¢ã‚¯ã‚»ã‚¹ã™ã‚‹ãŸã‚ã®ã‚¤ãƒ³ã‚¹ã‚¿ãƒ³ã‚¹
         /// </summary>
         public static DataManager Instance { get; private set; }
 
@@ -44,7 +44,7 @@ namespace Ambition.GameCore
         }
 
         /// <summary>
-        /// ’è‹`‚³‚ê‚½‘S‚Ä‚Ìƒ}ƒbƒsƒ“ƒO‚ÉŠî‚Ã‚¢‚ÄƒQ[ƒ€ƒf[ƒ^‚ğƒ[ƒh
+        /// å®šç¾©ã•ã‚ŒãŸå…¨ã¦ã®ãƒãƒƒãƒ”ãƒ³ã‚°ã«åŸºã¥ã„ã¦ã‚²ãƒ¼ãƒ ãƒ‡ãƒ¼ã‚¿ã‚’ãƒ­ãƒ¼ãƒ‰
         /// </summary>
         public async UniTask LoadAllGameDataAsync()
         {
@@ -57,15 +57,15 @@ namespace Ambition.GameCore
                 totalLoadedCount += await LoadCsvDataByFileNameAsync(modelType, fileName);
             }
 
-            Debug.Log($"‘S‚Ä‚ÌƒQ[ƒ€ƒf[ƒ^ƒ[ƒh‚ªŠ®—¹‚µ‚Ü‚µ‚½B‡Œv {totalLoadedCount} ŒB");
+            Debug.Log($"å…¨ã¦ã®ã‚²ãƒ¼ãƒ ãƒ‡ãƒ¼ã‚¿ãƒ­ãƒ¼ãƒ‰ãŒå®Œäº†ã—ã¾ã—ãŸã€‚åˆè¨ˆ {totalLoadedCount} ä»¶ã€‚");
         }
 
         /// <summary>
-        /// w’è‚³‚ê‚½ƒtƒ@ƒCƒ‹–¼‚©‚çƒf[ƒ^‚ğƒ[ƒh‚µAƒLƒƒƒbƒVƒ…
+        /// æŒ‡å®šã•ã‚ŒãŸãƒ•ã‚¡ã‚¤ãƒ«åã‹ã‚‰ãƒ‡ãƒ¼ã‚¿ã‚’ãƒ­ãƒ¼ãƒ‰ã—ã€ã‚­ãƒ£ãƒƒã‚·ãƒ¥
         /// </summary>
-        /// <param name="modelType">IDataModel‚ğÀ‘•‚µ‚½Œ^B</param>
-        /// <param name="fileName">ƒtƒ@ƒCƒ‹–¼iŠg’£q‚È‚µjB</param>
-        /// <returns>ƒ[ƒh‚µ‚½Œ”B</returns>
+        /// <param name="modelType">IDataModelã‚’å®Ÿè£…ã—ãŸå‹ã€‚</param>
+        /// <param name="fileName">ãƒ•ã‚¡ã‚¤ãƒ«åï¼ˆæ‹¡å¼µå­ãªã—ï¼‰ã€‚</param>
+        /// <returns>ãƒ­ãƒ¼ãƒ‰ã—ãŸä»¶æ•°ã€‚</returns>
         private async UniTask<int> LoadCsvDataByFileNameAsync(System.Type modelType, string fileName)
         {
             string fullPath = $"{BASE_CSV_PATH}/{fileName}";
@@ -77,14 +77,14 @@ namespace Ambition.GameCore
 
             if (textAsset == null)
             {
-                Debug.LogError($"CSVƒtƒ@ƒCƒ‹‚ªŒ©‚Â‚©‚è‚Ü‚¹‚ñ: {fullPath}");
+                Debug.LogError($"CSVãƒ•ã‚¡ã‚¤ãƒ«ãŒè¦‹ã¤ã‹ã‚Šã¾ã›ã‚“: {fullPath}");
                 return 0;
             }
 
             CsvData csvData = CsvHelper.LoadAndParseCsvFromText(textAsset.text);
             if (csvData == null || csvData.RowCount <= 1)
             {
-                Debug.LogError($"ƒf[ƒ^ƒ[ƒh¸”s: {modelType.Name}");
+                Debug.LogError($"ãƒ‡ãƒ¼ã‚¿ãƒ­ãƒ¼ãƒ‰å¤±æ•—: {modelType.Name}");
                 return 0;
             }
 
@@ -102,10 +102,10 @@ namespace Ambition.GameCore
         }
 
         /// <summary>
-        /// w’è‚³‚ê‚½Œ^‚Ì‘S‚Ä‚Ìƒf[ƒ^ƒŠƒXƒg‚ğæ“¾
+        /// æŒ‡å®šã•ã‚ŒãŸå‹ã®å…¨ã¦ã®ãƒ‡ãƒ¼ã‚¿ãƒªã‚¹ãƒˆã‚’å–å¾—
         /// </summary>
-        /// <typeparam name="T">IDataModel‚ğÀ‘•‚µ‚½Œ^B</typeparam>
-        /// <returns>ƒf[ƒ^ƒŠƒXƒgB</returns>
+        /// <typeparam name="T">IDataModelã‚’å®Ÿè£…ã—ãŸå‹ã€‚</typeparam>
+        /// <returns>ãƒ‡ãƒ¼ã‚¿ãƒªã‚¹ãƒˆã€‚</returns>
         public List<T> GetDatas<T>() where T : IDataModel
         {
             if (dataCache.TryGetValue(typeof(T), out object cachedList))
@@ -113,16 +113,16 @@ namespace Ambition.GameCore
                 return (List<T>)cachedList;
             }
 
-            Debug.LogError($"ƒLƒƒƒbƒVƒ…‚É {typeof(T).Name} ‚Ìƒf[ƒ^‚ªŒ©‚Â‚©‚è‚Ü‚¹‚ñB");
+            Debug.LogError($"ã‚­ãƒ£ãƒƒã‚·ãƒ¥ã« {typeof(T).Name} ã®ãƒ‡ãƒ¼ã‚¿ãŒè¦‹ã¤ã‹ã‚Šã¾ã›ã‚“ã€‚");
             return new List<T>();
         }
 
         /// <summary>
-        /// w’è‚³‚ê‚½ID‚ğ‚Â’Pˆê‚Ìƒf[ƒ^ƒ‚ƒfƒ‹‚ğæ“¾
+        /// æŒ‡å®šã•ã‚ŒãŸIDã‚’æŒã¤å˜ä¸€ã®ãƒ‡ãƒ¼ã‚¿ãƒ¢ãƒ‡ãƒ«ã‚’å–å¾—
         /// </summary>
-        /// <typeparam name="T">IDataModel‚ğÀ‘•‚µ‚½Œ^B</typeparam>
-        /// <param name="id">ƒf[ƒ^‚ÌŒÅ—LIDB</param>
-        /// <returns>ƒf[ƒ^ƒ‚ƒfƒ‹BŒ©‚Â‚©‚ç‚È‚¢ê‡‚Í nullB</returns>
+        /// <typeparam name="T">IDataModelã‚’å®Ÿè£…ã—ãŸå‹ã€‚</typeparam>
+        /// <param name="id">ãƒ‡ãƒ¼ã‚¿ã®å›ºæœ‰IDã€‚</param>
+        /// <returns>ãƒ‡ãƒ¼ã‚¿ãƒ¢ãƒ‡ãƒ«ã€‚è¦‹ã¤ã‹ã‚‰ãªã„å ´åˆã¯ nullã€‚</returns>
         public T GetDataById<T>(int id) where T : IDataModel
         {
             List<T> allDatas = GetDatas<T>();
