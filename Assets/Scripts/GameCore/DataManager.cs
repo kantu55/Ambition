@@ -81,8 +81,6 @@ namespace Ambition.GameCore
                 return 0;
             }
 
-            // ここで少し重い処理（解析）が入るため、必要であればスレッドプールに逃がすことも可能です
-            // 今回はメインスレッドで処理します
             CsvData csvData = CsvHelper.LoadAndParseCsvFromText(textAsset.text);
             if (csvData == null || csvData.RowCount <= 1)
             {
@@ -104,7 +102,7 @@ namespace Ambition.GameCore
         }
 
         /// <summary>
-        /// 指定された型の全てのデータリストを取得します。
+        /// 指定された型の全てのデータリストを取得
         /// </summary>
         /// <typeparam name="T">IDataModelを実装した型。</typeparam>
         /// <returns>データリスト。</returns>
@@ -120,7 +118,7 @@ namespace Ambition.GameCore
         }
 
         /// <summary>
-        /// 指定されたIDを持つ単一のデータモデルを取得します。
+        /// 指定されたIDを持つ単一のデータモデルを取得
         /// </summary>
         /// <typeparam name="T">IDataModelを実装した型。</typeparam>
         /// <param name="id">データの固有ID。</param>

@@ -36,7 +36,7 @@ namespace Ambition.GameCore
         /// <summary>
         /// コンストラクタ
         /// </summary>
-        /// <param name="data">解析済みの二次元配列データ。</param>
+        /// <param name="data">解析済みの二次元配列データ</param>
         public CsvData(string[,] data)
         {
             this.rawData = data;
@@ -64,7 +64,6 @@ namespace Ambition.GameCore
         public int GetColumnIndex(string columnName)
         {
             string upperColumnName = columnName.ToUpper();
-
             if (columnNameToIndex.TryGetValue(upperColumnName, out int columnIndex))
             {
                 return columnIndex;
@@ -83,7 +82,6 @@ namespace Ambition.GameCore
         public string GetValue(int row, string columnName)
         {
             int columnIndex = GetColumnIndex(columnName);
-
             if (columnIndex >= 0 && row < RawData.GetLength(0))
             {
                 return RawData[row, columnIndex];

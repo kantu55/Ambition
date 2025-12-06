@@ -3,17 +3,17 @@
 namespace Ambition.DataStructures
 {
     /// <summary>
-    /// 全てのCSVベースのデータモデルが実装すべきインターフェースを定義します。
+    /// 全てのCSVベースのデータモデルが実装すべきインターフェース
     /// </summary>
     public interface IDataModel
     {
         /// <summary>
-        /// データモデルの固有IDを取得します。
+        /// データモデルの固有ID
         /// </summary>
         public int Id { get; }
 
         /// <summary>
-        /// CSVデータ（CsvData）の一行分を使用して、モデルのインスタンスを初期化します。
+        /// CSVデータ（CsvData）の一行分を使用して、モデルのインスタンスを初期化
         /// </summary>
         /// <param name="data">読み込み元の CsvData オブジェクト。</param>
         /// <param name="rowIndex">CSVデータの対象行のインデックス（ヘッダー行を除く）。</param>
