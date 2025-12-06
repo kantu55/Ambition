@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using Ambition.DataStructures;
 using Ambition.Utility;
+using Cysharp.Threading.Tasks;
 
 namespace Ambition.GameCore
 {
@@ -35,7 +36,6 @@ namespace Ambition.GameCore
             {
                 Instance = this;
                 DontDestroyOnLoad(gameObject);
-                LoadAllGameData();
             }
             else
             {
@@ -46,7 +46,7 @@ namespace Ambition.GameCore
         /// <summary>
         /// 定義された全てのマッピングに基づいてゲームデータをロード
         /// </summary>
-        public void LoadAllGameData()
+        public async UniTask LoadAllGameDataAsync()
         {
             int totalLoadedCount = 0;
 
@@ -54,9 +54,7 @@ namespace Ambition.GameCore
             {
                 System.Type modelType = pair.Key;
                 string fileName = pair.Value;
-
-                // ファイル名に基づきデータをロード
-                totalLoadedCount += LoadCsvDataByFileName(modelType, fileName);
+                totalLoadedCount += await LoadCsvDataByFileNameAsync(modelType, fileName);
             }
 
             Debug.Log($"全てのゲームデータロードが完了しました。合計 {totalLoadedCount} 件。");
@@ -68,12 +66,14 @@ namespace Ambition.GameCore
         /// <param name="modelType">IDataModelを実装した型。</param>
         /// <param name="fileName">ファイル名（拡張子なし）。</param>
         /// <returns>ロードした件数。</returns>
-        private int LoadCsvDataByFileName(System.Type modelType, string fileName)
+        private async UniTask<int> LoadCsvDataByFileNameAsync(System.Type modelType, string fileName)
         {
             string fullPath = $"{BASE_CSV_PATH}/{fileName}";
 
-            // ResourcesフォルダからTextAssetとして読み込み
-            TextAsset textAsset = Resources.Load<TextAsset>(fullPath);
+            ResourceRequest request = Resources.LoadAsync<TextAsset>(fullPath);
+            await request;
+
+            TextAsset textAsset = request.asset as TextAsset;
 
             if (textAsset == null)
             {
@@ -81,31 +81,25 @@ namespace Ambition.GameCore
                 return 0;
             }
 
-            // CSVテキストを解析
+            // ここで少し重い処理（解析）が入るため、必要であればスレッドプールに逃がすことも可能です
+            // 今回はメインスレッドで処理します
             CsvData csvData = CsvHelper.LoadAndParseCsvFromText(textAsset.text);
-
             if (csvData == null || csvData.RowCount <= 1)
             {
-                Debug.LogError($"データロード失敗: {modelType.Name} のデータが空か解析エラーです。");
+                Debug.LogError($"データロード失敗: {modelType.Name}");
                 return 0;
             }
 
-            // 汎用リストの生成 (List<T>)
             System.Collections.IList dataList = (System.Collections.IList)System.Activator.CreateInstance(typeof(List<>).MakeGenericType(modelType));
 
-            // データ行の処理（1行目から）
             for (int row = 1; row < csvData.RowCount; row++)
             {
-                // インスタンス生成と初期化
                 IDataModel model = (IDataModel)System.Activator.CreateInstance(modelType);
                 model.Initialize(csvData, row);
                 dataList.Add(model);
             }
 
-            // キャッシュに保存
             dataCache[modelType] = dataList;
-
-            Debug.Log($"{modelType.Name} のデータを {dataList.Count} 件ロードしました。");
             return dataList.Count;
         }
 
