@@ -1,10 +1,9 @@
 ﻿using Ambition.DataStructures;
-using Ambition.GameCore;
 using Cysharp.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
-namespace ProBaseballSim.GameCore
+namespace Ambition.GameCore
 {
     /// <summary>
     /// ゲーム起動時の初期化フローを管理するクラス

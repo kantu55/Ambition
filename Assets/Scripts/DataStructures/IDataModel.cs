@@ -1,4 +1,4 @@
-﻿using Ambition.GameCore;
+﻿using Ambition.Utility;
 
 namespace Ambition.DataStructures
 {

@@ -4,7 +4,7 @@ using UnityEngine.SceneManagement;
 using Cysharp.Threading.Tasks;
 using UnityEngine.EventSystems;
 
-namespace ProBaseballSim.Scenes.Title
+namespace Ambition.Scenes.Title
 {
     /// <summary>
     /// タイトル画面のUI操作とシーン遷移を制御するクラス
