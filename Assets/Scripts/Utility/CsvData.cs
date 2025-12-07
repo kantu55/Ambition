@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
 
-namespace Ambition.GameCore
+namespace Ambition.Utility
 {
     /// <summary>
     /// CSVのヘッダー情報と生データを保持し、列名によるアクセスを可能にするクラス
