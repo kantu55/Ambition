@@ -19,6 +19,9 @@ namespace Assets.Scripts.UI
         [SerializeField]
         private Button targetButton;
 
+        [SerializeField]
+        private Image targetImage;
+
         [Header("Animation Settings")]
         [SerializeField]
         private float animationDuration = 0.1f;
@@ -30,10 +33,18 @@ namespace Assets.Scripts.UI
         private float pressedScale = 0.95f;
 
         [SerializeField]
-        private Ease scaleEase = Ease.OutQuad;
+        private Ease animEase = Ease.OutQuad;
 
-        // 元のスケールを保持
+        [Header("Color Settings")]
+        [SerializeField]
+        private bool enableColorChange = true;
+
+        [SerializeField]
+        private Color selectedColor = new Color(0.9f, 0.9f, 0.9f, 1f);
+
+        // 元のスケールと色を保持
         private Vector3 defaultScale;
+        private Color defaultColor;
 
         private void Awake()
         {
@@ -42,12 +53,28 @@ namespace Assets.Scripts.UI
             {
                 targetButton = GetComponent<Button>();
             }
+
+            if (targetImage == null)
+            {
+                targetImage = GetComponent<Image>();
+            }
+
+            if (targetImage != null)
+            {
+                defaultColor = targetImage.color;
+            }
         }
 
         private void OnDisable()
         {
             transform.DOKill();
             transform.localScale = defaultScale;
+
+            if (targetImage != null)
+            {
+                targetImage.DOKill();
+                targetImage.color = defaultColor;
+            }
         }
 
         // --- インターフェース実装 ---
@@ -62,7 +89,7 @@ namespace Assets.Scripts.UI
                 eventData.selectedObject = gameObject;
             }
 
-            PlayScaleAnimation(hoverScale);
+            PlayScaleAnimation(hoverScale, selectedColor);
         }
 
         /// <summary>
@@ -70,7 +97,7 @@ namespace Assets.Scripts.UI
         /// </summary>
         public void OnPointerExit(PointerEventData eventData)
         {
-            PlayScaleAnimation(1.0f);
+            PlayScaleAnimation(1.0f, defaultColor);
         }
 
         /// <summary>
@@ -78,7 +105,7 @@ namespace Assets.Scripts.UI
         /// </summary>
         public void OnSelect(BaseEventData eventData)
         {
-            PlayScaleAnimation(hoverScale);
+            PlayScaleAnimation(hoverScale, selectedColor);
         }
 
         /// <summary>
@@ -86,7 +113,7 @@ namespace Assets.Scripts.UI
         /// </summary>
         public void OnDeselect(BaseEventData eventData)
         {
-            PlayScaleAnimation(1.0f);
+            PlayScaleAnimation(1.0f, defaultColor);
         }
 
         /// <summary>
@@ -96,7 +123,7 @@ namespace Assets.Scripts.UI
         {
             if (IsButtonInteractable())
             {
-                PlayScaleAnimation(pressedScale);
+                PlayScaleAnimation(pressedScale, selectedColor);
             }
         }
 
@@ -107,20 +134,26 @@ namespace Assets.Scripts.UI
         {
             if (IsButtonInteractable())
             {
-                PlayScaleAnimation(hoverScale);
+                PlayScaleAnimation(hoverScale, selectedColor);
             }
         }
 
         // --- 内部ロジック ---
 
         /// <summary>
-        /// 指定したスケールへ滑らかに変化させる
+        /// 指定したスケールと色へ滑らかに変化させる
         /// </summary>
-        private void PlayScaleAnimation(float targetScaleMultiplier)
+        private void PlayScaleAnimation(float targetScaleMultiplier, Color targetColor)
         {
             transform.DOKill();
             Vector3 endValue = defaultScale * targetScaleMultiplier;
-            transform.DOScale(endValue, animationDuration).SetEase(scaleEase).SetLink(gameObject).SetUpdate(true);
+            transform.DOScale(endValue, animationDuration).SetEase(animEase).SetLink(gameObject).SetUpdate(true);
+
+            if (targetImage != null && enableColorChange)
+            {
+                targetImage.DOKill();
+                targetImage.DOColor(targetColor, animationDuration).SetEase(animEase).SetLink(gameObject).SetUpdate(true);
+            }
         }
 
         /// <summary>
