@@ -1,8 +1,9 @@
-﻿using System.Collections.Generic;
-using UnityEngine;
-using Ambition.DataStructures;
+﻿using Ambition.DataStructures;
 using Ambition.Utility;
 using Cysharp.Threading.Tasks;
+using System.Collections.Generic;
+using UnityEngine;
+using UnityEngine.AddressableAssets;
 
 namespace Ambition.GameCore
 {
@@ -14,11 +15,8 @@ namespace Ambition.GameCore
         // データをキャッシュする辞書
         private readonly Dictionary<System.Type, object> dataCache = new Dictionary<System.Type, object>();
 
-        // CSVファイルが格納されているResourcesフォルダ以下のパス
-        private const string BASE_CSV_PATH = "CsvData";
-
         /// <summary>
-        /// データモデルの型と、それに対応するCSVファイル名のマッピング。
+        /// データモデルの型と、それに対応するAddressablesのアドレス（キー）のマッピング
         /// </summary>
         private readonly Dictionary<System.Type, string> csvModelMap = new Dictionary<System.Type, string>()
         {
@@ -53,31 +51,26 @@ namespace Ambition.GameCore
             foreach (var pair in csvModelMap)
             {
                 System.Type modelType = pair.Key;
-                string fileName = pair.Value;
-                totalLoadedCount += await LoadCsvDataByFileNameAsync(modelType, fileName);
+                string address = pair.Value;
+                totalLoadedCount += await LoadCsvDataByAddressAsync(modelType, address);
             }
 
             Debug.Log($"全てのゲームデータロードが完了しました。合計 {totalLoadedCount} 件。");
         }
 
         /// <summary>
-        /// 指定されたファイル名からデータをロードし、キャッシュ
+        /// 指定されたアドレスからデータをAddressablesでロードし、キャッシュ
         /// </summary>
-        /// <param name="modelType">IDataModelを実装した型。</param>
-        /// <param name="fileName">ファイル名（拡張子なし）。</param>
+        /// <param name="modelType">IDataModelを実装した型</param>
+        /// <param name="address">Addressables名</param>
         /// <returns>ロードした件数。</returns>
-        private async UniTask<int> LoadCsvDataByFileNameAsync(System.Type modelType, string fileName)
+        private async UniTask<int> LoadCsvDataByAddressAsync(System.Type modelType, string address)
         {
-            string fullPath = $"{BASE_CSV_PATH}/{fileName}";
-
-            ResourceRequest request = Resources.LoadAsync<TextAsset>(fullPath);
-            await request;
-
-            TextAsset textAsset = request.asset as TextAsset;
-
+            var handle = Addressables.LoadAssetAsync<TextAsset>(address);
+            TextAsset textAsset = await handle.ToUniTask();
             if (textAsset == null)
             {
-                Debug.LogError($"CSVファイルが見つかりません: {fullPath}");
+                Debug.LogError($"Addressables ロード失敗: アドレス '{address}' が見つかりません。");
                 return 0;
             }
 
