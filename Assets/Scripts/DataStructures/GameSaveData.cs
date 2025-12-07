@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace Assets.Scripts.DataStructures
+namespace Ambition.DataStructures
 {
     /// <summary>
     /// セーブファイルに記録されるデータ構造
