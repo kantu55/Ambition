@@ -1,11 +1,10 @@
 ﻿using UnityEngine;
 using Ambition.Utility;
-using Ambition.GameCore;
 
 namespace Ambition.DataStructures
 {
     /// <summary>
-    /// プロ野球選手の基礎能力値と情報を格納するデータモデル
+    /// プロ野球選手（夫）の基礎能力値と情報を格納するデータモデル
     /// </summary>
     public class PlayerStatsModel : IDataModel
     {
@@ -33,6 +32,8 @@ namespace Ambition.DataStructures
         private int technique;
         private int concentration;
         private string evaluation;
+        private int salary;
+        private int love;
 
         // プロパティ
 
@@ -90,6 +91,60 @@ namespace Ambition.DataStructures
         /// 選手の総合評価
         /// </summary>
         public string Evaluation => evaluation;
+
+        /// <summary>
+        /// 年棒
+        /// </summary>
+        public int Salary => salary;
+
+        /// <summary>
+        /// 夫婦仲（愛情度）
+        /// </summary>
+        public int Love => love;
+
+        /// <summary>
+        /// セーブデータからモデルを復元するためのコンストラクタ
+        /// </summary>
+        /// <param name="saveData">ロードされた選手データ</param>
+        public PlayerStatsModel(PlayerSaveData saveData)
+        {
+            this.id = saveData.Id;
+            this.name = saveData.Name;
+            this.position = ParsePosition(saveData.PositionString);
+            this.age = saveData.Age;
+            this.health = saveData.Health;
+            this.mental = saveData.Mental;
+            this.fatigue = saveData.Fatigue;
+            this.muscle = saveData.Muscle;
+            this.technique = saveData.Technique;
+            this.concentration = saveData.Concentration;
+            this.evaluation = saveData.Evaluation;
+            this.salary = saveData.Salary;
+            this.love = saveData.Love;
+        }
+
+        /// <summary>
+        /// 現在の状態をセーブデータ構造体に変換して返します。
+        /// </summary>
+        public PlayerSaveData ToSaveData()
+        {
+            return new PlayerSaveData
+            {
+                Id = this.id,
+                Name = this.name,
+                PositionString = this.position.ToString(),
+                Age = this.age,
+                Health = this.health,
+                Mental = this.mental,
+                Fatigue = this.fatigue,
+                Muscle = this.muscle,
+                Technique = this.technique,
+                Concentration = this.concentration,
+                Evaluation = this.evaluation,
+                Salary = this.salary,
+                Love = this.love
+            };
+        }
 
         /// <summary>
         /// CSVデータからモデルを初期化
