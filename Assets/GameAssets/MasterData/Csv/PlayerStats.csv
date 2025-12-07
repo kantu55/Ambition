@@ -1,6 +1,5 @@
-ID,Name,Position,Age,Power,Stamina,IsRookie
-1001,山田 太郎,P,25,65.5,88.0,0
-1002,田中 次郎,C,32,85.0,50.5,0
-1003,佐藤 三郎,IF,18,40.2,60.0,1
-1004,鈴木 四郎,OF,29,77.8,75.3,0
-1005,(未定),OF,,22.1,35.0,1
+ID,Name,Position,Age,Health,Mental,Fatigue,Muscle,Technique,Concentration,Evaluation
+1001,山田 太郎,P,25,100,80,0,25,45,30,E
+1002,田中 次郎,C,32,100,95,0,40,70,60,C
+1003,佐藤 三郎,IF,19,100,60,0,15,10,20,F
+1004,鈴木 四郎,OF,28,100,75,0,25,50,40,D

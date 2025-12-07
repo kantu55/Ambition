@@ -26,9 +26,13 @@ namespace Ambition.DataStructures
         private string name;
         private PositionType position;
         private int age;
-        private float power;
-        private float stamina;
-        private bool isRookie;
+        private int health;
+        private int mental;
+        private int fatigue;
+        private int muscle;
+        private int technique;
+        private int concentration;
+        private string evaluation;
 
         // プロパティ
 
@@ -53,19 +57,39 @@ namespace Ambition.DataStructures
         public int Age => age;
 
         /// <summary>
-        /// パワー
+        /// ヘルス（体力）
         /// </summary>
-        public float Power => power;
+        public int Health => health;
 
         /// <summary>
-        /// スタミナ
+        /// メンタル
         /// </summary>
-        public float Stamina => stamina;
+        public int Mental => mental;
 
         /// <summary>
-        /// ルーキーフラグ
+        /// 疲労累積値
         /// </summary>
-        public bool IsRookie => isRookie;
+        public int Fatigue => fatigue;
+
+        /// <summary>
+        /// 能力値：筋力
+        /// </summary>
+        public int Muscle => muscle;
+
+        /// <summary>
+        /// 能力値：技術
+        /// </summary>
+        public int Technique => technique;
+
+        /// <summary>
+        /// 能力値：集中
+        /// </summary>
+        public int Concentration => concentration;
+
+        /// <summary>
+        /// 選手の総合評価
+        /// </summary>
+        public string Evaluation => evaluation;
 
         /// <summary>
         /// CSVデータからモデルを初期化
@@ -77,18 +101,25 @@ namespace Ambition.DataStructures
             string nameString = data.GetValue(rowIndex, "Name");
             string positionString = data.GetValue(rowIndex, "Position");
             string ageString = data.GetValue(rowIndex, "Age");
-            string powerString = data.GetValue(rowIndex, "Power");
-            string staminaString = data.GetValue(rowIndex, "Stamina");
-            string isRookieString = data.GetValue(rowIndex, "IsRookie");
+            string healthString = data.GetValue(rowIndex, "Health");
+            string mentalString = data.GetValue(rowIndex, "Mental");
+            string fatigueString = data.GetValue(rowIndex, "Fatigue");
+            string muscleString = data.GetValue(rowIndex, "Muscle");
+            string techniqueString = data.GetValue(rowIndex, "Technique");
+            string concentrationString = data.GetValue(rowIndex, "Concentration");
+            string evaluationString = data.GetValue(rowIndex, "Evaluation");
 
             // 型変換
             this.id = CsvHelper.ConvertToInt(idString);
             this.name = nameString;
             this.age = CsvHelper.ConvertToInt(ageString, defaultValue: 0);
-            this.power = CsvHelper.ConvertToFloat(powerString);
-            this.stamina = CsvHelper.ConvertToFloat(staminaString);
-            this.isRookie = CsvHelper.ConvertToInt(isRookieString) == 1;
-            this.position = ParsePosition(positionString);
+            this.health = CsvHelper.ConvertToInt(healthString, defaultValue: 100);
+            this.mental = CsvHelper.ConvertToInt(mentalString, defaultValue: 50);
+            this.fatigue = CsvHelper.ConvertToInt(fatigueString, defaultValue: 0);
+            this.muscle = CsvHelper.ConvertToInt(muscleString, defaultValue: 0);
+            this.technique = CsvHelper.ConvertToInt(techniqueString, defaultValue: 0);
+            this.concentration = CsvHelper.ConvertToInt(concentrationString, defaultValue: 0);
+            this.evaluation = evaluationString;
         }
 
         /// <summary>

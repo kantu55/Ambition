@@ -16,7 +16,10 @@ namespace Ambition.DebugTools
 
             if (yamadaById != null)
             {
-                Debug.Log($"[ID検索成功] 名前: {yamadaById.Name}, 守備: {yamadaById.Position}, パワー: {yamadaById.Power}");
+                Debug.Log($"[ID検索成功] 名前: {yamadaById.Name}, 年齢: {yamadaById.Age}, 守備: {yamadaById.Position}, " +
+                    $"体力: {yamadaById.Health}, メンタル: {yamadaById.Mental}, 疲労蓄積: {yamadaById.Fatigue}" +
+                    $"能力値[筋力]: {yamadaById.Muscle}, 能力値[技術]: {yamadaById.Technique}, 能力値[集中]: {yamadaById.Concentration}," +
+                    $"評価: {yamadaById.Evaluation}");
             }
             else
             {
