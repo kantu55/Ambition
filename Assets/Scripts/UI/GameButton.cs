@@ -4,7 +4,7 @@ using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
 
-namespace Assets.Scripts.UI
+namespace Ambition.UI
 {
     /// <summary>
     /// マウス、キーボード、コントローラー入力に対応した汎用UIボタン
