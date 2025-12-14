@@ -100,15 +100,13 @@ namespace Ambition.GameCore
         /// </summary>
         private async UniTask LoadCsvDataByAddressAsync<T>(string address) where T : IDataModel, new()
         {
-            var handle = Addressables.LoadAssetAsync<TextAsset>(address);
-            TextAsset csvAsset = await handle.ToUniTask();
-            if (csvAsset == null)
+            string csvText = await AssetLoader.LoadTextDataAndReleaseAsync(address);
+            if (string.IsNullOrEmpty(csvText))
             {
-                Debug.LogError($"Addressables ロード失敗: アドレス '{address}' が見つかりません。");
                 return;
             }
 
-            CsvData csvData = new CsvData(csvAsset.text);
+            CsvData csvData = new CsvData(csvText);
             List<T> list = new List<T>();
 
             // データ変換ループ
@@ -121,7 +119,6 @@ namespace Ambition.GameCore
                 }
 
                 T model = new T();
-
                 model.Initialize(csvData, i);
                 list.Add(model);
             }
@@ -134,11 +131,6 @@ namespace Ambition.GameCore
             {
                 masterDataCache.Add(typeof(T), list);
             }
-
-            // データを取り出した後のTextAssetは不要なのでハンドルをリリース
-            Addressables.Release(handle);
-
-            Debug.Log($"[DataManager] ロード完了: {typeof(T).Name} ({list.Count}件)");
         }
 
         /// <summary>
