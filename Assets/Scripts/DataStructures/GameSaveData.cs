@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 
 namespace Ambition.DataStructures
 {
@@ -11,7 +10,12 @@ namespace Ambition.DataStructures
     {
         // JsonUtilityでのシリアライズ用のため、フィールドはpublic変数
 
+        public int CurrentTurn;
+
         public PlayerSaveData PlayerData;
+        public WifeSaveData WifeData;
+        public EnvironmentSaveData EnvironmentData;
+        public BudgetSaveData BudgetData;
     }
 
     /// <summary>
@@ -33,5 +37,53 @@ namespace Ambition.DataStructures
         public string Evaluation;
         public int Salary;
         public int Love;
+    }
+
+    /// <summary>
+    /// 妻のステータス保存用構造体
+    /// </summary>
+    [Serializable]
+    public struct WifeSaveData
+    {
+        public int CurrentHealth;
+        public int MaxHealth;
+        public int CookingLevel;
+        public int LooksLevel;
+        public int SocialLevel;
+    }
+
+    /// <summary>
+    /// 家の環境のステータス保存構造体
+    /// </summary>
+    [Serializable]
+    public struct EnvironmentSaveData
+    {
+        public int CurrentHouseId;
+        public int BedLevel;
+        public int GymLevel;
+        public int MealRank;
+    }
+
+    /// <summary>
+    /// 家賃のステータス保存構造体
+    /// </summary>
+    [Serializable]
+    public struct BudgetSaveData
+    {
+        public long CurrentSavings;
+        public FixedCostSaveData FixedCostSaveData;
+    }
+
+    /// <summary>
+    /// 固定費のステータス保存構造体
+    /// </summary>
+    [Serializable]
+    public struct FixedCostSaveData
+    {
+        public int Rent;
+        public int FoodCost;
+        public int Tax;
+        public int Insurance;
+        public int Maintenance;
     }
 }

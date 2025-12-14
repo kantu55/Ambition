@@ -1,93 +1,103 @@
 ﻿using System.Collections.Generic;
-using UnityEngine;
 
 namespace Ambition.Utility
 {
     /// <summary>
-    /// CSVのヘッダー情報と生データを保持し、列名によるアクセスを可能にするクラス
+    /// CSVテキストを解析し、行と列ごとのデータアクセスを提供するクラス
     /// </summary>
     public class CsvData
     {
-        /// <summary>
-        /// 列名とそのインデックス
-        /// </summary>
-        private Dictionary<string, int> columnNameToIndex = new Dictionary<string, int>();
+        // [行][列] の文字列データ
+        private List<string[]> rows = new List<string[]>();
 
-        /// <summary>
-        /// 生の二次元配列データを取得
-        /// </summary>
-        private string[,] rawData;
+        // ヘッダー名から列インデックスを引く辞書
+        private Dictionary<string, int> headerMap = new Dictionary<string, int>();
 
-        /// <summary>
-        /// 生の二次元配列データを取得
-        /// </summary>
-        public string[,] RawData => rawData;
+        public int LineCount => rows.Count;
 
-        /// <summary>
-        /// データの行数を取得
-        /// </summary>
-        public int RowCount => rawData.GetLength(0);
-
-        /// <summary>
-        /// データの列数を取得
-        /// </summary>
-        public int ColumnCount => rawData.GetLength(1);
-
-        /// <summary>
-        /// コンストラクタ
-        /// </summary>
-        /// <param name="data">解析済みの二次元配列データ</param>
-        public CsvData(string[,] data)
+        public CsvData(string csvText)
         {
-            this.rawData = data;
+            Parse(csvText);
+        }
 
-            // データが存在し、ヘッダー行がある場合のみマッピングを初期化
-            if (data.GetLength(0) > 0)
+        /// <summary>
+        /// CSVテキストをパース
+        /// </summary>
+        private void Parse(string text)
+        {
+            // 改行コード統一
+            text = text.Replace("\r\n", "\n").Replace("\r", "\n");
+
+            string[] lines = text.Split('\n');
+
+            for (int i = 0; i < lines.Length; i++)
             {
-                // ヘッダー行を解析し、列名とそのインデックスをマッピング
-                for (int i = 0; i < data.GetLength(1); i++)
+                string line = lines[i];
+                if (string.IsNullOrWhiteSpace(line))
                 {
-                    string columnName = data[0, i].Trim().ToUpper();
-                    if (!columnNameToIndex.ContainsKey(columnName))
+                    continue;
+                }
+
+                // カンマ区切り（簡易実装）
+                string[] cols = line.Split(',');
+
+                // 文字列の前後の空白除去や " の除去処理などを入れるならここ
+                for (int j = 0; j < cols.Length; j++)
+                {
+                    cols[j] = cols[j].Trim();
+                }
+
+                rows.Add(cols);
+            }
+
+            // ヘッダー行(0行目)の解析
+            if (rows.Count > 0)
+            {
+                string[] headers = rows[0];
+                for (int i = 0; i < headers.Length; i++)
+                {
+                    // 重複キー対策
+                    if (!headerMap.ContainsKey(headers[i]))
                     {
-                        columnNameToIndex.Add(columnName, i);
+                        headerMap.Add(headers[i], i);
                     }
                 }
             }
         }
 
         /// <summary>
-        /// 列名に対応するインデックスを取得
+        /// 指定した行・列名の値を取得
         /// </summary>
-        /// <param name="columnName">CSVヘッダーに記載された列名。</param>
-        /// <returns>対応する列インデックス。見つからない場合は -1。</returns>
-        public int GetColumnIndex(string columnName)
+        public string GetValue(int rowIndex, string columnName)
         {
-            string upperColumnName = columnName.ToUpper();
-            if (columnNameToIndex.TryGetValue(upperColumnName, out int columnIndex))
+            if (rowIndex < 0 || rowIndex >= rows.Count)
             {
-                return columnIndex;
+                return string.Empty;
             }
 
-            Debug.LogError($"CSVファイルに '{columnName}' という列名が見つかりません。");
-            return -1;
-        }
-
-        /// <summary>
-        /// 指定した行と列名に対応する文字列データを取得
-        /// </summary>
-        /// <param name="row">行インデックス。</param>
-        /// <param name="columnName">列名。</param>
-        /// <returns>セルの値。</returns>
-        public string GetValue(int row, string columnName)
-        {
-            int columnIndex = GetColumnIndex(columnName);
-            if (columnIndex >= 0 && row < RawData.GetLength(0))
+            if (headerMap.TryGetValue(columnName, out int colIndex))
             {
-                return RawData[row, columnIndex];
+                string[] row = rows[rowIndex];
+                if (colIndex < row.Length)
+                {
+                    return row[colIndex];
+                }
             }
 
             return string.Empty;
+        }
+
+        /// <summary>
+        /// 指定した行が空、またはデータ不足か判定
+        /// </summary>
+        public bool IsRowEmpty(int rowIndex)
+        {
+            if (rowIndex < 0 || rowIndex >= rows.Count)
+            {
+                return true;
+            }
+
+            return rows[rowIndex].Length == 0;
         }
     }
 }

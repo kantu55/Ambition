@@ -1,7 +1,6 @@
-﻿using UnityEngine;
+﻿using Ambition.DataStructures;
 using System;
-using Ambition.DataStructures;
-using Assets.Scripts.DataStructures;
+using UnityEngine;
 
 namespace Ambition.GameCore
 {

@@ -1,0 +1,9 @@
+Key,Value,Description
+Initial_Money,1000000,初期資金
+Turn_Health_Recover,30,毎ターンの妻体力回復
+Tax_Rate,0.3,税率
+Cost_Maint_Gym,5000,ジム維持費
+Cost_Food_Lv0,10000,食費Lv0
+Cost_Food_Lv1,30000,食費Lv1
+Cost_Food_Lv2,60000,食費Lv2
+Cost_Food_Lv3,150000,食費Lv3

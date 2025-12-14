@@ -1,5 +1,4 @@
-ID,Name,Position,Age,Health,Mental,Fatigue,Muscle,Technique,Concentration,Evaluation
-1001,山田 太郎,P,25,100,80,0,25,45,30,E
-1002,田中 次郎,C,32,100,95,0,40,70,60,C
-1003,佐藤 三郎,IF,19,100,60,0,15,10,20,F
-1004,鈴木 四郎,OF,28,100,75,0,25,50,40,D
+ID,Name,Position,Age,Health,Mental,Fatigue,Muscle,Technique,Concentration,Love,Evaluation,Salary
+1001,佐藤 輝明,IF,22,100,60,0,85,60,50,40,C,12000000
+1002,大谷 翔平,P,28,90,80,10,70,90,85,60,A,120000000
+1003,イチロー,OF,30,95,90,20,75,85,80,55,B,80000000

@@ -103,27 +103,6 @@ namespace Ambition.DataStructures
         public int Love => love;
 
         /// <summary>
-        /// セーブデータからモデルを復元するためのコンストラクタ
-        /// </summary>
-        /// <param name="saveData">ロードされた選手データ</param>
-        public PlayerStatsModel(PlayerSaveData saveData)
-        {
-            this.id = saveData.Id;
-            this.name = saveData.Name;
-            this.position = ParsePosition(saveData.PositionString);
-            this.age = saveData.Age;
-            this.health = saveData.Health;
-            this.mental = saveData.Mental;
-            this.fatigue = saveData.Fatigue;
-            this.muscle = saveData.Muscle;
-            this.technique = saveData.Technique;
-            this.concentration = saveData.Concentration;
-            this.evaluation = saveData.Evaluation;
-            this.salary = saveData.Salary;
-            this.love = saveData.Love;
-        }
-
-        /// <summary>
         /// 現在の状態をセーブデータ構造体に変換して返します。
         /// </summary>
         public PlayerSaveData ToSaveData()

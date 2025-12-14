@@ -1,0 +1,4 @@
+ID,MainCategory,SubCategory,SubCategoryName01,SubCategoryName02,Description,CostMoney,CostWifeHealth,HealthChange,MentalChange,FatigueChange,LoveChange,MuscleChange,TechniqueChange,ConcentrationChange,StressChange,SkillExp
+10101,1,101,特別な手料理,疲労抜き薬膳,愛情料理で体力を回復させます。(HP大幅回復),30000,25,40,0,-15,5,0,0,0,0,0
+10201,1,102,優しく励ます,メンタル管理,優しい言葉でやる気を引き出します。(メンタル回復),10000,10,0,20,0,5,0,0,0,0,0
+10301,1,103,病院・マッサージ,メンテナンス,プロの施術で体の痛みを和らげます。(HP回復),100000,5,60,0,-10,0,0,0,0,0,0
