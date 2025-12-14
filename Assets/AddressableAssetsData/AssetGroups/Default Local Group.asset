@@ -18,27 +18,32 @@ MonoBehaviour:
   - m_GUID: 15a3538b735b8bd49989e6075ed229a9
     m_Address: PlayerStats
     m_ReadOnly: 0
-    m_SerializedLabels: []
+    m_SerializedLabels:
+    - MasterData
     FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 2965779a3c39da34fae9c4f22fdd40f6
     m_Address: Housing
     m_ReadOnly: 0
-    m_SerializedLabels: []
+    m_SerializedLabels:
+    - MasterData
     FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 6f1e996e6106b554590971dbdd884d5d
     m_Address: WifeActions
     m_ReadOnly: 0
-    m_SerializedLabels: []
+    m_SerializedLabels:
+    - MasterData
     FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 701f28f3cefe61945a048358018fae7a
     m_Address: WifeStats
     m_ReadOnly: 0
-    m_SerializedLabels: []
+    m_SerializedLabels:
+    - MasterData
     FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: dde5f68275f04804bbd0a110bf367f77
-    m_Address: Assets/GameAssets/MasterData/Csv/GameSettings.csv
+    m_Address: GameSettings
     m_ReadOnly: 0
-    m_SerializedLabels: []
+    m_SerializedLabels:
+    - MasterData
     FlaggedDuringContentUpdateRestriction: 0
   m_ReadOnly: 0
   m_Settings: {fileID: 11400000, guid: e611ae57f6e2e4c4b99cce42edd4c550, type: 2}

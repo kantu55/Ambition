@@ -15,7 +15,14 @@ namespace Ambition.GameCore
     /// </summary>
     public class DataManager : MonoBehaviour
     {
-        // データをキャッシュする辞書
+        /// <summary>
+        /// Addressablesのラベル名
+        /// </summary>
+        private const string LABEL_MASTER_DATA = "MasterData";
+
+        /// <summary>
+        /// データをキャッシュする辞書
+        /// </summary>
         private Dictionary<Type, IList> masterDataCache = new Dictionary<Type, IList>();
 
         /// <summary>
@@ -26,8 +33,6 @@ namespace Ambition.GameCore
             { typeof(PlayerStatsModel), "PlayerStats" },
             { typeof(WifeStatsModel), "WifeStats" },
             { typeof(HousingModel), "Housing" },
-            { typeof(FixedCostModel), "FixedCost" },
-            { typeof(BudgetModel), "Budget" },
             { typeof(GameSettingModel), "GameSettings" },
             { typeof(WifeActionModel), "WifeActions" },
         };
@@ -56,14 +61,29 @@ namespace Ambition.GameCore
         public async UniTask LoadAllGameDataAsync()
         {
             masterDataCache.Clear();
-            var tasks = new List<UniTask>();
+
+            Debug.Log("[DataManager] 全マスタデータの読み込みを開始します...");
+
+            Dictionary<string, string> loadedTexts = await AssetLoader.LoadAllTextDataByLabelAndReleaseAsync(LABEL_MASTER_DATA);
+            if (loadedTexts == null || loadedTexts.Count == 0)
+            {
+                Debug.LogWarning($"[DataManager] ラベル '{LABEL_MASTER_DATA}' のデータが見つかりませんでした。");
+                return;
+            }
 
             foreach (var pair in csvModelMap)
             {
-                tasks.Add(LoadDataByTypeAsync(pair.Key, pair.Value));
+                Type type = pair.Key;
+                string fileName = pair.Value;
+                if (loadedTexts.TryGetValue(fileName, out string csvContent))
+                {
+                    ParseAndCache(type, csvContent);
+                }
+                else
+                {
+                    Debug.LogError($"[DataManager] 必須データが見つかりません: {fileName} (Type: {type.Name})");
+                }
             }
-
-            await UniTask.WhenAll(tasks);
 
             Debug.Log("[DataManager] 全マスタデータの読み込みが完了しました。");
         }
@@ -71,42 +91,36 @@ namespace Ambition.GameCore
         /// <summary>
         /// 型情報をもとに適切なロードメソッドを呼び出すヘルパー。
         /// </summary>
-        private async UniTask LoadDataByTypeAsync(Type type, string address)
+        private void ParseAndCache(Type type, string address)
         {
             if (type == typeof(PlayerStatsModel))
             {
-                await LoadCsvDataByAddressAsync<PlayerStatsModel>(address);
+                ParseCsvData<PlayerStatsModel>(address);
             }
             else if (type == typeof(WifeActionModel))
             {
-                await LoadCsvDataByAddressAsync<WifeActionModel>(address);
+                ParseCsvData<WifeActionModel>(address);
             }
             else if (type == typeof(GameSettingModel))
             {
-                await LoadCsvDataByAddressAsync<GameSettingModel>(address);
+                ParseCsvData<GameSettingModel>(address);
             }
             else if (type == typeof(HousingModel))
             {
-                await LoadCsvDataByAddressAsync<HousingModel>(address);
+                ParseCsvData<HousingModel>(address);
             }
             else if (type == typeof(WifeStatsModel))
             {
-                await LoadCsvDataByAddressAsync<WifeStatsModel>(address);
+                ParseCsvData<WifeStatsModel>(address);
             }
         }
 
         /// <summary>
         /// AddressablesからCSVを読み込み、指定されたモデルのリストに変換
         /// </summary>
-        private async UniTask LoadCsvDataByAddressAsync<T>(string address) where T : IDataModel, new()
+        private void ParseCsvData<T>(string csvContent) where T : IDataModel, new()
         {
-            string csvText = await AssetLoader.LoadTextDataAndReleaseAsync(address);
-            if (string.IsNullOrEmpty(csvText))
-            {
-                return;
-            }
-
-            CsvData csvData = new CsvData(csvText);
+            CsvData csvData = new CsvData(csvContent);
             List<T> list = new List<T>();
 
             // データ変換ループ
@@ -131,6 +145,8 @@ namespace Ambition.GameCore
             {
                 masterDataCache.Add(typeof(T), list);
             }
+
+            Debug.Log($"[DataManager] データ構築完了: {typeof(T).Name} ({list.Count}件)");
         }
 
         /// <summary>

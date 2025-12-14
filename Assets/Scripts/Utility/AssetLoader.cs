@@ -100,5 +100,56 @@ namespace Ambition.Utility
                 Debug.LogWarning($"[AssetLoader] 無効なハンドルを解放しようとしました: {key}");
             }
         }
+
+        /// <summary>
+        /// 指定したラベルが付いた全てのアセットを読み込み
+        /// </summary>
+        public static async UniTask<(IList<T> results, AsyncOperationHandle<IList<T>> handle)> LoadAssetsByLabelAsync<T>(string label) where T : UnityEngine.Object
+        {
+            Debug.Log($"[AssetLoader] ラベル読み込み開始: {label}");
+
+            AsyncOperationHandle<IList<T>> handle = Addressables.LoadAssetsAsync<T>(label, null);
+            IList<T> results = await handle.ToUniTask();
+            if (handle.Status == AsyncOperationStatus.Succeeded && results != null)
+            {
+                Debug.Log($"[AssetLoader] <color=green>ラベル読み込み完了</color>: {label} ({results.Count}件)");
+                return (results, handle);
+            }
+            else
+            {
+                Debug.LogError($"[AssetLoader] <color=red>ラベル読み込み失敗</color>: {label}");
+                Unload(handle, label);
+                return (null, default(AsyncOperationHandle<IList<T>>));
+            }
+        }
+
+        /// <summary>
+        /// 指定したラベルのTextAssetを一括で読み込み、
+        /// 「ファイル名」と「テキスト内容」のDictionaryに変換して返します。
+        /// 読み込みに使ったメモリは即座に解放されます。
+        /// </summary>
+        /// <returns>Key: ファイル名, Value: CSVテキスト内容</returns>
+        public static async UniTask<Dictionary<string, string>> LoadAllTextDataByLabelAndReleaseAsync(string label)
+        {
+            var (assets, handle) = await LoadAssetsByLabelAsync<TextAsset>(label);
+            if (assets == null)
+            {
+                return new Dictionary<string, string>();
+            }
+
+            Dictionary<string, string> contentMap = new Dictionary<string, string>();
+            foreach (var textAsset in assets)
+            {
+                if (textAsset != null)
+                {
+                    // textAsset.name はAddressableのアドレス名（ファイル名）
+                    contentMap[textAsset.name] = textAsset.text;
+                }
+            }
+
+            Unload(handle, $"Label: {label}");
+
+            return contentMap;
+        }
     }
 }
