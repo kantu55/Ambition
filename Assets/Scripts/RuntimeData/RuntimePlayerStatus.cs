@@ -10,6 +10,11 @@ namespace Ambition.GameCore
     [Serializable]
     public class RuntimePlayerStatus
     {
+        // --- 定数・最大値 ---
+        public readonly int MAX_HEALTH = 100;
+        public readonly int MAX_MENTAL = 100;
+        public readonly int MAX_LOVE = 100;
+
         // マスタデータへの参照キー（ID）
         public int PlayerId { get; private set; }
 
@@ -26,11 +31,6 @@ namespace Ambition.GameCore
 
         // 評価
         public string Evaluation { get; private set; }
-
-        // --- 定数・最大値 ---
-        public const int MAX_HEALTH = 100;
-        public const int MAX_MENTAL = 100;
-        public const int MAX_LOVE = 100;
 
         /// <summary>
         /// ニューゲーム用コンストラクタ
