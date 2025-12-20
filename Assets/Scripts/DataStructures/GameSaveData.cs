@@ -16,6 +16,7 @@ namespace Ambition.DataStructures
         public WifeSaveData WifeData;
         public EnvironmentSaveData EnvironmentData;
         public BudgetSaveData BudgetData;
+        public DateSaveData DateData;
     }
 
     /// <summary>
@@ -85,5 +86,15 @@ namespace Ambition.DataStructures
         public int Tax;
         public int Insurance;
         public int Maintenance;
+    }
+
+    /// <summary>
+    /// 年月のセーブデータ構造体
+    /// </summary>
+    [Serializable]
+    public struct DateSaveData
+    {
+        public int Year;
+        public int Month;
     }
 }

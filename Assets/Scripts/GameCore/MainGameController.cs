@@ -67,7 +67,7 @@ namespace Ambition.GameCore
                 return;
             }
 
-            m_MainView.RefreshView(GameSimulationManager.Instance.Husband, GameSimulationManager.Instance.Wife);
+            m_MainView.RefreshView(GameSimulationManager.Instance.Date, GameSimulationManager.Instance.Budget, GameSimulationManager.Instance.Husband, GameSimulationManager.Instance.Wife);
         }
     }
 }

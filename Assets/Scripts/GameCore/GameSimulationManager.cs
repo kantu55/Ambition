@@ -47,6 +47,11 @@ namespace Ambition.GameCore
         private RuntimeHouseholdBudget budget;
 
         /// <summary>
+        /// 年月（進行度）
+        /// </summary>
+        private RuntimeDate date;
+
+        /// <summary>
         /// ゲーム進行度
         /// </summary>
         private int currentTurn;
@@ -57,6 +62,7 @@ namespace Ambition.GameCore
         public RuntimeWifeStatus Wife => wife;
         public RuntimeEnvironmentStatus Environment => environment;
         public RuntimeHouseholdBudget Budget => budget;
+        public RuntimeDate Date => date;
 
         /// <summary>
         /// 夫の名前を取得するヘルパープロパティ
@@ -123,6 +129,7 @@ namespace Ambition.GameCore
             this.environment = new RuntimeEnvironmentStatus(initialHouseId);
             int initialMoney = GameSettings.GetInt("Initial_Money", 1000000);
             this.budget = new RuntimeHouseholdBudget(initialMoney);
+            this.date = new RuntimeDate(1, 3);
 
             // --- 固定費の初期計算 ---
             this.budget.FixedCost.UpdateRent(houseMaster.MonthlyRent);
@@ -339,6 +346,8 @@ namespace Ambition.GameCore
         {
             this.currentTurn++;
 
+            this.date.AdvanceMonth();
+
             int recoverAmount = GameSettings.GetInt("Turn_Health_Recover", 30);
             this.wife.RecoverHealth(recoverAmount);
 
@@ -387,6 +396,7 @@ namespace Ambition.GameCore
                 WifeData = this.wife.ToSaveData(),
                 EnvironmentData = this.environment.ToSaveData(),
                 BudgetData = this.budget.ToSaveData(),
+                DateData = this.date.ToSaveData(),
             };
 
             string json = JsonUtility.ToJson(saveData, prettyPrint: true);
@@ -423,6 +433,7 @@ namespace Ambition.GameCore
             this.wife = new RuntimeWifeStatus(saveData.WifeData);
             this.environment = new RuntimeEnvironmentStatus(saveData.EnvironmentData);
             this.budget = new RuntimeHouseholdBudget(saveData.BudgetData);
+            this.date = new RuntimeDate(saveData.DateData);
 
             Debug.Log("ロード完了。ゲームを再開します。");
             return true;
