@@ -31,9 +31,29 @@ namespace Ambition.UI
         [SerializeField] private Button buttonSelfPolish;
         [SerializeField] private Button buttonEnvironment;
         [SerializeField] private Button buttonPR;
+        [SerializeField] private Button confirmButton;
+
+        [Header("Sub Controllers")]
+        [SerializeField] private SubMenuController subMenuController;
+        [SerializeField] private ActionDialogController actionDialogController;
 
         // 文字列生成時のGC Allocを避けるためのStringBuilder
         private StringBuilder stringBuilder = new StringBuilder(512);
+
+        /// <summary>
+        /// サブメニューコントローラーへの参照
+        /// </summary>
+        public SubMenuController SubMenuController => subMenuController;
+
+        /// <summary>
+        /// アクションダイアログコントローラーへの参照
+        /// </summary>
+        public ActionDialogController ActionDialogController => actionDialogController;
+
+        /// <summary>
+        /// 確定ボタンへの参照
+        /// </summary>
+        public Button ConfirmButton => confirmButton;
 
         /// <summary>
         /// ボタンクリック時のコールバックを登録
@@ -58,6 +78,28 @@ namespace Ambition.UI
             if (buttonPR != null)
             {
                 buttonPR.onClick.AddListener(onPR);
+            }
+        }
+
+        /// <summary>
+        /// 確定ボタンのコールバックを登録
+        /// </summary>
+        public void BindConfirmButton(UnityAction onConfirm)
+        {
+            if (confirmButton != null)
+            {
+                confirmButton.onClick.AddListener(onConfirm);
+            }
+        }
+
+        /// <summary>
+        /// 確定ボタンの有効/無効を設定
+        /// </summary>
+        public void SetConfirmButtonEnabled(bool enabled)
+        {
+            if (confirmButton != null)
+            {
+                confirmButton.interactable = enabled;
             }
         }
 
