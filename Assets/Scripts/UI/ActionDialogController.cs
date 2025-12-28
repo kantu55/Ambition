@@ -31,6 +31,13 @@ namespace Ambition.UI
         public event Action OnBackPressed;
 
         private WifeActionModel currentAction;
+        
+        // GC Allocを避けるためのStringBuilder
+        private System.Text.StringBuilder stringBuilder = new System.Text.StringBuilder(256);
+        
+        // ヘッダーテキスト
+        private const string COST_HEADER = "【コスト】\n";
+        private const string EFFECTS_HEADER = "【効果】\n";
 
         private void Awake()
         {
@@ -124,25 +131,25 @@ namespace Ambition.UI
         /// </summary>
         private string BuildCostText()
         {
-            System.Text.StringBuilder sb = new System.Text.StringBuilder();
-            sb.Append("【コスト】\n");
+            stringBuilder.Clear();
+            stringBuilder.Append(COST_HEADER);
 
             if (currentAction.CostMoney != 0)
             {
-                sb.Append($"資金: {currentAction.CostMoney:N0}円\n");
+                stringBuilder.Append($"資金: {currentAction.CostMoney:N0}円\n");
             }
 
             if (currentAction.CostWifeHealth != 0)
             {
-                sb.Append($"妻体力: {currentAction.CostWifeHealth}\n");
+                stringBuilder.Append($"妻体力: {currentAction.CostWifeHealth}\n");
             }
 
-            if (sb.Length == 9) // "【コスト】\n" のみの場合
+            if (stringBuilder.Length == COST_HEADER.Length)
             {
-                sb.Append("なし");
+                stringBuilder.Append("なし");
             }
 
-            return sb.ToString();
+            return stringBuilder.ToString();
         }
 
         /// <summary>
@@ -150,62 +157,62 @@ namespace Ambition.UI
         /// </summary>
         private string BuildEffectsText()
         {
-            System.Text.StringBuilder sb = new System.Text.StringBuilder();
-            sb.Append("【効果】\n");
+            stringBuilder.Clear();
+            stringBuilder.Append(EFFECTS_HEADER);
 
             // 夫への効果
             if (currentAction.HealthChange != 0)
             {
-                sb.Append($"夫体力: {FormatChangeValue(currentAction.HealthChange)}\n");
+                stringBuilder.Append($"夫体力: {FormatChangeValue(currentAction.HealthChange)}\n");
             }
 
             if (currentAction.MentalChange != 0)
             {
-                sb.Append($"夫精神: {FormatChangeValue(currentAction.MentalChange)}\n");
+                stringBuilder.Append($"夫精神: {FormatChangeValue(currentAction.MentalChange)}\n");
             }
 
             if (currentAction.FatigueChange != 0)
             {
-                sb.Append($"夫疲労: {FormatChangeValue(currentAction.FatigueChange)}\n");
+                stringBuilder.Append($"夫疲労: {FormatChangeValue(currentAction.FatigueChange)}\n");
             }
 
             if (currentAction.LoveChange != 0)
             {
-                sb.Append($"愛情: {FormatChangeValue(currentAction.LoveChange)}\n");
+                stringBuilder.Append($"愛情: {FormatChangeValue(currentAction.LoveChange)}\n");
             }
 
             if (currentAction.MuscleChange != 0)
             {
-                sb.Append($"筋力: {FormatChangeValue(currentAction.MuscleChange)}\n");
+                stringBuilder.Append($"筋力: {FormatChangeValue(currentAction.MuscleChange)}\n");
             }
 
             if (currentAction.TechniqueChange != 0)
             {
-                sb.Append($"技術: {FormatChangeValue(currentAction.TechniqueChange)}\n");
+                stringBuilder.Append($"技術: {FormatChangeValue(currentAction.TechniqueChange)}\n");
             }
 
             if (currentAction.ConcentrationChange != 0)
             {
-                sb.Append($"集中: {FormatChangeValue(currentAction.ConcentrationChange)}\n");
+                stringBuilder.Append($"集中: {FormatChangeValue(currentAction.ConcentrationChange)}\n");
             }
 
             // 妻への効果
             if (currentAction.StressChange != 0)
             {
-                sb.Append($"妻ストレス: {FormatChangeValue(currentAction.StressChange)}\n");
+                stringBuilder.Append($"妻ストレス: {FormatChangeValue(currentAction.StressChange)}\n");
             }
 
             if (currentAction.SkillExp != 0)
             {
-                sb.Append($"スキル経験値: +{currentAction.SkillExp}\n");
+                stringBuilder.Append($"スキル経験値: +{currentAction.SkillExp}\n");
             }
 
-            if (sb.Length == 9) // "【効果】\n" のみの場合
+            if (stringBuilder.Length == EFFECTS_HEADER.Length)
             {
-                sb.Append("なし");
+                stringBuilder.Append("なし");
             }
 
-            return sb.ToString();
+            return stringBuilder.ToString();
         }
 
         /// <summary>
