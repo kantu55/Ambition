@@ -38,6 +38,7 @@ namespace Ambition.UI
         // ヘッダーテキスト
         private const string COST_HEADER = "【コスト】\n";
         private const string EFFECTS_HEADER = "【効果】\n";
+        private const string NONE_TEXT = "なし";
 
         private void Awake()
         {
@@ -146,7 +147,7 @@ namespace Ambition.UI
 
             if (stringBuilder.Length == COST_HEADER.Length)
             {
-                stringBuilder.Append("なし");
+                stringBuilder.Append(NONE_TEXT);
             }
 
             return stringBuilder.ToString();
@@ -204,12 +205,12 @@ namespace Ambition.UI
 
             if (currentAction.SkillExp != 0)
             {
-                stringBuilder.Append($"スキル経験値: +{currentAction.SkillExp}\n");
+                stringBuilder.Append($"スキル経験値: {FormatChangeValue(currentAction.SkillExp)}\n");
             }
 
             if (stringBuilder.Length == EFFECTS_HEADER.Length)
             {
-                stringBuilder.Append("なし");
+                stringBuilder.Append(NONE_TEXT);
             }
 
             return stringBuilder.ToString();
