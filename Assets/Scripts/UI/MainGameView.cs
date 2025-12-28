@@ -32,8 +32,32 @@ namespace Ambition.UI
         [SerializeField] private Button buttonEnvironment;
         [SerializeField] private Button buttonPR;
 
+        [Header("Confirm Button")]
+        [SerializeField] private Button confirmButton;
+
+        [Header("Sub Controllers")]
+        [SerializeField] private SubMenuController subMenuController;
+        [SerializeField] private ActionDialogController actionDialogController;
+
         // 文字列生成時のGC Allocを避けるためのStringBuilder
         private StringBuilder stringBuilder = new StringBuilder(512);
+
+        // --- プロパティ ---
+
+        /// <summary>
+        /// 確定ボタンへのアクセス
+        /// </summary>
+        public Button ConfirmButton => confirmButton;
+
+        /// <summary>
+        /// サブメニューコントローラーへのアクセス
+        /// </summary>
+        public SubMenuController SubMenuController => subMenuController;
+
+        /// <summary>
+        /// アクションダイアログコントローラーへのアクセス
+        /// </summary>
+        public ActionDialogController ActionDialogController => actionDialogController;
 
         /// <summary>
         /// ボタンクリック時のコールバックを登録
