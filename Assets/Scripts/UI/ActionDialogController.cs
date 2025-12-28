@@ -1,5 +1,6 @@
 using Ambition.DataStructures;
 using System;
+using System.Text;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -23,6 +24,7 @@ namespace Ambition.UI
         private WifeActionModel currentAction;
         private Action<WifeActionModel> onExecute;
         private Action onBack;
+        private StringBuilder stringBuilder = new StringBuilder(512);
 
         private void Awake()
         {
@@ -95,54 +97,68 @@ namespace Ambition.UI
             // コスト情報
             if (actionCostText != null)
             {
-                string costInfo = "コスト:\n";
+                stringBuilder.Clear();
+                stringBuilder.Append("コスト:\n");
                 if (currentAction.CostMoney != 0)
                 {
-                    costInfo += $"  資金: {currentAction.CostMoney:N0}円\n";
+                    stringBuilder.Append("  資金: ").Append(currentAction.CostMoney.ToString("N0")).Append("円\n");
                 }
                 if (currentAction.CostWifeHealth != 0)
                 {
-                    costInfo += $"  妻の体力: {currentAction.CostWifeHealth}\n";
+                    stringBuilder.Append("  妻の体力: ").Append(currentAction.CostWifeHealth).Append('\n');
                 }
-                actionCostText.text = costInfo;
+                actionCostText.text = stringBuilder.ToString();
             }
 
             // 効果情報
             if (actionEffectsText != null)
             {
-                string effectsInfo = "効果:\n";
+                stringBuilder.Clear();
+                stringBuilder.Append("効果:\n");
                 
                 if (currentAction.HealthChange != 0)
                 {
-                    effectsInfo += $"  夫の体力: {currentAction.HealthChange:+#;-#;0}\n";
+                    stringBuilder.Append("  夫の体力: ").Append(FormatChangeValue(currentAction.HealthChange)).Append('\n');
                 }
                 if (currentAction.MentalChange != 0)
                 {
-                    effectsInfo += $"  夫のメンタル: {currentAction.MentalChange:+#;-#;0}\n";
+                    stringBuilder.Append("  夫のメンタル: ").Append(FormatChangeValue(currentAction.MentalChange)).Append('\n');
                 }
                 if (currentAction.FatigueChange != 0)
                 {
-                    effectsInfo += $"  夫の疲労: {currentAction.FatigueChange:+#;-#;0}\n";
+                    stringBuilder.Append("  夫の疲労: ").Append(FormatChangeValue(currentAction.FatigueChange)).Append('\n');
                 }
                 if (currentAction.LoveChange != 0)
                 {
-                    effectsInfo += $"  夫の愛情: {currentAction.LoveChange:+#;-#;0}\n";
+                    stringBuilder.Append("  夫の愛情: ").Append(FormatChangeValue(currentAction.LoveChange)).Append('\n');
                 }
                 if (currentAction.MuscleChange != 0)
                 {
-                    effectsInfo += $"  筋力: {currentAction.MuscleChange:+#;-#;0}\n";
+                    stringBuilder.Append("  筋力: ").Append(FormatChangeValue(currentAction.MuscleChange)).Append('\n');
                 }
                 if (currentAction.TechniqueChange != 0)
                 {
-                    effectsInfo += $"  技術: {currentAction.TechniqueChange:+#;-#;0}\n";
+                    stringBuilder.Append("  技術: ").Append(FormatChangeValue(currentAction.TechniqueChange)).Append('\n');
                 }
                 if (currentAction.ConcentrationChange != 0)
                 {
-                    effectsInfo += $"  集中: {currentAction.ConcentrationChange:+#;-#;0}\n";
+                    stringBuilder.Append("  集中: ").Append(FormatChangeValue(currentAction.ConcentrationChange)).Append('\n');
                 }
                 
-                actionEffectsText.text = effectsInfo;
+                actionEffectsText.text = stringBuilder.ToString();
             }
+        }
+
+        /// <summary>
+        /// 変化量を表示用にフォーマット
+        /// </summary>
+        private string FormatChangeValue(int value)
+        {
+            if (value > 0)
+            {
+                return "+" + value;
+            }
+            return value.ToString();
         }
 
         /// <summary>

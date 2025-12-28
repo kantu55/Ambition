@@ -90,8 +90,7 @@ namespace Ambition.UI
                 Button itemButton = itemObj.GetComponent<Button>();
                 if (itemButton != null)
                 {
-                    WifeActionModel actionCopy = action; // クロージャ対策
-                    itemButton.onClick.AddListener(() => OnActionItemClicked(actionCopy));
+                    itemButton.onClick.AddListener(() => OnActionItemClicked(action));
                 }
             }
         }
