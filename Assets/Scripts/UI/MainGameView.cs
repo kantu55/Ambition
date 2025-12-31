@@ -1,5 +1,6 @@
 ﻿using Ambition.GameCore;
 using Ambition.RuntimeData;
+using Ambition.DataStructures;
 using System.Text;
 using TMPro;
 using UnityEngine;
@@ -34,6 +35,12 @@ namespace Ambition.UI
 
         [Header("Confirm Button")]
         [SerializeField] private Button confirmButton;
+
+        [Header("Action Info Panels")]
+        [SerializeField] private ActionInfoPanel actionInfoSupport;
+        [SerializeField] private ActionInfoPanel actionInfoSelfPolish;
+        [SerializeField] private ActionInfoPanel actionInfoEnvironment;
+        [SerializeField] private ActionInfoPanel actionInfoPR;
 
         [Header("Sub Controllers")]
         [SerializeField] private SubMenuController subMenuController;
@@ -142,6 +149,76 @@ namespace Ambition.UI
 
             wifeStaminaSlider.maxValue = wife.MaxHealth;
             wifeStaminaSlider.value = wife.CurrentHealth;
+        }
+
+        /// <summary>
+        /// 選択されたアクションを表示
+        /// </summary>
+        /// <param name="action">選択されたアクション（nullの場合はクリア）</param>
+        public void UpdateSelectedAction(WifeActionModel action)
+        {
+            if (action == null)
+            {
+                // すべてのアクション情報パネルを非表示
+                HideAllActionInfo();
+                return;
+            }
+
+            // まず全て非表示
+            HideAllActionInfo();
+
+            // アクションのカテゴリに応じて対応するパネルを表示
+            ActionInfoPanel targetPanel = GetActionInfoPanelForCategory(action.MainCategory);
+            if (targetPanel != null)
+            {
+                targetPanel.Show(action);
+            }
+        }
+
+        /// <summary>
+        /// すべてのアクション情報パネルを非表示にする
+        /// </summary>
+        private void HideAllActionInfo()
+        {
+            if (actionInfoSupport != null)
+            {
+                actionInfoSupport.Hide();
+            }
+
+            if (actionInfoSelfPolish != null)
+            {
+                actionInfoSelfPolish.Hide();
+            }
+
+            if (actionInfoEnvironment != null)
+            {
+                actionInfoEnvironment.Hide();
+            }
+
+            if (actionInfoPR != null)
+            {
+                actionInfoPR.Hide();
+            }
+        }
+
+        /// <summary>
+        /// アクションのカテゴリに対応するアクション情報パネルを取得
+        /// </summary>
+        private ActionInfoPanel GetActionInfoPanelForCategory(WifeActionModel.ActionMainCategory category)
+        {
+            switch (category)
+            {
+                case WifeActionModel.ActionMainCategory.SUPPORT_HUSBAND:
+                    return actionInfoSupport;
+                case WifeActionModel.ActionMainCategory.SELF_POLISH:
+                    return actionInfoSelfPolish;
+                case WifeActionModel.ActionMainCategory.ENVIRONMENT:
+                    return actionInfoEnvironment;
+                case WifeActionModel.ActionMainCategory.PR_SALES:
+                    return actionInfoPR;
+                default:
+                    return null;
+            }
         }
     }
 }
