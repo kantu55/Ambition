@@ -148,6 +148,9 @@ namespace Ambition.GameCore
             {
                 m_MainView.ConfirmButton.interactable = true;
             }
+
+            // 選択されたアクション情報を表示
+            m_MainView.UpdateSelectedAction(action);
         }
 
         /// <summary>
@@ -191,6 +194,9 @@ namespace Ambition.GameCore
                     {
                         m_MainView.ConfirmButton.interactable = false;
                     }
+
+                    // アクション情報パネルをクリア
+                    m_MainView.UpdateSelectedAction(null);
 
                     // UIを更新
                     RefreshUI();
