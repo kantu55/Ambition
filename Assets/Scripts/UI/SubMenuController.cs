@@ -189,12 +189,14 @@ namespace Ambition.UI
             if (layoutGroup != null)
             {
                 spacing = layoutGroup.spacing;
+                // 高さ計算のため、垂直方向のパディングのみを使用
                 padding = layoutGroup.padding.top + layoutGroup.padding.bottom;
             }
 
             // 背景の高さを計算: ボタンの高さ * 個数 + スペーシング * (個数-1) + パディング
-            int spacingCount = Mathf.Max(0, instantiatedButtons.Count - 1);
-            float totalHeight = (buttonHeight * instantiatedButtons.Count) + (spacing * spacingCount) + padding;
+            int buttonCount = instantiatedButtons.Count;
+            int spacingCount = Mathf.Max(0, buttonCount - 1);
+            float totalHeight = (buttonHeight * buttonCount) + (spacing * spacingCount) + padding;
 
             // 背景のサイズを適用
             Vector2 sizeDelta = panelRect.sizeDelta;
