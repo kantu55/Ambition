@@ -164,6 +164,7 @@ namespace Ambition.UI
             }
 
             // ボタンの高さを取得（全ボタンが同じプレハブから生成されるため、最初のボタンの高さを使用）
+            // 注: このコードは全ボタンが同じ高さを持つことを前提としています
             float buttonHeight = 0f;
             if (instantiatedButtons.Count > 0 && instantiatedButtons[0] != null)
             {
@@ -192,7 +193,8 @@ namespace Ambition.UI
             }
 
             // 背景の高さを計算: ボタンの高さ * 個数 + スペーシング * (個数-1) + パディング
-            float totalHeight = (buttonHeight * instantiatedButtons.Count) + (spacing * (instantiatedButtons.Count - 1)) + padding;
+            int spacingCount = Mathf.Max(0, instantiatedButtons.Count - 1);
+            float totalHeight = (buttonHeight * instantiatedButtons.Count) + (spacing * spacingCount) + padding;
 
             // 背景のサイズを適用
             Vector2 sizeDelta = panelRect.sizeDelta;
