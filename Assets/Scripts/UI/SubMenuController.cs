@@ -157,7 +157,7 @@ namespace Ambition.UI
             pivot.y = 0f;
             panelRect.pivot = pivot;
 
-            // ボタンの高さを取得
+            // ボタンの高さを取得（全ボタンが同じプレハブから生成されるため、最初のボタンの高さを使用）
             float buttonHeight = 0f;
             if (instantiatedButtons.Count > 0 && instantiatedButtons[0] != null)
             {
@@ -166,6 +166,12 @@ namespace Ambition.UI
                 {
                     buttonHeight = buttonRect.sizeDelta.y;
                 }
+            }
+
+            // ボタンの高さが取得できない場合は処理を中断
+            if (buttonHeight <= 0f)
+            {
+                return;
             }
 
             // VerticalLayoutGroupの設定を取得
