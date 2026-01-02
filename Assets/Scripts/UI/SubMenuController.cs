@@ -62,6 +62,9 @@ namespace Ambition.UI
             {
                 CreateActionButton(action);
             }
+
+            // 生成されたボタンの数に応じて背景のサイズを調整
+            AdjustBackgroundSize();
         }
 
         /// <summary>
@@ -131,6 +134,57 @@ namespace Ambition.UI
             }
 
             instantiatedButtons.Clear();
+        }
+
+        /// <summary>
+        /// 生成されたボタンの数に応じて背景のサイズを調整する
+        /// </summary>
+        private void AdjustBackgroundSize()
+        {
+            if (menuPanel == null || contentContainer == null || instantiatedButtons.Count == 0)
+            {
+                return;
+            }
+
+            RectTransform panelRect = menuPanel.GetComponent<RectTransform>();
+            if (panelRect == null)
+            {
+                return;
+            }
+
+            // ピボットをY=0（下）に設定して、上に伸びるようにする
+            Vector2 pivot = panelRect.pivot;
+            pivot.y = 0f;
+            panelRect.pivot = pivot;
+
+            // ボタンの高さを取得
+            float buttonHeight = 0f;
+            if (instantiatedButtons.Count > 0 && instantiatedButtons[0] != null)
+            {
+                RectTransform buttonRect = instantiatedButtons[0].GetComponent<RectTransform>();
+                if (buttonRect != null)
+                {
+                    buttonHeight = buttonRect.sizeDelta.y;
+                }
+            }
+
+            // VerticalLayoutGroupの設定を取得
+            float spacing = 0f;
+            float padding = 0f;
+            VerticalLayoutGroup layoutGroup = contentContainer.GetComponent<VerticalLayoutGroup>();
+            if (layoutGroup != null)
+            {
+                spacing = layoutGroup.spacing;
+                padding = layoutGroup.padding.top + layoutGroup.padding.bottom;
+            }
+
+            // 背景の高さを計算: ボタンの高さ * 個数 + スペーシング * (個数-1) + パディング
+            float totalHeight = (buttonHeight * instantiatedButtons.Count) + (spacing * (instantiatedButtons.Count - 1)) + padding;
+
+            // 背景のサイズを適用
+            Vector2 sizeDelta = panelRect.sizeDelta;
+            sizeDelta.y = totalHeight;
+            panelRect.sizeDelta = sizeDelta;
         }
 
         private void OnDestroy()
