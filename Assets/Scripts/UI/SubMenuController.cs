@@ -63,6 +63,9 @@ namespace Ambition.UI
                 CreateActionButton(action);
             }
 
+            // レイアウト計算を強制的に完了させてから背景サイズを調整
+            Canvas.ForceUpdateCanvases();
+            
             // 生成されたボタンの数に応じて背景のサイズを調整
             AdjustBackgroundSize();
         }
@@ -152,10 +155,13 @@ namespace Ambition.UI
                 return;
             }
 
-            // ピボットをY=0（下）に設定して、上に伸びるようにする
+            // ピボットをY=0（下）に設定して、上に伸びるようにする（必要な場合のみ）
             Vector2 pivot = panelRect.pivot;
-            pivot.y = 0f;
-            panelRect.pivot = pivot;
+            if (pivot.y != 0f)
+            {
+                pivot.y = 0f;
+                panelRect.pivot = pivot;
+            }
 
             // ボタンの高さを取得（全ボタンが同じプレハブから生成されるため、最初のボタンの高さを使用）
             float buttonHeight = 0f;
