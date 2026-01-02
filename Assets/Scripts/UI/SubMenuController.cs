@@ -164,7 +164,8 @@ namespace Ambition.UI
                 RectTransform buttonRect = instantiatedButtons[0].GetComponent<RectTransform>();
                 if (buttonRect != null)
                 {
-                    buttonHeight = buttonRect.sizeDelta.y;
+                    // 実際にレンダリングされた高さを使用（Content Size Fitterなどのレイアウト制御に対応）
+                    buttonHeight = buttonRect.rect.height;
                 }
             }
 
