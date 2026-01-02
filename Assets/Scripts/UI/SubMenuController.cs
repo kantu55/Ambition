@@ -62,6 +62,13 @@ namespace Ambition.UI
             {
                 CreateActionButton(action);
             }
+
+            // backButtonをcontentContainerの最後尾に移動
+            if (backButton != null && contentContainer != null)
+            {
+                backButton.transform.SetParent(contentContainer);
+                backButton.transform.SetAsLastSibling();
+            }
         }
 
         /// <summary>
