@@ -24,23 +24,26 @@ namespace Ambition.UI
         [SerializeField] private TextMeshProUGUI husbandAbilityText; // 筋力などの一覧表示用
 
         [Header("Wife UI")]
-        [SerializeField] private Slider wifeStaminaSlider;
         [SerializeField] private TextMeshProUGUI wifeSkillText; // スキル一覧表示用
 
         [Header("Command Buttons")]
+        [SerializeField] private Button buttonCare;
         [SerializeField] private Button buttonSupport;
-        [SerializeField] private Button buttonSelfPolish;
-        [SerializeField] private Button buttonEnvironment;
-        [SerializeField] private Button buttonPR;
+        [SerializeField] private Button buttonSNS;
+        [SerializeField] private Button buttonDiscipline;
+        [SerializeField] private Button buttonTalk;
+        [SerializeField] private Button buttonRest;
 
         [Header("Confirm Button")]
         [SerializeField] private Button confirmButton;
 
         [Header("Action Info Panels")]
+        [SerializeField] private ActionInfoPanel actionInfoCare;
         [SerializeField] private ActionInfoPanel actionInfoSupport;
-        [SerializeField] private ActionInfoPanel actionInfoSelfPolish;
-        [SerializeField] private ActionInfoPanel actionInfoEnvironment;
-        [SerializeField] private ActionInfoPanel actionInfoPR;
+        [SerializeField] private ActionInfoPanel actionInfoSNS;
+        [SerializeField] private ActionInfoPanel actionInfoDiscipline;
+        [SerializeField] private ActionInfoPanel actionInfoTalk;
+        [SerializeField] private ActionInfoPanel actionInfoRest;
 
         [Header("Sub Controllers")]
         [SerializeField] private SubMenuController subMenuController;
@@ -69,26 +72,31 @@ namespace Ambition.UI
         /// <summary>
         /// ボタンクリック時のコールバックを登録
         /// </summary>
-        public void BindButtons(UnityAction onSupport, UnityAction onSelfPolish, UnityAction onEnvironment, UnityAction onPR)
+        public void BindButtons(UnityAction onCare, UnityAction onSupport, UnityAction onSNS, UnityAction onDiscipline, UnityAction onTalk, UnityAction onRest)
         {
+            if (buttonCare != null)
+            {
+                buttonCare.onClick.AddListener(onCare);
+            }
+
             if (buttonSupport != null)
             {
                 buttonSupport.onClick.AddListener(onSupport);
             }
 
-            if (buttonSelfPolish != null)
+            if (buttonSNS != null)
             {
-                buttonSelfPolish.onClick.AddListener(onSelfPolish);
+                buttonSNS.onClick.AddListener(onSNS);
             }
 
-            if (buttonEnvironment != null)
+            if (buttonDiscipline != null)
             {
-                buttonEnvironment.onClick.AddListener(onEnvironment);
+                buttonDiscipline.onClick.AddListener(onDiscipline);
             }
-            
-            if (buttonPR != null)
+
+            if (buttonTalk != null)
             {
-                buttonPR.onClick.AddListener(onPR);
+                buttonTalk.onClick.AddListener(onTalk);
             }
         }
 
@@ -146,9 +154,6 @@ namespace Ambition.UI
             stringBuilder.Append("容姿: Lv").Append(wife.LooksLevel).Append('\n');
             stringBuilder.Append("マーケティング: Lv").Append(wife.SocialLevel);
             wifeSkillText.SetText(stringBuilder);
-
-            wifeStaminaSlider.maxValue = wife.MaxHealth;
-            wifeStaminaSlider.value = wife.CurrentHealth;
         }
 
         /// <summary>
@@ -168,7 +173,7 @@ namespace Ambition.UI
             HideAllActionInfo();
 
             // アクションのカテゴリに応じて対応するパネルを表示
-            ActionInfoPanel targetPanel = GetActionInfoPanelForCategory(action.MainCategory);
+            ActionInfoPanel targetPanel = GetActionInfoPanelForCategory(action.GetMainCategory());
             if (targetPanel != null)
             {
                 targetPanel.Show(action);
@@ -180,24 +185,34 @@ namespace Ambition.UI
         /// </summary>
         private void HideAllActionInfo()
         {
+            if (actionInfoCare != null)
+            {
+                actionInfoCare.Hide();
+            }
+
             if (actionInfoSupport != null)
             {
                 actionInfoSupport.Hide();
             }
 
-            if (actionInfoSelfPolish != null)
+            if (actionInfoSNS != null)
             {
-                actionInfoSelfPolish.Hide();
+                actionInfoSNS.Hide();
             }
 
-            if (actionInfoEnvironment != null)
+            if (actionInfoDiscipline != null)
             {
-                actionInfoEnvironment.Hide();
+                actionInfoDiscipline.Hide();
             }
 
-            if (actionInfoPR != null)
+            if (actionInfoTalk != null)
             {
-                actionInfoPR.Hide();
+                actionInfoTalk.Hide();
+            }
+
+            if (actionInfoRest != null)
+            {
+                actionInfoRest.Hide();
             }
         }
 
@@ -208,14 +223,18 @@ namespace Ambition.UI
         {
             switch (category)
             {
-                case WifeActionModel.ActionMainCategory.SUPPORT_HUSBAND:
+                case WifeActionModel.ActionMainCategory.CARE:
+                    return actionInfoCare;
+                case WifeActionModel.ActionMainCategory.SUPPORT:
                     return actionInfoSupport;
-                case WifeActionModel.ActionMainCategory.SELF_POLISH:
-                    return actionInfoSelfPolish;
-                case WifeActionModel.ActionMainCategory.ENVIRONMENT:
-                    return actionInfoEnvironment;
-                case WifeActionModel.ActionMainCategory.PR_SALES:
-                    return actionInfoPR;
+                case WifeActionModel.ActionMainCategory.SNS:
+                    return actionInfoSNS;
+                case WifeActionModel.ActionMainCategory.DISCIPLINE:
+                    return actionInfoDiscipline;
+                case WifeActionModel.ActionMainCategory.TALK:
+                    return actionInfoTalk;
+                case WifeActionModel.ActionMainCategory.REST:
+                    return actionInfoRest;
                 default:
                     return null;
             }

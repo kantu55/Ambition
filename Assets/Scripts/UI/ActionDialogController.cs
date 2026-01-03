@@ -108,12 +108,6 @@ namespace Ambition.UI
                 actionNameText.text = currentAction.Name;
             }
 
-            // 説明
-            if (actionDescriptionText != null)
-            {
-                actionDescriptionText.text = currentAction.Description;
-            }
-
             // コスト
             if (actionCostText != null)
             {
@@ -135,14 +129,9 @@ namespace Ambition.UI
             stringBuilder.Clear();
             stringBuilder.Append(COST_HEADER);
 
-            if (currentAction.CostMoney != 0)
+            if (currentAction.CashCost != 0)
             {
-                stringBuilder.Append($"資金: {currentAction.CostMoney:N0}円\n");
-            }
-
-            if (currentAction.CostWifeHealth != 0)
-            {
-                stringBuilder.Append($"妻体力: {currentAction.CostWifeHealth}\n");
+                stringBuilder.Append($"資金: {currentAction.CashCost:N0}円\n");
             }
 
             if (stringBuilder.Length == COST_HEADER.Length)
@@ -162,50 +151,34 @@ namespace Ambition.UI
             stringBuilder.Append(EFFECTS_HEADER);
 
             // 夫への効果
-            if (currentAction.HealthChange != 0)
+            if (currentAction.DeltaHP != 0)
             {
-                stringBuilder.Append($"夫体力: {FormatChangeValue(currentAction.HealthChange)}\n");
+                stringBuilder.Append($"夫体力: {FormatChangeValue(currentAction.DeltaHP)}\n");
             }
 
-            if (currentAction.MentalChange != 0)
+            if (currentAction.DeltaMP != 0)
             {
-                stringBuilder.Append($"夫精神: {FormatChangeValue(currentAction.MentalChange)}\n");
+                stringBuilder.Append($"夫精神: {FormatChangeValue(currentAction.DeltaMP)}\n");
             }
 
-            if (currentAction.FatigueChange != 0)
+            if (currentAction.DeltaCOND != 0)
             {
-                stringBuilder.Append($"夫疲労: {FormatChangeValue(currentAction.FatigueChange)}\n");
+                stringBuilder.Append($"夫調子: {FormatChangeValue(currentAction.DeltaCOND)}\n");
             }
 
-            if (currentAction.LoveChange != 0)
+            if (currentAction.DeltaLove != 0)
             {
-                stringBuilder.Append($"愛情: {FormatChangeValue(currentAction.LoveChange)}\n");
+                stringBuilder.Append($"愛情: {FormatChangeValue(currentAction.DeltaLove)}\n");
             }
 
-            if (currentAction.MuscleChange != 0)
+            if (currentAction.DeltaPublicEye != 0)
             {
-                stringBuilder.Append($"筋力: {FormatChangeValue(currentAction.MuscleChange)}\n");
+                stringBuilder.Append($"世間の目: {FormatChangeValue(currentAction.DeltaPublicEye)}\n");
             }
 
-            if (currentAction.TechniqueChange != 0)
+            if (currentAction.DeltaTeamEvaluation != 0)
             {
-                stringBuilder.Append($"技術: {FormatChangeValue(currentAction.TechniqueChange)}\n");
-            }
-
-            if (currentAction.ConcentrationChange != 0)
-            {
-                stringBuilder.Append($"集中: {FormatChangeValue(currentAction.ConcentrationChange)}\n");
-            }
-
-            // 妻への効果
-            if (currentAction.StressChange != 0)
-            {
-                stringBuilder.Append($"妻ストレス: {FormatChangeValue(currentAction.StressChange)}\n");
-            }
-
-            if (currentAction.SkillExp != 0)
-            {
-                stringBuilder.Append($"スキル経験値: {FormatChangeValue(currentAction.SkillExp)}\n");
+                stringBuilder.Append($"チーム評価: {FormatChangeValue(currentAction.DeltaTeamEvaluation)}\n");
             }
 
             if (stringBuilder.Length == EFFECTS_HEADER.Length)

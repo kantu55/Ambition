@@ -74,26 +74,13 @@ namespace Ambition.UI
             {
                 stringBuilder.Clear();
                 stringBuilder.Append("資金: ");
-                if (action.CostMoney > 0)
+                if (action.CashCost > 0)
                 {
                     stringBuilder.Append("-");
                 }
-                stringBuilder.Append(action.CostMoney.ToString("N0"));
+                stringBuilder.Append(action.CashCost.ToString("N0"));
                 stringBuilder.Append("円");
                 costMoneyText.text = stringBuilder.ToString();
-            }
-
-            // コスト（妻体力）
-            if (costWifeHealthText != null)
-            {
-                stringBuilder.Clear();
-                stringBuilder.Append("妻体力: ");
-                if (action.CostWifeHealth > 0)
-                {
-                    stringBuilder.Append("-");
-                }
-                stringBuilder.Append(action.CostWifeHealth.ToString());
-                costWifeHealthText.text = stringBuilder.ToString();
             }
         }
     }

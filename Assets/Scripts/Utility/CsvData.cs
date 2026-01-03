@@ -88,6 +88,34 @@ namespace Ambition.Utility
         }
 
         /// <summary>
+        /// 指定した行・列名の値をint型で取得
+        /// </summary>
+        public int GetValueToInt(int rowIndex, string columnName)
+        {
+            string value = GetValue(rowIndex, columnName);
+            if (int.TryParse(value, out int result))
+            {
+                return result;
+            }
+
+            return 0;
+        }
+
+        /// <summary>
+        /// 指定した行・列名の値をfloat型で取得
+        /// </summary>
+        public float GetValueToFloat(int rowIndex, string columnName)
+        {
+            string value = GetValue(rowIndex, columnName);
+            if (float.TryParse(value, out float result))
+            {
+                return result;
+            }
+
+            return 0f;
+        }
+
+        /// <summary>
         /// 指定した行が空、またはデータ不足か判定
         /// </summary>
         public bool IsRowEmpty(int rowIndex)

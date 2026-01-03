@@ -183,16 +183,7 @@ namespace Ambition.GameCore
         public List<WifeActionModel> GetActionsByMainCategory(WifeActionModel.ActionMainCategory category)
         {
             var allActions = GetDatas<WifeActionModel>();
-            return allActions.Where(a => a.MainCategory == category).ToList();
-        }
-
-        /// <summary>
-        /// 指定されたサブカテゴリに属する行動リストを取得
-        /// </summary>
-        public List<WifeActionModel> GetActionsBySubCategory(WifeActionModel.ActionSubCategory category)
-        {
-            var allActions = GetDatas<WifeActionModel>();
-            return allActions.Where(a => a.SubCategory == category).ToList();
+            return allActions.Where(a => a.GetMainCategory() == category).ToList();
         }
     }
 }

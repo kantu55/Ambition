@@ -24,11 +24,13 @@ namespace Ambition.GameCore
             }
 
             m_MainView.BindButtons(
+                OnCareClicked,
                 OnSupportClicked,
-                OnSelfPolishClicked,
-                OnEnvironmentClicked,
-                OnPRClicked
-            );
+                OnSNSClicked,
+                OnDisciplineClicked,
+                OnTalkClicked,
+                OnRestClicked
+                );
 
             // 確定ボタンのイベントを設定
             if (m_MainView.ConfirmButton != null)
@@ -57,28 +59,40 @@ namespace Ambition.GameCore
 
         // --- イベントハンドラ ---
 
+        private void OnCareClicked()
+        {
+            Debug.Log("コマンド: ケア");
+            OpenSubMenu(WifeActionModel.ActionMainCategory.CARE);
+        }
+
         private void OnSupportClicked()
         {
-            Debug.Log("コマンド: 夫を支える");
-            OpenSubMenu(WifeActionModel.ActionMainCategory.SUPPORT_HUSBAND);
+            Debug.Log("コマンド: 練習支援");
+            OpenSubMenu(WifeActionModel.ActionMainCategory.SUPPORT);
         }
 
-        private void OnSelfPolishClicked()
+        private void OnSNSClicked()
         {
-            Debug.Log("コマンド: 自分を磨く");
-            OpenSubMenu(WifeActionModel.ActionMainCategory.SELF_POLISH);
+            Debug.Log("コマンド: SNS/対外");
+            OpenSubMenu(WifeActionModel.ActionMainCategory.SNS);
         }
 
-        private void OnEnvironmentClicked()
+        private void OnDisciplineClicked()
         {
-            Debug.Log("コマンド: 環境を整える");
-            OpenSubMenu(WifeActionModel.ActionMainCategory.ENVIRONMENT);
+            Debug.Log("コマンド: 躾");
+            OpenSubMenu(WifeActionModel.ActionMainCategory.DISCIPLINE);
         }
 
-        private void OnPRClicked()
+        private void OnTalkClicked()
         {
-            Debug.Log("コマンド: 広報・営業");
-            OpenSubMenu(WifeActionModel.ActionMainCategory.PR_SALES);
+            Debug.Log("コマンド: 夫婦仲");
+            OpenSubMenu(WifeActionModel.ActionMainCategory.TALK);
+        }
+
+        private void OnRestClicked()
+        {
+            Debug.Log("コマンド: 休養");
+            OpenSubMenu(WifeActionModel.ActionMainCategory.REST);
         }
 
         // --- サブメニュー関連 ---

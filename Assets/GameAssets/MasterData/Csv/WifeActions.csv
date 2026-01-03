@@ -1,4 +1,31 @@
-ID,MainCategory,SubCategory,SubCategoryName01,SubCategoryName02,Description,CostMoney,CostWifeHealth,HealthChange,MentalChange,FatigueChange,LoveChange,MuscleChange,TechniqueChange,ConcentrationChange,StressChange,SkillExp
-10101,1,101,特別な手料理,疲労抜き薬膳,愛情料理で体力を回復させます。(HP大幅回復),30000,25,40,0,-15,5,0,0,0,0,0
-10201,1,102,優しく励ます,メンタル管理,優しい言葉でやる気を引き出します。(メンタル回復),10000,10,0,20,0,5,0,0,0,0,0
-10301,1,103,病院・マッサージ,メンテナンス,プロの施術で体の痛みを和らげます。(HP回復),100000,5,60,0,-10,0,0,0,0,0,0
+action_id,name,tag,req,cash_cost,delta_HP,delta_MP,delta_COND,delta_RL,delta_RP,delta_T,growth_add,growth_mult,success_model,note
+(GLOBAL),成功率クランプ,,,,,,,,,,,,"p = clamp(p_base + p_skill*skill_lv + p_cond*COND_stage, 0.05, 0.90)",actions_master冒頭のp_min/p_max。詳細は actions_spec参照。
+ACT_CARE,ケア（標準）,CARE,none,,+4,+1,+8,+1,+0,+0,0.05,0.95,,HP主軸の回復。CONDは固定値で戻すが、過剰に上がりすぎないよう抑えめ。
+ACT_CARE_HP,ケア（HP寄り）,CARE,wife.CARE>=2,,+7,+0,+3,+0,+0,+0,0,0.9,,HPを大きく戻す（成長はほぼ止まる）。
+ACT_CARE_COND,ケア（COND寄り）,CARE,wife.CARE>=2,,+1,+0,+14,+0,+0,+0,0,0.95,,CONDを固定値で戻す（COND依存で減衰しない前提）。
+ACT_CARE_MP,ケア（メンタル寄り）,CARE,wife.CARE>=4,,+0,+5,+6,+1,+0,-1,0,0.95,,MPを戻すが、MP過剰で天狗側に寄り得る（Tも微減）
+ACT_CARE_REHAB,リハビリ集中,CARE,wife.CARE>=6,,+4,-2,+18,+0,+0,-1,0,0.9,,CONDを大きく戻す代わりにMPを落とす（過剰維持を抑える）
+ACT_SUPPORT,練習支援/帯同（標準）,SUPPORT,none,,-5,-3,-1,+0,+0,+0,0.3,1,,“総負荷”は従来のCOND偏重と同程度を維持しつつ、HP/MPへ寄せる。
+ACT_SUPPORT_LIGHT,練習支援（軽）,SUPPORT,wife.COACH>=2,,-4,-2,+0,+0,+0,+0,0.45,1,,序盤の回し用。HP負荷はあるが、CONDは基本維持。
+ACT_SUPPORT_INTENSE,練習支援（重）,SUPPORT,wife.COACH>=4,,-7,-4,-1,-1,+0,+0,0.8,1,,成長は大きいがHPが最も削れる。RLにも軽いしわ寄せ。
+ACT_SUPPORT_PRIVATE,プライベートコーチ帯同,SUPPORT,wife.COACH>=6,,-6,-4,-1,-1,+0,+0,1.5,1.05,,伸びは最大級。HP負荷は重い（費用は設備/イベント側で表現してもよい）。
+ACT_REST,休養,REST,none,,+1,+7,+3,+0,+0,-1,0,0.9,,MP回復が主。CONDは小さめに戻す。
+ACT_DISCIPLINE,躾/引き締め（標準）,DISCIPLINE,none,,,,,,,,0.2,1,"{""p_base"": ""0.70"", ""penalty_per_tengu_level"": ""0.05"", ""penalty_per_uwaki_level"": ""0.05"", ""equip_bonus_field"": ""discipline_success_bonus""}",
+ACT_DISCIPLINE_SOFT,躾（ソフト）,DISCIPLINE,wife.COACH>=2,,,,,,,,0.1,1,"{""p_base"": ""0.80"", ""penalty_per_tengu_level"": ""0.04"", ""penalty_per_uwaki_level"": ""0.04"", ""equip_bonus_field"": ""discipline_success_bonus""}",RLを守りながらMPを落とす（効果は控えめ）
+ACT_DISCIPLINE_HARD,躾（ハード）,DISCIPLINE,wife.COACH>=4,,,,,,,,0.25,1,"{""p_base"": ""0.60"", ""penalty_per_tengu_level"": ""0.06"", ""penalty_per_uwaki_level"": ""0.06"", ""equip_bonus_field"": ""discipline_success_bonus""}",強いが家庭に負担（RL）も出る
+ACT_SNS,SNS/対外対応（標準）,SNS,none,,,,,,,,0,1,"{""p_base"": ""0.65"", ""penalty_per_enjou_level"": ""0.10"", ""penalty_if_rp_bad"": ""0.10"", ""equip_bonus_field"": ""sns_success_bonus""}",序盤保険: 成功T:+2 / 失敗T:+0（評価ダウン緩和）
+ACT_SNS_ROUTINE,SNS（ルーティン）,SNS,wife.PR>=2,,,,,,,,0,1,"{""p_base"": ""0.75"", ""penalty_per_enjou_level"": ""0.08"", ""penalty_if_rp_bad"": ""0.08"", ""equip_bonus_field"": ""sns_success_bonus""}",低燃費で失敗が軽いが、成果も小さい
+ACT_SNS_SILENCE,SNS（沈黙）,SNS,wife.PR>=2,,0,+0,+1,0,+0,-1,0,1,,失敗は起きないが、評価は落ちやすい（危機時の“様子見”）
+ACT_SNS_CRISIS,SNS（危機対応）,SNS,wife.PR>=4,,,,,,,,0,1,"{""p_base"": ""0.60"", ""penalty_per_enjou_level"": ""0.12"", ""penalty_if_rp_bad"": ""0.12"", ""equip_bonus_field"": ""sns_success_bonus""}",成功の振れ幅が大きいが、失敗時のダメージも大きい（博打）
+ACT_MEDIA_TRAIN,メディア訓練,SNS,wife.PR>=6,,0,-3,-1,0,+1,+2,0.1,1,,炎上対処ではなく、T/RPの地力を上げる投資（MPを削る）
+ACT_TALK,話し合い/関係維持（標準）,TALK,none,,,,,,,,0,1,"{""p_base"": ""0.80"", ""penalty_per_uwaki_level"": ""0.05"", ""bonus_if_rl_low"": ""0.05""}",
+ACT_TALK_DEEP,話し合い（深め）,TALK,wife.CARE>=4,,,,,,,,0,1,"{""p_base"": ""0.75"", ""penalty_per_uwaki_level"": ""0.05"", ""bonus_if_rl_low"": ""0.08""}",RL回復が大きい代わりにMP消耗が大きい
+ACT_OTHER,何もしない,OTHER,none,,0,0,0,0,0,0,0,1,,
+ACT_CARE_BALANCE,ケア（バランス）,CARE,wife.CARE>=8,,+5,-4,+6,0,0,0,0,0.95,,MPを下げつつ回復する（天狗/浮気の芽を摘む）。
+ACT_CARE_SURGE,ケア（サージ）,CARE,wife.CARE>=10,,+10,-6,+10,-1,0,-1,0,0.85,,終盤の立て直し専用。回復は大きいが、関係と評価に軽い代償。
+ACT_SUPPORT_TACTICS,練習支援（戦術）,SUPPORT,wife.COACH>=8,,-5,-3,-1,0,0,+1,0.75,1,,育成と対外評価の両立を狙う（PRIVATEより安全だが成長は控えめ）。
+ACT_SUPPORT_PEAK,練習支援（ピーク）,SUPPORT,wife.COACH>=10,,-9,-5,-2,-2,0,0,2.5,1,,真エンド前の最後の押し込み用。常用すると事故る。
+ACT_DISCIPLINE_STEADY,躾（堅実）,DISCIPLINE,wife.COACH>=8,,,,,,,,0.15,1,"{""p_base"": ""0.72"", ""penalty_per_tengu_level"": ""0.04"", ""penalty_per_uwaki_level"": ""0.04"", ""equip_bonus_field"": ""discipline_success_bonus""}",MP制御を安定させる（家庭へのしわ寄せを最小化）。
+ACT_SNS_APOLOGY,SNS（謝罪）,SNS,wife.PR>=8,,,,,,,,0,1,"{""p_base"": ""0.8"", ""penalty_per_enjou_level"": ""0.06"", ""penalty_if_rp_bad"": ""0.06"", ""equip_bonus_field"": ""sns_success_bonus""}",炎上中でも比較的安定して鎮火を狙う（成果は控えめ）。
+ACT_SNS_CAMPAIGN,SNS（キャンペーン）,SNS,wife.PR>=10,,,,,,,,0,1,"{""p_base"": ""0.6"", ""penalty_per_enjou_level"": ""0.1"", ""penalty_if_rp_bad"": ""0.08"", ""equip_bonus_field"": ""sns_success_bonus""}",査定前の勝負札。普段は回さず“必要な時だけ”使う。
+ACT_TALK_GENTLE,話し合い（穏やか）,TALK,wife.CARE>=8,,,,,,,,0,1,"{""p_base"": ""0.85"", ""penalty_per_uwaki_level"": ""0.04"", ""bonus_if_rl_low"": ""0.04""}",RL維持の安定札（DEEPより軽い）。

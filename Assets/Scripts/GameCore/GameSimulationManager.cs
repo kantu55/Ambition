@@ -157,18 +157,17 @@ namespace Ambition.GameCore
                 return false;
             }
 
-            bool isRestAction = action.SubCategory == WifeActionModel.ActionSubCategory.WIFE_REST;
-            if (CheckActionRequirements(action, isRestAction) == false)
+            if (CheckActionRequirements(action, false) == false)
             {
                 return false;
             }
 
-            ConsumeResources(action, isRestAction);
+            ConsumeResources(action, false);
             ApplyEffectsToHusband(action);
             ApplyEffectsToWife(action);
             ApplySpecialLogic(action);
 
-            Debug.Log($"行動実行完了: {action.Name} (Main:{action.MainCategory}, Sub:{action.SubCategory})");
+            Debug.Log($"行動実行完了: {action.Name} (Main:{action.GetMainCategory()}, Sub:{action.Name})");
 
             ProceedTurn();
 
@@ -180,15 +179,9 @@ namespace Ambition.GameCore
         /// </summary>
         private bool CheckActionRequirements(WifeActionModel action, bool isRestAction)
         {
-            if (budget.CurrentSavings < action.CostMoney)
+            if (budget.CurrentSavings < action.CashCost)
             {
                 Debug.LogWarning("資金不足です。");
-                return false;
-            }
-
-            if (isRestAction == false && wife.CurrentHealth < action.CostWifeHealth)
-            {
-                Debug.LogWarning("妻の体力が不足しています。");
                 return false;
             }
 
@@ -200,18 +193,13 @@ namespace Ambition.GameCore
         /// </summary>
         private void ConsumeResources(WifeActionModel action, bool isRestAction)
         {
-            if (action.CostMoney > 0)
+            if (action.CashCost > 0)
             {
-                budget.TrySpend(action.CostMoney);
+                budget.TrySpend(action.CashCost);
             }
-            else if (action.CostMoney < 0)
+            else if (action.CashCost < 0)
             {
-                budget.AddIncome(Mathf.Abs(action.CostMoney));
-            }
-
-            if (isRestAction == false && action.CostWifeHealth > 0)
-            {
-                wife.ConsumeHealth(action.CostWifeHealth);
+                budget.AddIncome(Mathf.Abs(action.CashCost));
             }
         }
 
@@ -226,29 +214,14 @@ namespace Ambition.GameCore
                 return;
             }
 
-            if (action.HealthChange != 0)
+            if (action.DeltaHP != 0)
             {
-                husband.ChangeHealth(action.HealthChange);
+                husband.ChangeHealth(action.DeltaHP);
             }
 
-            if (action.MentalChange != 0)
+            if (action.DeltaMP != 0)
             {
-                husband.ChangeMental(action.MentalChange);
-            }
-
-            if (action.FatigueChange != 0)
-            {
-                husband.ChangeFatigue(action.FatigueChange);
-            }
-
-            if (action.LoveChange != 0)
-            {
-                husband.ChangeLove(action.LoveChange);
-            }
-
-            if (action.MuscleChange != 0 || action.TechniqueChange != 0 || action.ConcentrationChange != 0)
-            {
-                husband.GrowAbility(action.MuscleChange, action.TechniqueChange, action.ConcentrationChange);
+                husband.ChangeMental(action.DeltaMP);
             }
         }
 
@@ -262,11 +235,6 @@ namespace Ambition.GameCore
             {
                 return;
             }
-
-            if (action.StressChange != 0)
-            {
-                Debug.Log($"妻ストレス変動: {action.StressChange}");
-            }
         }
 
         /// <summary>
@@ -274,52 +242,6 @@ namespace Ambition.GameCore
         /// </summary>
         private void ApplySpecialLogic(WifeActionModel action)
         {
-            switch (action.SubCategory)
-            {
-                // --- 妻の休養 ---
-                case WifeActionModel.ActionSubCategory.WIFE_REST:
-                    int recoverAmount = wife.MaxHealth / 2;
-                    wife.RecoverHealth(recoverAmount);
-                    Debug.Log($"完全休養: 体力{recoverAmount}回復");
-                    break;
-
-                // --- 叱る ---
-                case WifeActionModel.ActionSubCategory.SCOLD:
-
-                    break;
-
-                // --- 設備投資 (家具購入) ---
-                case WifeActionModel.ActionSubCategory.INVESTMENT:
-                    // 何を強化するかは、ActionIDや別パラメータで判断する必要がある
-                    // 仮実装: SkillExpの値を「強化対象ID」として扱うなどの運用ルールを決める
-                    UpgradeEnvironment(action.SkillExp);
-                    break;
-
-                // --- 拠点変更 (引っ越し) ---
-                case WifeActionModel.ActionSubCategory.MOVE_BASE:
-                    // 引っ越し処理
-                    // 例: ActionID 3031 = マンションへ引っ越し
-                    // 新しい家のIDを特定して移動させる
-                    int newHouseId = action.SkillExp; // 仮: SkillExp列を家IDとして利用
-                    ChangeHouse(newHouseId);
-                    break;
-
-                // --- スポンサー要請 ---
-                case WifeActionModel.ActionSubCategory.REQUEST_SPONSOR:
-                    // 妻の「社交スキル」や「営業スキル」に応じて成功判定
-                    /*
-                    if (wife.SocialLevel >= 3) {
-                         budget.AddIncome(1000000); // 成功報酬
-                         Debug.Log("スポンサー獲得成功！");
-                    } else {
-                         Debug.Log("スポンサー獲得失敗...");
-                    }
-                    */
-                    break;
-
-                default:
-                    break;
-            }
         }
 
         private void UpgradeEnvironment(int targetType)
