@@ -7,42 +7,37 @@ namespace Ambition.RuntimeData
     [Serializable]
     public class RuntimeWifeStatus
     {
-        public int CurrentHealth { get; private set; }
-        public int MaxHealth { get; private set; }
         public int CookingLevel { get; private set; }
-        public int LooksLevel { get; private set; }
+        public int CareLevel { get; private set; }
 
-        public int SocialLevel { get; private set; }
+        public int PRLevel { get; private set; }
+
+        public int CoachLevel { get; private set; }
 
         public RuntimeWifeStatus(WifeStatsModel master)
         {
-            MaxHealth = master.InitialHealth;
-            CurrentHealth = MaxHealth;
-
             CookingLevel = master.InitialCooking;
-            LooksLevel = master.InitialLooks;
-            SocialLevel = master.InitialSocial;
+            CareLevel = master.InitialCare;
+            PRLevel = master.InitialPR;
+            CoachLevel = master.InitialCoach;
         }
 
         public RuntimeWifeStatus(WifeSaveData saveData)
         {
-            MaxHealth = saveData.MaxHealth;
-            CurrentHealth = saveData.CurrentHealth;
-
             CookingLevel = saveData.CookingLevel;
-            LooksLevel = saveData.LooksLevel;
-            SocialLevel = saveData.SocialLevel;
+            CareLevel = saveData.CareLevel;
+            PRLevel = saveData.PRLevel;
+            CoachLevel = saveData.CoachLevel;
         }
 
         public WifeSaveData ToSaveData()
         {
             return new WifeSaveData
             {
-                MaxHealth = this.MaxHealth,
-                CurrentHealth = this.CurrentHealth,
-                CookingLevel = this.CookingLevel,
-                LooksLevel = this.LooksLevel,
-                SocialLevel = this.SocialLevel,
+                CookingLevel = CookingLevel,
+                CareLevel = CareLevel,
+                PRLevel = PRLevel,
+                CoachLevel = CoachLevel
             };
         }
 
@@ -59,16 +54,6 @@ namespace Ambition.RuntimeData
         public void AddSocialExp()
         {
 
-        }
-
-        public void ConsumeHealth(int amount)
-        {
-            CurrentHealth = Mathf.Max(0, CurrentHealth - amount);
-        }
-
-        public void RecoverHealth(int amount)
-        {
-            CurrentHealth = Mathf.Min(MaxHealth, CurrentHealth + amount);
         }
     }
 }

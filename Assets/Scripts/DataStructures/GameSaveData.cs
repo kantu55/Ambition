@@ -46,11 +46,10 @@ namespace Ambition.DataStructures
     [Serializable]
     public struct WifeSaveData
     {
-        public int CurrentHealth;
-        public int MaxHealth;
         public int CookingLevel;
-        public int LooksLevel;
-        public int SocialLevel;
+        public int CareLevel;
+        public int PRLevel;
+        public int CoachLevel;
     }
 
     /// <summary>

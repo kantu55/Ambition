@@ -24,7 +24,10 @@ namespace Ambition.UI
         [SerializeField] private TextMeshProUGUI husbandAbilityText; // 筋力などの一覧表示用
 
         [Header("Wife UI")]
-        [SerializeField] private TextMeshProUGUI wifeSkillText; // スキル一覧表示用
+        [SerializeField] private TextMeshProUGUI wifeCookingLevelText;
+        [SerializeField] private TextMeshProUGUI wifeCareLevelText;
+        [SerializeField] private TextMeshProUGUI wifePRLevelText;
+        [SerializeField] private TextMeshProUGUI wifeCaochLevelText;
 
         [Header("Command Buttons")]
         [SerializeField] private Button buttonCare;
@@ -147,13 +150,18 @@ namespace Ambition.UI
                 return;
             }
 
-
             // スキル一覧
+            wifeCookingLevelText.SetText(GetWifeSkillText("料理: Lv", wife.CookingLevel));
+            wifeCareLevelText.SetText(GetWifeSkillText("ケア: Lv", wife.CareLevel));
+            wifePRLevelText.SetText(GetWifeSkillText("PR: Lv", wife.PRLevel));
+            wifeCaochLevelText.SetText(GetWifeSkillText("コーチ: Lv", wife.CoachLevel));
+        }
+
+        private string GetWifeSkillText(string titleName, int level)
+        {
             stringBuilder.Clear();
-            stringBuilder.Append("料理: Lv").Append(wife.CookingLevel).Append('\n');
-            stringBuilder.Append("容姿: Lv").Append(wife.LooksLevel).Append('\n');
-            stringBuilder.Append("マーケティング: Lv").Append(wife.SocialLevel);
-            wifeSkillText.SetText(stringBuilder);
+            stringBuilder.Append(titleName).Append(level);
+            return stringBuilder.ToString();
         }
 
         /// <summary>

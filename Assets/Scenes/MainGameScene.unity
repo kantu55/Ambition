@@ -3725,8 +3725,10 @@ MonoBehaviour:
   husbandHealthSlider: {fileID: 747204922}
   husbandMentalSlider: {fileID: 474069823}
   husbandAbilityText: {fileID: 1580389343}
-  wifeStaminaSlider: {fileID: 0}
-  wifeSkillText: {fileID: 2123936174}
+  wifeCookingLevelText: {fileID: 1416075723}
+  wifeCareLevelText: {fileID: 2123936174}
+  wifePRLevelText: {fileID: 1356021311}
+  wifeCaochLevelText: {fileID: 608739952}
   buttonCare: {fileID: 1572926035}
   buttonSupport: {fileID: 1610941621}
   buttonSNS: {fileID: 640570780}

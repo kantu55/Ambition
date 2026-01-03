@@ -11,24 +11,24 @@ namespace Ambition.DataStructures
     public class WifeStatsModel : IDataModel
     {
         private int id;
-        private int initialHealth;
         private int initialCooking;
-        private int initialLooks;
-        private int initialSocial;
+        private int initialCare;
+        private int initialPR;
+        private int initialCoach;
 
         public int Id => id;
-        public int InitialHealth => initialHealth;
         public int InitialCooking => initialCooking;
-        public int InitialLooks => initialLooks;
-        public int InitialSocial => initialSocial;
+        public int InitialCare => initialCare;
+        public int InitialPR => initialPR;
+        public int InitialCoach => initialCoach;
 
         public void Initialize(CsvData data, int rowIndex)
         {
-            id = CsvHelper.ConvertToInt(data.GetValue(rowIndex, "ID"));
-            initialHealth = CsvHelper.ConvertToInt(data.GetValue(rowIndex, "Health"), 100);
-            initialCooking = CsvHelper.ConvertToInt(data.GetValue(rowIndex, "Cooking"), 1);
-            initialLooks = CsvHelper.ConvertToInt(data.GetValue(rowIndex, "Looks"), 1);
-            initialSocial = CsvHelper.ConvertToInt(data.GetValue(rowIndex, "Social"), 0);
+            id = CsvHelper.ConvertToInt(data.GetValue(rowIndex, "id"));
+            initialCooking = CsvHelper.ConvertToInt(data.GetValue(rowIndex, "cooking"));
+            initialCare = CsvHelper.ConvertToInt(data.GetValue(rowIndex, "care"));
+            initialPR = CsvHelper.ConvertToInt(data.GetValue(rowIndex, "PR"));
+            initialCoach = CsvHelper.ConvertToInt(data.GetValue(rowIndex, "coach"));
         }
     }
 }

@@ -270,9 +270,6 @@ namespace Ambition.GameCore
 
             this.date.AdvanceMonth();
 
-            int recoverAmount = GameSettings.GetInt("Turn_Health_Recover", 30);
-            this.wife.RecoverHealth(recoverAmount);
-
             Debug.Log("--- 月末処理: 固定費支払い ---");
             this.budget.PayMonthlyFixedCosts();
 
