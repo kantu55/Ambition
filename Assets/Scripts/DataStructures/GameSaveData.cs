@@ -17,6 +17,7 @@ namespace Ambition.DataStructures
         public EnvironmentSaveData EnvironmentData;
         public BudgetSaveData BudgetData;
         public DateSaveData DateData;
+        public ReputationSaveData ReputationData;
     }
 
     /// <summary>
@@ -31,11 +32,9 @@ namespace Ambition.DataStructures
         public int Age;
         public int Health;
         public int Mental;
-        public int Fatigue;
-        public int Muscle;
-        public int Technique;
-        public int Concentration;
-        public string Evaluation;
+        public int Ability;
+        public int Condition;
+        public int TeamEvaluation;
         public int Salary;
         public int Love;
     }
@@ -95,5 +94,16 @@ namespace Ambition.DataStructures
     {
         public int Year;
         public int Month;
+    }
+
+    /// <summary>
+    /// 評判のセーブデータ構造体
+    /// </summary>
+    [Serializable]
+    public struct ReputationSaveData
+    {
+        public int Love;
+        public int TeamEvaluation;
+        public int PublicEye;
     }
 }

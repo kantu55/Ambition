@@ -27,13 +27,11 @@ namespace Ambition.DataStructures
         private int age;
         private int health;
         private int mental;
-        private int fatigue;
-        private int muscle;
-        private int technique;
-        private int concentration;
-        private string evaluation;
-        private int salary;
+        private int ability;
+        private int condition;
         private int love;
+        private int teamEvaluation;
+        private int salary;
 
         // プロパティ
 
@@ -68,29 +66,19 @@ namespace Ambition.DataStructures
         public int Mental => mental;
 
         /// <summary>
-        /// 疲労累積値
+        /// 選手能力
         /// </summary>
-        public int Fatigue => fatigue;
+        public int Ability => ability;
 
         /// <summary>
-        /// 能力値：筋力
+        /// 調子
         /// </summary>
-        public int Muscle => muscle;
-
-        /// <summary>
-        /// 能力値：技術
-        /// </summary>
-        public int Technique => technique;
-
-        /// <summary>
-        /// 能力値：集中
-        /// </summary>
-        public int Concentration => concentration;
+        public int Condition => condition;
 
         /// <summary>
         /// 選手の総合評価
         /// </summary>
-        public string Evaluation => evaluation;
+        public int TeamEvaluation => teamEvaluation;
 
         /// <summary>
         /// 年棒
@@ -115,11 +103,9 @@ namespace Ambition.DataStructures
                 Age = this.age,
                 Health = this.health,
                 Mental = this.mental,
-                Fatigue = this.fatigue,
-                Muscle = this.muscle,
-                Technique = this.technique,
-                Concentration = this.concentration,
-                Evaluation = this.evaluation,
+                Condition = this.condition,
+                Ability = this.ability,
+                TeamEvaluation = this.teamEvaluation,
                 Salary = this.salary,
                 Love = this.love
             };
@@ -137,23 +123,24 @@ namespace Ambition.DataStructures
             string ageString = data.GetValue(rowIndex, "Age");
             string healthString = data.GetValue(rowIndex, "Health");
             string mentalString = data.GetValue(rowIndex, "Mental");
-            string fatigueString = data.GetValue(rowIndex, "Fatigue");
-            string muscleString = data.GetValue(rowIndex, "Muscle");
-            string techniqueString = data.GetValue(rowIndex, "Technique");
-            string concentrationString = data.GetValue(rowIndex, "Concentration");
-            string evaluationString = data.GetValue(rowIndex, "Evaluation");
+            string conditionString = data.GetValue(rowIndex, "Condition");
+            string abilityString = data.GetValue(rowIndex, "Ability");
+            string teamEvaluationString = data.GetValue(rowIndex, "TeamEvaluation");
+            string salaryString = data.GetValue(rowIndex, "Salary");
+            string loveString = data.GetValue(rowIndex, "Love");
 
             // 型変換
             this.id = CsvHelper.ConvertToInt(idString);
             this.name = nameString;
-            this.age = CsvHelper.ConvertToInt(ageString, defaultValue: 0);
+            this.age = CsvHelper.ConvertToInt(ageString, defaultValue: 25);
             this.health = CsvHelper.ConvertToInt(healthString, defaultValue: 100);
             this.mental = CsvHelper.ConvertToInt(mentalString, defaultValue: 50);
-            this.fatigue = CsvHelper.ConvertToInt(fatigueString, defaultValue: 0);
-            this.muscle = CsvHelper.ConvertToInt(muscleString, defaultValue: 0);
-            this.technique = CsvHelper.ConvertToInt(techniqueString, defaultValue: 0);
-            this.concentration = CsvHelper.ConvertToInt(concentrationString, defaultValue: 0);
-            this.evaluation = evaluationString;
+            this.condition = CsvHelper.ConvertToInt(conditionString, defaultValue: 50);
+            this.ability = CsvHelper.ConvertToInt(abilityString, defaultValue: 0);
+            this.teamEvaluation = CsvHelper.ConvertToInt(teamEvaluationString, defaultValue: 0);
+            this.position = ParsePosition(positionString);
+            this.salary = CsvHelper.ConvertToInt(salaryString, defaultValue: 2400000);
+            this.love = CsvHelper.ConvertToInt(loveString, defaultValue: 100);
         }
 
         /// <summary>

@@ -16,12 +16,22 @@ namespace Ambition.UI
     {
         [Header("Global Info")]
         [SerializeField] private TextMeshProUGUI dateText;
-        [SerializeField] private TextMeshProUGUI moneyText;
+        [SerializeField] private TextMeshProUGUI totalMoneyText;
+        [SerializeField] private TextMeshProUGUI fixedCostText;
+        [SerializeField] private TextMeshProUGUI salaryText;
+
+        [Header("Reputation UI")]
+        [SerializeField] private TextMeshProUGUI loveText;
+        [SerializeField] private TextMeshProUGUI teamEvaluationText;
+        [SerializeField] private TextMeshProUGUI publicEyeText;
 
         [Header("Husband UI")]
         [SerializeField] private Slider husbandHealthSlider;
         [SerializeField] private Slider husbandMentalSlider;
-        [SerializeField] private TextMeshProUGUI husbandAbilityText; // 筋力などの一覧表示用
+        [SerializeField] private TextMeshProUGUI husbandHealthText;
+        [SerializeField] private TextMeshProUGUI husbandMentalText;
+        [SerializeField] private TextMeshProUGUI husbandAgeText;
+        [SerializeField] private TextMeshProUGUI husbandAbilityText;
 
         [Header("Wife UI")]
         [SerializeField] private TextMeshProUGUI wifeCookingLevelText;
@@ -106,17 +116,54 @@ namespace Ambition.UI
         /// <summary>
         /// 全体の表示を更新
         /// </summary>
-        public void RefreshView(RuntimeDate date, RuntimeHouseholdBudget budget, RuntimePlayerStatus husband, RuntimeWifeStatus wife)
+        public void RefreshView(RuntimeDate date, RuntimeHouseholdBudget budget, RuntimePlayerStatus husband, RuntimeWifeStatus wife, RuntimeReputation reputation)
         {
             UpdateGlobalInfo(date, budget);
             UpdateHusbandInfo(husband);
             UpdateWifeInfo(wife);
+            UpdateEvaluationInfo(reputation);
         }
 
         private void UpdateGlobalInfo(RuntimeDate date, RuntimeHouseholdBudget budget)
         {
-            dateText.text = $"{date.Year}年\n{date.Month}月";
-            moneyText.text = budget.CurrentSavings.ToString("N0");
+            // 日付表示
+            stringBuilder.Clear();
+            stringBuilder.Append("結婚: ");
+            stringBuilder.Append(date.Year).Append("年目 ");
+            stringBuilder.Append(date.Month).Append("月");
+            dateText.SetText(stringBuilder);
+
+            // 資金表示
+            stringBuilder.Clear();
+            stringBuilder.Append("資金: ¥");
+            stringBuilder.Append(budget.CurrentSavings.ToString("N0"));
+            totalMoneyText.SetText(stringBuilder);
+
+            // 固定費表示
+            stringBuilder.Clear();
+            stringBuilder.Append("固定費: ¥-");
+            stringBuilder.Append(budget.FixedCost.TotalCost.ToString("N0"));
+            stringBuilder.Append(" / 月");
+            fixedCostText.SetText(stringBuilder);
+            fixedCostText.color = Color.red;
+        }
+
+        private void UpdateEvaluationInfo(RuntimeReputation reputation)
+        {
+            // 夫婦仲表示
+            stringBuilder.Clear();
+            stringBuilder.Append("夫婦仲: ").Append(reputation.CurrentLove.ToString("F1")).Append(reputation.MAX_LOVE);
+            loveText.SetText(stringBuilder);
+
+            // チーム評価表示
+            stringBuilder.Clear();
+            stringBuilder.Append("チーム評価: ").Append(reputation.CurrentTeamEvaluation.ToString("F1"));
+            teamEvaluationText.SetText(stringBuilder);
+
+            // 世間の目表示
+            stringBuilder.Clear();
+            stringBuilder.Append(reputation.CurrentPublicEye.ToString("F1"));
+            publicEyeText.SetText(stringBuilder);
         }
 
         private void UpdateHusbandInfo(RuntimePlayerStatus husband)
@@ -129,18 +176,31 @@ namespace Ambition.UI
             // スライダー更新 (最大値に対する現在値)
             husbandHealthSlider.maxValue = (float)husband.MAX_HEALTH;
             husbandHealthSlider.value = husband.CurrentHealth;
+            stringBuilder.Clear();
+            stringBuilder.Append("体力: ").Append(husband.CurrentHealth).Append(" / ").Append(husband.MAX_HEALTH);
+            husbandHealthText.SetText(stringBuilder);
 
             // マジックナンバー(100)を定数に置き換え
             husbandMentalSlider.maxValue = (float)husband.MAX_MENTAL;
             husbandMentalSlider.value = husband.CurrentMental;
+            stringBuilder.Clear();
+            stringBuilder.Append("精神: ").Append(husband.CurrentMental).Append(" / ").Append(husband.MAX_MENTAL);
+            husbandMentalText.SetText(stringBuilder);
 
             // 能力テキスト整形
             stringBuilder.Clear();
-            stringBuilder.Append("筋力: ").Append(husband.Muscle).Append('\n');
-            stringBuilder.Append("技術: ").Append(husband.Technique).Append('\n');
-            stringBuilder.Append("集中: ").Append(husband.Concentration).Append('\n');
-            stringBuilder.Append("評価: ").Append(husband.Evaluation);
+            stringBuilder.Append("選手能力: ").Append(husband.CurrentAbility);
             husbandAbilityText.SetText(stringBuilder);
+
+            stringBuilder.Clear();
+            stringBuilder.Append("年齢: ").Append(husband.CurrentAge).Append("歳");
+            husbandAgeText.SetText(stringBuilder);
+
+            // 契約金表示
+            stringBuilder.Clear();
+            stringBuilder.Append("当年契約: ¥");
+            stringBuilder.Append(husband.Salary.ToString("N0"));
+            salaryText.SetText(stringBuilder);
         }
 
         private void UpdateWifeInfo(RuntimeWifeStatus wife)

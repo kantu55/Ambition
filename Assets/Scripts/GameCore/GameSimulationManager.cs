@@ -51,6 +51,8 @@ namespace Ambition.GameCore
         /// </summary>
         private RuntimeDate date;
 
+        private RuntimeReputation reputation;
+
         /// <summary>
         /// ゲーム進行度
         /// </summary>
@@ -63,6 +65,7 @@ namespace Ambition.GameCore
         public RuntimeEnvironmentStatus Environment => environment;
         public RuntimeHouseholdBudget Budget => budget;
         public RuntimeDate Date => date;
+        public RuntimeReputation Reputation => reputation;
 
         /// <summary>
         /// 夫の名前を取得するヘルパープロパティ
@@ -130,6 +133,7 @@ namespace Ambition.GameCore
             int initialMoney = GameSettings.GetInt("Initial_Money", 1000000);
             this.budget = new RuntimeHouseholdBudget(initialMoney);
             this.date = new RuntimeDate(1, 3);
+            this.reputation = new RuntimeReputation();
 
             // --- 固定費の初期計算 ---
             this.budget.FixedCost.UpdateRent(houseMaster.MonthlyRent);
@@ -316,6 +320,7 @@ namespace Ambition.GameCore
                 EnvironmentData = this.environment.ToSaveData(),
                 BudgetData = this.budget.ToSaveData(),
                 DateData = this.date.ToSaveData(),
+                ReputationData = this.reputation.ToSaveData()
             };
 
             string json = JsonUtility.ToJson(saveData, prettyPrint: true);
@@ -353,6 +358,7 @@ namespace Ambition.GameCore
             this.environment = new RuntimeEnvironmentStatus(saveData.EnvironmentData);
             this.budget = new RuntimeHouseholdBudget(saveData.BudgetData);
             this.date = new RuntimeDate(saveData.DateData);
+            this.reputation = new RuntimeReputation(saveData.ReputationData);
 
             Debug.Log("ロード完了。ゲームを再開します。");
             return true;

@@ -19,18 +19,20 @@ namespace Ambition.GameCore
         public int PlayerId { get; private set; }
 
         // 現在値
+        public int CurrentAge { get; private set; }
         public int CurrentHealth { get; private set; }
         public int CurrentMental { get; private set; }
-        public int CurrentFatigue { get; private set; }
         public int CurrentLove { get; private set; }
+        public int CurrentCondition { get; private set; }
 
         // 成長する能力値
-        public int Muscle { get; private set; }
-        public int Technique { get; private set; }
-        public int Concentration { get; private set; }
+        public int CurrentAbility { get; private set; }
 
         // 評価
-        public string Evaluation { get; private set; }
+        public int TeamEvaluation { get; private set; }
+
+        // 契約金
+        public int Salary { get; private set; }
 
         /// <summary>
         /// ニューゲーム用コンストラクタ
@@ -39,16 +41,14 @@ namespace Ambition.GameCore
         public RuntimePlayerStatus(PlayerStatsModel master)
         {
             this.PlayerId = master.Id;
-
+            this.CurrentAge = master.Age;
             this.CurrentHealth = master.Health;
             this.CurrentMental = master.Mental;
-            this.CurrentFatigue = master.Fatigue;
             this.CurrentLove = master.Love;
-
-            this.Muscle = master.Muscle;
-            this.Technique = master.Technique;
-            this.Concentration = master.Concentration;
-            this.Evaluation = master.Evaluation;
+            this.CurrentCondition = master.Condition;
+            this.CurrentAbility = master.Ability;
+            this.TeamEvaluation = master.TeamEvaluation;
+            this.Salary = master.Salary;
         }
 
         /// <summary>
@@ -57,16 +57,14 @@ namespace Ambition.GameCore
         public RuntimePlayerStatus(PlayerSaveData saveData)
         {
             this.PlayerId = saveData.Id;
-
+            this.CurrentAge = saveData.Age;
             this.CurrentHealth = saveData.Health;
             this.CurrentMental = saveData.Mental;
-            this.CurrentFatigue = saveData.Fatigue;
             this.CurrentLove = saveData.Love;
-
-            this.Muscle = saveData.Muscle;
-            this.Technique = saveData.Technique;
-            this.Concentration = saveData.Concentration;
-            this.Evaluation = saveData.Evaluation;
+            this.CurrentCondition = saveData.Condition;
+            this.CurrentAbility = saveData.Ability;
+            this.TeamEvaluation = saveData.TeamEvaluation;
+            this.Salary = saveData.Salary;
         }
 
         /// <summary>
@@ -84,15 +82,14 @@ namespace Ambition.GameCore
                 Id = this.PlayerId,
                 Name = name,
                 PositionString = pos,
-                Age = age,
+                Age = this.CurrentAge,
                 Health = this.CurrentHealth,
                 Mental = this.CurrentMental,
-                Fatigue = this.CurrentFatigue,
                 Love = this.CurrentLove,
-                Muscle = this.Muscle,
-                Technique = this.Technique,
-                Concentration = this.Concentration,
-                Evaluation = this.Evaluation
+                Condition = this.CurrentCondition,
+                Ability = this.CurrentAbility,
+                Salary = this.Salary,
+                TeamEvaluation = this.TeamEvaluation
             };
         }
 
@@ -115,9 +112,9 @@ namespace Ambition.GameCore
         /// <summary>
         /// 疲労度を増減
         /// </summary>
-        public void ChangeFatigue(int amount)
+        public void ChangeCondition(int amount)
         {
-            this.CurrentFatigue = Mathf.Max(0, this.CurrentFatigue + amount);
+            this.CurrentCondition = Mathf.Max(0, this.CurrentCondition + amount);
         }
 
         /// <summary>
@@ -131,11 +128,17 @@ namespace Ambition.GameCore
         /// <summary>
         /// 能力値を成長
         /// </summary>
-        public void GrowAbility(int muscleDelta, int techDelta, int concDelta)
+        public void GrowAbility(int deltaAbility)
         {
-            this.Muscle += muscleDelta;
-            this.Technique += techDelta;
-            this.Concentration += concDelta;
+            this.CurrentAbility += deltaAbility;
+        }
+
+        /// <summary>
+        /// 加齢
+        /// </summary>
+        public void AddAge()
+        {
+            this.CurrentAge++;
         }
     }
 }
