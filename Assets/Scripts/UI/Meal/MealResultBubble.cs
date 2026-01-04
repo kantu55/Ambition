@@ -94,7 +94,9 @@ namespace Ambition.UI.Meal
             stringBuilder.Append(menu.MenuName);
             stringBuilder.Append("\n\n");
 
-            stringBuilder.Append("【効果】\n");
+            const string effectHeader = "【効果】\n";
+            int effectHeaderStart = stringBuilder.Length;
+            stringBuilder.Append(effectHeader);
 
             if (menu.MitigHP != 0)
             {
@@ -111,7 +113,7 @@ namespace Ambition.UI.Meal
                 stringBuilder.Append($"調子改善: {FormatChangeValue(menu.MitigCOND)}\n");
             }
 
-            if (stringBuilder.ToString().EndsWith("【効果】\n"))
+            if (stringBuilder.Length == effectHeaderStart + effectHeader.Length)
             {
                 stringBuilder.Append("なし");
             }
