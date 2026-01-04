@@ -35,6 +35,8 @@ namespace Ambition.GameCore
             { typeof(HousingModel), "Housing" },
             { typeof(GameSettingModel), "GameSettings" },
             { typeof(WifeActionModel), "WifeActions" },
+            { typeof(FoodModel), "Food" },
+            { typeof(FoodMitModel), "FoodMit" },
         };
 
         /// <summary>
@@ -112,6 +114,14 @@ namespace Ambition.GameCore
             else if (type == typeof(WifeStatsModel))
             {
                 ParseCsvData<WifeStatsModel>(address);
+            }
+            else if (type == typeof(FoodModel))
+            {
+                ParseCsvData<FoodModel>(address);
+            }
+            else if (type == typeof(FoodMitModel))
+            {
+                ParseCsvData<FoodMitModel>(address);
             }
         }
 
