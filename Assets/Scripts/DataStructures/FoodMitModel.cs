@@ -32,6 +32,7 @@ namespace Ambition.DataStructures
 
         public void Initialize(CsvData data, int rowIndex)
         {
+            id = data.GetValueToInt(rowIndex, "id");
             tier = data.GetValue(rowIndex, "tier");
             menuId = data.GetValue(rowIndex, "menu_id");
             menuName = data.GetValue(rowIndex, "menu_name");

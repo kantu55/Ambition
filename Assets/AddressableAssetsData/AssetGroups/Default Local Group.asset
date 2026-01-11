@@ -21,6 +21,12 @@ MonoBehaviour:
     m_SerializedLabels:
     - MasterData
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 1bef48b4da88c6d4db445730471f8b88
+    m_Address: FoodMit
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - MasterData
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 2965779a3c39da34fae9c4f22fdd40f6
     m_Address: Housing
     m_ReadOnly: 0
@@ -41,6 +47,12 @@ MonoBehaviour:
     FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: dde5f68275f04804bbd0a110bf367f77
     m_Address: GameSettings
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - MasterData
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: dfe99a42e67e80d4282e927f6498ccf8
+    m_Address: MasterFood
     m_ReadOnly: 0
     m_SerializedLabels:
     - MasterData

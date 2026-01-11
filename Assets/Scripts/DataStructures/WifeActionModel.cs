@@ -84,7 +84,7 @@ namespace Ambition.DataStructures
 
         public ActionMainCategory GetMainCategory()
         {
-            return tag.ToLower() switch
+            return tag switch
             {
                 "CARE" => ActionMainCategory.CARE,
                 "SUPPORT" => ActionMainCategory.SUPPORT,

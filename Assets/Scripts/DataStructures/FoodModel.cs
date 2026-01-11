@@ -1,5 +1,6 @@
 ﻿using Ambition.Utility;
 using System;
+using UnityEngine.Tilemaps;
 
 namespace Ambition.DataStructures
 {
@@ -12,6 +13,7 @@ namespace Ambition.DataStructures
         // --- メンバ変数 ---
         private int kind;
         private int id;
+        private string tier;
         private string name;
         private int primary;
         private int type;
@@ -22,6 +24,7 @@ namespace Ambition.DataStructures
 
         // --- プロパティ ---
         public int Kind => kind;
+        public string Tier => tier;
         public int Id => id;
         public string Name => name;
         public int Primary => primary;
@@ -34,6 +37,7 @@ namespace Ambition.DataStructures
         {
             kind = CsvHelper.ConvertToInt(data.GetValue(rowIndex, "kind"));
             id = CsvHelper.ConvertToInt(data.GetValue(rowIndex, "id"));
+            tier = data.GetValue(rowIndex, "tier");
             name = data.GetValue(rowIndex, "name");
             primary = CsvHelper.ConvertToInt(data.GetValue(rowIndex, "primary"));
             type = CsvHelper.ConvertToInt(data.GetValue(rowIndex, "type"));

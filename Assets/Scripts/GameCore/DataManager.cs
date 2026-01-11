@@ -35,6 +35,8 @@ namespace Ambition.GameCore
             { typeof(HousingModel), "Housing" },
             { typeof(GameSettingModel), "GameSettings" },
             { typeof(WifeActionModel), "WifeActions" },
+            { typeof(FoodMitModel), "FoodMit" },
+            { typeof(FoodModel), "MasterFood" },
         };
 
         /// <summary>
@@ -112,6 +114,18 @@ namespace Ambition.GameCore
             else if (type == typeof(WifeStatsModel))
             {
                 ParseCsvData<WifeStatsModel>(address);
+            }
+            else if (type == typeof(FoodModel))
+            {
+                 ParseCsvData<FoodModel>(address);
+            }
+            else if (type == typeof(FoodMitModel))
+            {
+                ParseCsvData<FoodMitModel>(address);
+            }
+            else
+            {
+                Debug.LogError($"[DataManager] 未対応のデータモデル型です: {type.Name}");
             }
         }
 
