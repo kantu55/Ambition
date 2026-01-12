@@ -1,8 +1,10 @@
 ﻿using Ambition.DataStructures;
+using Ambition.GameCore;
 using System;
 using System.Collections.Generic;
 using System.Text;
 using TMPro;
+using UnityEditor;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -10,6 +12,8 @@ namespace Ambition.UI.Meal
 {
     public class MealSelectionPanel : MonoBehaviour
     {
+        [Header("Main View")]
+        [SerializeField] private MainGameView mainView;
         [Header("UI Components")]
         [SerializeField] private GameObject panelRoot;
         [SerializeField] private Transform menuButtonContainer;
@@ -178,6 +182,11 @@ namespace Ambition.UI.Meal
             {
                 menuEffectText.text = BuildEffectText(menu);
             }
+
+            if (mainView != null)
+            {
+                mainView.ShowPreview(menu.MitigHP, menu.MitigMP, menu.MitigCOND, 0, GameSimulationManager.Instance.Husband);
+            }
         }
 
         /// <summary>
@@ -230,6 +239,10 @@ namespace Ambition.UI.Meal
         private void HandleBackPressed()
         {
             OnBackPressed?.Invoke();
+            if (mainView != null)
+            {
+                mainView.HidePreview();
+            }
         }
 
         /// <summary>

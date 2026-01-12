@@ -62,6 +62,35 @@ namespace Ambition.UI
         [SerializeField] private SubMenuController subMenuController;
         [SerializeField] private ActionDialogController actionDialogController;
 
+        [Header("Preview UI")]
+
+        // --- プレビュー用スライダー ---
+
+        [SerializeField] private Slider husbandHealthPreviewSlider;
+        [SerializeField] private Slider husbandMentalPreviewSlider;
+
+        // --- プレビュー用テキスト ---
+
+        [SerializeField] private TextMeshProUGUI husbandHealthPreviewText;
+        [SerializeField] private TextMeshProUGUI husbandMentalPreviewText;
+
+        // --- 増減を表す矢印表示用テキスト ---
+
+        [SerializeField] private TextMeshProUGUI conditionArrowText;
+        [SerializeField] private TextMeshProUGUI evaluationArrowText;
+
+        // --- 色設定 ---
+
+        /// <summary>
+        /// 増加時の色
+        /// </summary>
+        [SerializeField] private Color increaseColor = Color.green;
+
+        /// <summary>
+        /// 減少時の色
+        /// </summary>
+        [SerializeField] private Color decreaseColor = Color.red;
+
         // 文字列生成時のGC Allocを避けるためのStringBuilder
         private StringBuilder stringBuilder = new StringBuilder(512);
 
@@ -123,6 +152,107 @@ namespace Ambition.UI
             UpdateWifeInfo(wife);
             UpdateEvaluationInfo(reputation);
         }
+
+
+
+        /// <summary>
+        /// 選択されたアクションを表示
+        /// </summary>
+        /// <param name="action">選択されたアクション（nullの場合はクリア）</param>
+        public void UpdateSelectedAction(WifeActionModel action)
+        {
+            if (action == null)
+            {
+                // すべてのアクション情報パネルを非表示
+                HideAllActionInfo();
+                return;
+            }
+
+            // まず全て非表示
+            HideAllActionInfo();
+
+            // アクションのカテゴリに応じて対応するパネルを表示
+            ActionInfoPanel targetPanel = GetActionInfoPanelForCategory(action.GetMainCategory());
+            if (targetPanel != null)
+            {
+                targetPanel.Show(action);
+            }
+        }
+
+        /// <summary>
+        /// 行動・食事の効果をプレビュー表示
+        /// </summary>
+        /// <param name="deltaHP">体力の増減値</param>
+        /// <param name="deltaMP">精神の増減値</param>
+        /// <param name="deltaCond">調子の増減値</param>
+        /// <param name="deltaEval">評価の増減値</param>
+        /// <param name="currentStatus">現在のステータス（基準値用）</param>
+        public void ShowPreview(int deltaHP, int deltaMP, int deltaCond, int deltaEval, RuntimePlayerStatus currentStatus)
+        {
+            if (currentStatus == null)
+            {
+                return;
+            }
+
+            UpdatePreviewSlider(
+                husbandHealthSlider,
+                husbandHealthPreviewSlider,
+                husbandHealthPreviewText,
+                currentStatus.CurrentHealth,
+                currentStatus.MAX_HEALTH,
+                deltaHP);
+
+            UpdatePreviewSlider(
+                husbandMentalSlider,
+                husbandMentalPreviewSlider,
+                husbandMentalPreviewText,
+                currentStatus.CurrentMental,
+                currentStatus.MAX_MENTAL,
+                deltaMP);
+
+            UpdateArrowText(conditionArrowText, deltaCond);
+            UpdateArrowText(evaluationArrowText, deltaEval);
+        }
+
+        /// <summary>
+        /// プレビュー表示を非表示にする
+        /// </summary>
+        public void HidePreview()
+        {
+            if (husbandHealthPreviewSlider != null)
+            {
+                husbandHealthPreviewSlider.gameObject.SetActive(false);
+            }
+
+            if (husbandMentalPreviewSlider != null)
+            {
+                husbandMentalPreviewSlider.gameObject.SetActive(false);
+            }
+
+            if (husbandHealthPreviewText != null)
+            {
+                husbandHealthPreviewText.gameObject.SetActive(false);
+            }
+
+            if (husbandMentalPreviewText != null)
+            {
+                husbandMentalPreviewText.gameObject.SetActive(false);
+            }
+
+            if (conditionArrowText != null)
+            {
+                conditionArrowText.SetText("");
+                conditionArrowText.color = Color.white;
+            }
+
+            if (evaluationArrowText != null)
+            {
+                evaluationArrowText.SetText("");
+                evaluationArrowText.color = Color.white;
+            }
+        }
+
+        // --- 内部メソッド ---
 
         private void UpdateGlobalInfo(RuntimeDate date, RuntimeHouseholdBudget budget)
         {
@@ -203,48 +333,27 @@ namespace Ambition.UI
             salaryText.SetText(stringBuilder);
         }
 
-        private void UpdateWifeInfo(RuntimeWifeStatus wife)
-        {
-            if (wife == null)
-            {
-                return;
-            }
-
-            // スキル一覧
-            wifeCookingLevelText.SetText(GetWifeSkillText("料理: Lv", wife.CookingLevel));
-            wifeCareLevelText.SetText(GetWifeSkillText("ケア: Lv", wife.CareLevel));
-            wifePRLevelText.SetText(GetWifeSkillText("PR: Lv", wife.PRLevel));
-            wifeCaochLevelText.SetText(GetWifeSkillText("コーチ: Lv", wife.CoachLevel));
-        }
-
-        private string GetWifeSkillText(string titleName, int level)
-        {
-            stringBuilder.Clear();
-            stringBuilder.Append(titleName).Append(level);
-            return stringBuilder.ToString();
-        }
-
         /// <summary>
-        /// 選択されたアクションを表示
+        /// アクションのカテゴリに対応するアクション情報パネルを取得
         /// </summary>
-        /// <param name="action">選択されたアクション（nullの場合はクリア）</param>
-        public void UpdateSelectedAction(WifeActionModel action)
+        private ActionInfoPanel GetActionInfoPanelForCategory(WifeActionModel.ActionMainCategory category)
         {
-            if (action == null)
+            switch (category)
             {
-                // すべてのアクション情報パネルを非表示
-                HideAllActionInfo();
-                return;
-            }
-
-            // まず全て非表示
-            HideAllActionInfo();
-
-            // アクションのカテゴリに応じて対応するパネルを表示
-            ActionInfoPanel targetPanel = GetActionInfoPanelForCategory(action.GetMainCategory());
-            if (targetPanel != null)
-            {
-                targetPanel.Show(action);
+                case WifeActionModel.ActionMainCategory.CARE:
+                    return actionInfoCare;
+                case WifeActionModel.ActionMainCategory.SUPPORT:
+                    return actionInfoSupport;
+                case WifeActionModel.ActionMainCategory.SNS:
+                    return actionInfoSNS;
+                case WifeActionModel.ActionMainCategory.DISCIPLINE:
+                    return actionInfoDiscipline;
+                case WifeActionModel.ActionMainCategory.TALK:
+                    return actionInfoTalk;
+                case WifeActionModel.ActionMainCategory.REST:
+                    return actionInfoRest;
+                default:
+                    return null;
             }
         }
 
@@ -284,27 +393,94 @@ namespace Ambition.UI
             }
         }
 
-        /// <summary>
-        /// アクションのカテゴリに対応するアクション情報パネルを取得
-        /// </summary>
-        private ActionInfoPanel GetActionInfoPanelForCategory(WifeActionModel.ActionMainCategory category)
+        private void UpdateWifeInfo(RuntimeWifeStatus wife)
         {
-            switch (category)
+            if (wife == null)
             {
-                case WifeActionModel.ActionMainCategory.CARE:
-                    return actionInfoCare;
-                case WifeActionModel.ActionMainCategory.SUPPORT:
-                    return actionInfoSupport;
-                case WifeActionModel.ActionMainCategory.SNS:
-                    return actionInfoSNS;
-                case WifeActionModel.ActionMainCategory.DISCIPLINE:
-                    return actionInfoDiscipline;
-                case WifeActionModel.ActionMainCategory.TALK:
-                    return actionInfoTalk;
-                case WifeActionModel.ActionMainCategory.REST:
-                    return actionInfoRest;
-                default:
-                    return null;
+                return;
+            }
+
+            // スキル一覧
+            wifeCookingLevelText.SetText(GetWifeSkillText("料理: Lv", wife.CookingLevel));
+            wifeCareLevelText.SetText(GetWifeSkillText("ケア: Lv", wife.CareLevel));
+            wifePRLevelText.SetText(GetWifeSkillText("PR: Lv", wife.PRLevel));
+            wifeCaochLevelText.SetText(GetWifeSkillText("コーチ: Lv", wife.CoachLevel));
+        }
+
+        private string GetWifeSkillText(string titleName, int level)
+        {
+            stringBuilder.Clear();
+            stringBuilder.Append(titleName).Append(level);
+            return stringBuilder.ToString();
+        }
+
+        private void UpdatePreviewSlider(Slider mainSlider, Slider previewSlider, TextMeshProUGUI previewText, int current, int max, int delta)
+        {
+            if (mainSlider == null || previewSlider == null || previewText == null)
+            {
+                return;
+            }
+
+            if (delta == 0)
+            {
+                // 変化がない場合はプレビューを非表示にする
+                previewSlider.gameObject.SetActive(false);
+                previewText.gameObject.SetActive(false);
+                return;
+
+            }
+
+            previewSlider.gameObject.SetActive(true);
+            previewSlider.maxValue = max;
+
+            int nextValue = Mathf.Clamp(current + delta, 0, max);
+            bool isIncrease = delta > 0;
+
+            previewSlider.value = isIncrease ? nextValue : current;
+
+            var fillImage = previewSlider.fillRect.GetComponent<Image>();
+            if (fillImage != null)
+            {
+                fillImage.color = isIncrease ? increaseColor : decreaseColor;
+            }
+
+            if (previewText != null)
+            {
+                previewText.gameObject.SetActive(true);
+                string sign = isIncrease ? "+" : "-";
+                stringBuilder.Clear();
+                stringBuilder.Append(sign).Append(Mathf.Abs(delta));
+                previewText.SetText(stringBuilder);
+                previewText.color = isIncrease ? increaseColor : decreaseColor;
+            }
+        }
+
+        /// <summary>
+        /// 矢印テキストを更新
+        /// </summary>
+        /// <param name="arrowText"></param>
+        /// <param name="delta"></param>
+        private void UpdateArrowText(TextMeshProUGUI arrowText, int delta)
+        {
+            if (arrowText == null)
+            {
+                return;
+            }
+
+            if (delta > 0)
+            {
+                arrowText.SetText("↑ " + delta);
+                arrowText.color = increaseColor;
+            }
+            else if (delta < 0)
+            {
+                arrowText.SetText("↓ " + Mathf.Abs(delta));
+                arrowText.color = decreaseColor;
+            }
+            else
+            {
+                arrowText.SetText("-");
+                arrowText.color = Color.white;
             }
         }
     }

@@ -13,6 +13,7 @@ namespace Ambition.UI.Meal
     /// </summary>
     public class MealFlowController : MonoBehaviour
     {
+
         [Header("UI Panels")]
         [SerializeField] private MealTierPanel tierPanel;
         [SerializeField] private MealSelectionPanel selectionPanel;

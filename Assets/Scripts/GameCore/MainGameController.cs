@@ -9,7 +9,7 @@ namespace Ambition.GameCore
     /// </summary>
     public class MainGameController : MonoBehaviour
     {
-        [SerializeField] private MainGameView m_MainView;
+        [SerializeField] private MainGameView mainView;
 
         /// <summary>
         /// 保留中の行動（ユーザーが「実行」を選択した行動）
@@ -23,7 +23,7 @@ namespace Ambition.GameCore
                 GameSimulationManager.Instance.StartNewGame(1001);
             }
 
-            m_MainView.BindButtons(
+            mainView.BindButtons(
                 OnCareClicked,
                 OnSupportClicked,
                 OnSNSClicked,
@@ -33,25 +33,25 @@ namespace Ambition.GameCore
                 );
 
             // 確定ボタンのイベントを設定
-            if (m_MainView.ConfirmButton != null)
+            if (mainView.ConfirmButton != null)
             {
-                m_MainView.ConfirmButton.onClick.AddListener(OnConfirmClicked);
+                mainView.ConfirmButton.onClick.AddListener(OnConfirmClicked);
                 // 初期状態では無効化
-                m_MainView.ConfirmButton.interactable = false;
+                mainView.ConfirmButton.interactable = false;
             }
 
             // サブメニューコントローラーのイベントを設定
-            if (m_MainView.SubMenuController != null)
+            if (mainView.SubMenuController != null)
             {
-                m_MainView.SubMenuController.OnActionSelected += OnActionSelectedFromSubMenu;
-                m_MainView.SubMenuController.OnBackPressed += OnSubMenuBackPressed;
+                mainView.SubMenuController.OnActionSelected += OnActionSelectedFromSubMenu;
+                mainView.SubMenuController.OnBackPressed += OnSubMenuBackPressed;
             }
 
             // アクションダイアログコントローラーのイベントを設定
-            if (m_MainView.ActionDialogController != null)
+            if (mainView.ActionDialogController != null)
             {
-                m_MainView.ActionDialogController.OnExecutePressed += OnActionExecutePressed;
-                m_MainView.ActionDialogController.OnBackPressed += OnActionDialogBackPressed;
+                mainView.ActionDialogController.OnExecutePressed += OnActionExecutePressed;
+                mainView.ActionDialogController.OnBackPressed += OnActionDialogBackPressed;
             }
 
             RefreshUI();
@@ -102,14 +102,14 @@ namespace Ambition.GameCore
         /// </summary>
         private void OpenSubMenu(WifeActionModel.ActionMainCategory category)
         {
-            if (DataManager.Instance == null || m_MainView.SubMenuController == null)
+            if (DataManager.Instance == null || mainView.SubMenuController == null)
             {
                 Debug.LogError("DataManager または SubMenuController が null です。");
                 return;
             }
 
             var actions = DataManager.Instance.GetActionsByMainCategory(category);
-            m_MainView.SubMenuController.Open(actions);
+            mainView.SubMenuController.Open(actions);
         }
 
         /// <summary>
@@ -118,9 +118,9 @@ namespace Ambition.GameCore
         private void OnActionSelectedFromSubMenu(WifeActionModel action)
         {
             Debug.Log($"行動選択: {action.Name}");
-            if (m_MainView.ActionDialogController != null)
+            if (mainView.ActionDialogController != null)
             {
-                m_MainView.ActionDialogController.Open(action);
+                mainView.ActionDialogController.Open(action);
             }
         }
 
@@ -130,9 +130,9 @@ namespace Ambition.GameCore
         private void OnSubMenuBackPressed()
         {
             Debug.Log("サブメニューを閉じます");
-            if (m_MainView.SubMenuController != null)
+            if (mainView.SubMenuController != null)
             {
-                m_MainView.SubMenuController.Close();
+                mainView.SubMenuController.Close();
             }
         }
 
@@ -147,24 +147,24 @@ namespace Ambition.GameCore
             pendingAction = action;
 
             // ダイアログとサブメニューを閉じる
-            if (m_MainView.ActionDialogController != null)
+            if (mainView.ActionDialogController != null)
             {
-                m_MainView.ActionDialogController.Close();
+                mainView.ActionDialogController.Close();
             }
 
-            if (m_MainView.SubMenuController != null)
+            if (mainView.SubMenuController != null)
             {
-                m_MainView.SubMenuController.Close();
+                mainView.SubMenuController.Close();
             }
 
             // 確定ボタンを有効化
-            if (m_MainView.ConfirmButton != null)
+            if (mainView.ConfirmButton != null)
             {
-                m_MainView.ConfirmButton.interactable = true;
+                mainView.ConfirmButton.interactable = true;
             }
 
             // 選択されたアクション情報を表示
-            m_MainView.UpdateSelectedAction(action);
+            mainView.UpdateSelectedAction(action);
         }
 
         /// <summary>
@@ -173,9 +173,9 @@ namespace Ambition.GameCore
         private void OnActionDialogBackPressed()
         {
             Debug.Log("アクションダイアログを閉じます");
-            if (m_MainView.ActionDialogController != null)
+            if (mainView.ActionDialogController != null)
             {
-                m_MainView.ActionDialogController.Close();
+                mainView.ActionDialogController.Close();
             }
         }
 
@@ -204,13 +204,13 @@ namespace Ambition.GameCore
                     pendingAction = null;
 
                     // 確定ボタンを無効化
-                    if (m_MainView.ConfirmButton != null)
+                    if (mainView.ConfirmButton != null)
                     {
-                        m_MainView.ConfirmButton.interactable = false;
+                        mainView.ConfirmButton.interactable = false;
                     }
 
                     // アクション情報パネルをクリア
-                    m_MainView.UpdateSelectedAction(null);
+                    mainView.UpdateSelectedAction(null);
 
                     // UIを更新
                     RefreshUI();
@@ -234,29 +234,29 @@ namespace Ambition.GameCore
                 return;
             }
 
-            m_MainView.RefreshView(GameSimulationManager.Instance.Date, GameSimulationManager.Instance.Budget, GameSimulationManager.Instance.Husband, GameSimulationManager.Instance.Wife, GameSimulationManager.Instance.Reputation);
+            mainView.RefreshView(GameSimulationManager.Instance.Date, GameSimulationManager.Instance.Budget, GameSimulationManager.Instance.Husband, GameSimulationManager.Instance.Wife, GameSimulationManager.Instance.Reputation);
         }
 
         private void OnDestroy()
         {
             // イベントリスナーのクリーンアップ
-            if (m_MainView != null)
+            if (mainView != null)
             {
-                if (m_MainView.ConfirmButton != null)
+                if (mainView.ConfirmButton != null)
                 {
-                    m_MainView.ConfirmButton.onClick.RemoveListener(OnConfirmClicked);
+                    mainView.ConfirmButton.onClick.RemoveListener(OnConfirmClicked);
                 }
 
-                if (m_MainView.SubMenuController != null)
+                if (mainView.SubMenuController != null)
                 {
-                    m_MainView.SubMenuController.OnActionSelected -= OnActionSelectedFromSubMenu;
-                    m_MainView.SubMenuController.OnBackPressed -= OnSubMenuBackPressed;
+                    mainView.SubMenuController.OnActionSelected -= OnActionSelectedFromSubMenu;
+                    mainView.SubMenuController.OnBackPressed -= OnSubMenuBackPressed;
                 }
 
-                if (m_MainView.ActionDialogController != null)
+                if (mainView.ActionDialogController != null)
                 {
-                    m_MainView.ActionDialogController.OnExecutePressed -= OnActionExecutePressed;
-                    m_MainView.ActionDialogController.OnBackPressed -= OnActionDialogBackPressed;
+                    mainView.ActionDialogController.OnExecutePressed -= OnActionExecutePressed;
+                    mainView.ActionDialogController.OnBackPressed -= OnActionDialogBackPressed;
                 }
             }
         }
