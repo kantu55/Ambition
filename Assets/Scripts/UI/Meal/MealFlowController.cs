@@ -9,7 +9,7 @@ namespace Ambition.UI.Meal
 {
     /// <summary>
     /// 食事機能の画面フローを管理するメインコントローラー
-    /// ①食事_ティア選択 → ②食事_メニュー選択 → ③食事_確認ダイアログ の流れを制御
+    /// ①食事_ティア選択 → ②食事_メニュー選択（詳細パネル付き） → 確定 の流れを制御
     /// </summary>
     public class MealFlowController : MonoBehaviour
     {
@@ -17,7 +17,7 @@ namespace Ambition.UI.Meal
 
         [Header("UI Panels")]
         [SerializeField] private MealTierPanel tierPanel;
-        [SerializeField] private MealSelectionPanel selectionPanel;
+        [SerializeField] private MealDetailPanelController mealDetailPanel;
         [SerializeField] private MealConfirmPanel confirmPanel;
         [SerializeField] private MealResultBubble resultBubble;
 
@@ -59,10 +59,10 @@ namespace Ambition.UI.Meal
                 tierPanel.OnBackPressed += OnTierBackPressed;
             }
 
-            if (selectionPanel != null)
+            if (mealDetailPanel != null)
             {
-                selectionPanel.OnMenuSelected += OnMenuSelected;
-                selectionPanel.OnBackPressed += OnSelectionBackPressed;
+                mealDetailPanel.OnMenuConfirmed += OnMenuConfirmed;
+                mealDetailPanel.OnBackPressed += OnSelectionBackPressed;
             }
 
             if (confirmPanel != null)
@@ -94,10 +94,10 @@ namespace Ambition.UI.Meal
                 tierPanel.OnBackPressed -= OnTierBackPressed;
             }
 
-            if (selectionPanel != null)
+            if (mealDetailPanel != null)
             {
-                selectionPanel.OnMenuSelected -= OnMenuSelected;
-                selectionPanel.OnBackPressed -= OnSelectionBackPressed;
+                mealDetailPanel.OnMenuConfirmed -= OnMenuConfirmed;
+                mealDetailPanel.OnBackPressed -= OnSelectionBackPressed;
             }
 
             if (confirmPanel != null)
@@ -185,21 +185,39 @@ namespace Ambition.UI.Meal
 
             HideAllPanels();
 
-            if (selectionPanel != null)
+            if (mealDetailPanel != null)
             {
                 // 選択されたティアのメニューのみをフィルタリング
                 List<FoodMitModel> menusForTier = foodMitModels.FindAll(m => m.Tier == tier);
-                selectionPanel.Show(menusForTier);
+                mealDetailPanel.Show(menusForTier);
             }
         }
 
         /// <summary>
-        /// メニューが選択された時の処理
+        /// メニューが確定された時の処理（詳細パネルの確定ボタンから直接）
         /// </summary>
-        private void OnMenuSelected(FoodMitModel menu)
+        private void OnMenuConfirmed(FoodMitModel menu)
         {
             currentSelectedMenu = menu;
-            ShowConfirmation(menu);
+
+            // 結果バブルを表示
+            if (resultBubble != null)
+            {
+                resultBubble.ShowResult(menu);
+            }
+
+            if (mainGameView != null)
+            {
+                mainGameView.UpdateSelectedMenu(menu);
+            }
+
+            // ここで実際の食事処理を実行する（コストの適用など）
+            // 例: RuntimeFixedCostの更新、プレイヤーステータスへの効果適用など
+            Debug.Log($"[MealFlowController] 食事を実行: {menu.MenuName}");
+
+            // 全パネルを閉じる
+            HideAllPanels();
+            currentState = MealFlowState.Hidden;
         }
 
         /// <summary>
@@ -271,9 +289,9 @@ namespace Ambition.UI.Meal
                 tierPanel.Hide();
             }
 
-            if (selectionPanel != null)
+            if (mealDetailPanel != null)
             {
-                selectionPanel.Hide();
+                mealDetailPanel.Hide();
             }
 
             if (confirmPanel != null)
