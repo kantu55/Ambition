@@ -47,6 +47,11 @@ namespace Ambition.UI
         private WifeActionModel currentSelectedAction = null;
         private System.Text.StringBuilder stringBuilder = new System.Text.StringBuilder(256);
 
+        // ヘッダーテキスト定数
+        private const string COST_HEADER = "【コスト】\n";
+        private const string EFFECTS_HEADER = "【効果】\n";
+        private const string NONE_TEXT = "なし";
+
         private void Awake()
         {
             if (backButton != null)
@@ -218,16 +223,16 @@ namespace Ambition.UI
         private string BuildCostText(WifeActionModel action)
         {
             stringBuilder.Clear();
-            stringBuilder.Append("【コスト】\n");
+            stringBuilder.Append(COST_HEADER);
 
             if (action.CashCost != 0)
             {
                 stringBuilder.Append($"資金: {action.CashCost:N0}円\n");
             }
 
-            if (stringBuilder.Length == "【コスト】\n".Length)
+            if (stringBuilder.Length == COST_HEADER.Length)
             {
-                stringBuilder.Append("なし");
+                stringBuilder.Append(NONE_TEXT);
             }
 
             return stringBuilder.ToString();
@@ -239,7 +244,7 @@ namespace Ambition.UI
         private string BuildEffectsText(WifeActionModel action)
         {
             stringBuilder.Clear();
-            stringBuilder.Append("【効果】\n");
+            stringBuilder.Append(EFFECTS_HEADER);
 
             // 夫への効果
             if (action.DeltaHP != 0)
@@ -272,9 +277,9 @@ namespace Ambition.UI
                 stringBuilder.Append($"チーム評価: {FormatChangeValue(action.DeltaTeamEvaluation)}\n");
             }
 
-            if (stringBuilder.Length == "【効果】\n".Length)
+            if (stringBuilder.Length == EFFECTS_HEADER.Length)
             {
-                stringBuilder.Append("なし");
+                stringBuilder.Append(NONE_TEXT);
             }
 
             return stringBuilder.ToString();
