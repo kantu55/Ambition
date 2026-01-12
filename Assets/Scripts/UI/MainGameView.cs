@@ -109,6 +109,8 @@ namespace Ambition.UI
         private float blinkTimer = 0f;
         private const float BLINK_CYCLE = 1.0f; // 点滅周期（秒）
         private bool isPreviewActive = false;
+        private Image husbandHealthPreviewFillImage;
+        private Image husbandMentalPreviewFillImage;
 
         // --- プロパティ ---
 
@@ -169,30 +171,35 @@ namespace Ambition.UI
             }
 
             blinkTimer += Time.deltaTime;
-            float alpha = (Mathf.Sin(blinkTimer * Mathf.PI * 2f / BLINK_CYCLE) + 1f) * 0.5f;
-            alpha = Mathf.Lerp(0.5f, 1.0f, alpha); // 0.5〜1.0の範囲で点滅
+            float alpha = Mathf.Lerp(0.5f, 1.0f, (Mathf.Sin(blinkTimer * Mathf.PI * 2f / BLINK_CYCLE) + 1f) * 0.5f); // 0.5〜1.0の範囲で点滅
 
             // HP プレビューの点滅
             if (husbandHealthPreviewSlider != null && husbandHealthPreviewSlider.gameObject.activeSelf)
             {
-                var fillImage = husbandHealthPreviewSlider.fillRect.GetComponent<Image>();
-                if (fillImage != null)
+                if (husbandHealthPreviewFillImage == null && husbandHealthPreviewSlider.fillRect != null)
                 {
-                    Color color = fillImage.color;
+                    husbandHealthPreviewFillImage = husbandHealthPreviewSlider.fillRect.GetComponent<Image>();
+                }
+                if (husbandHealthPreviewFillImage != null)
+                {
+                    Color color = husbandHealthPreviewFillImage.color;
                     color.a = alpha;
-                    fillImage.color = color;
+                    husbandHealthPreviewFillImage.color = color;
                 }
             }
 
             // MP プレビューの点滅
             if (husbandMentalPreviewSlider != null && husbandMentalPreviewSlider.gameObject.activeSelf)
             {
-                var fillImage = husbandMentalPreviewSlider.fillRect.GetComponent<Image>();
-                if (fillImage != null)
+                if (husbandMentalPreviewFillImage == null && husbandMentalPreviewSlider.fillRect != null)
                 {
-                    Color color = fillImage.color;
+                    husbandMentalPreviewFillImage = husbandMentalPreviewSlider.fillRect.GetComponent<Image>();
+                }
+                if (husbandMentalPreviewFillImage != null)
+                {
+                    Color color = husbandMentalPreviewFillImage.color;
                     color.a = alpha;
-                    fillImage.color = color;
+                    husbandMentalPreviewFillImage.color = color;
                 }
             }
         }
@@ -550,7 +557,6 @@ namespace Ambition.UI
                 previewText.gameObject.SetActive(false);
                 mainSlider.value = current;
                 return;
-
             }
 
             previewSlider.gameObject.SetActive(true);
