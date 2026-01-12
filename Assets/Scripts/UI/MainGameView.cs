@@ -719,34 +719,34 @@ namespace Ambition.UI
                         color.a = alpha;
                         husbandHealthPreviewFillImage.color = color;
                     }
-
-                    if (husbandMentalPreviewSlider != null && husbandMentalPreviewSlider.gameObject.activeSelf)
-                    {
-                        InitializeImageCacheIfNeeded(husbandMentalPreviewSlider, ref husbandMentalPreviewFillImage);
-                        if (husbandMentalPreviewFillImage != null)
-                        {
-                            var color = husbandMentalPreviewFillImage.color;
-                            color.a = alpha;
-                            husbandMentalPreviewFillImage.color = color;
-                        }
-                    }
-
-                    if (husbandHealthPreviewText != null && husbandHealthPreviewText.gameObject.activeSelf)
-                    {
-                        var color = husbandHealthPreviewText.color;
-                        color.a = alpha;
-                        husbandHealthPreviewText.color = color;
-                    }
-
-                    if (husbandMentalPreviewText != null && husbandMentalPreviewText.gameObject.activeSelf)
-                    {
-                        var color = husbandMentalPreviewText.color;
-                        color.a = alpha;
-                        husbandMentalPreviewText.alpha = alpha;
-                    }
-
-                    await UniTask.Yield(PlayerLoopTiming.Update, token);
                 }
+
+                if (husbandMentalPreviewSlider != null && husbandMentalPreviewSlider.gameObject.activeSelf)
+                {
+                    InitializeImageCacheIfNeeded(husbandMentalPreviewSlider, ref husbandMentalPreviewFillImage);
+                    if (husbandMentalPreviewFillImage != null)
+                    {
+                        var color = husbandMentalPreviewFillImage.color;
+                        color.a = alpha;
+                        husbandMentalPreviewFillImage.color = color;
+                    }
+                }
+
+                if (husbandHealthPreviewText != null && husbandHealthPreviewText.gameObject.activeSelf)
+                {
+                    var color = husbandHealthPreviewText.color;
+                    color.a = alpha;
+                    husbandHealthPreviewText.color = color;
+                }
+
+                if (husbandMentalPreviewText != null && husbandMentalPreviewText.gameObject.activeSelf)
+                {
+                    var color = husbandMentalPreviewText.color;
+                    color.a = alpha;
+                    husbandMentalPreviewText.alpha = alpha;
+                }
+
+                await UniTask.Yield(PlayerLoopTiming.Update, token);
             }
         }
 
