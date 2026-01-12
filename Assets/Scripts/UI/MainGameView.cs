@@ -420,6 +420,85 @@ namespace Ambition.UI
             }
         }
 
+        /// <summary>
+        /// すべてのプレビュー表示を完全にリセットする（確定ボタン押下時などに使用）
+        /// </summary>
+        public void ResetAllPreviews()
+        {
+            // キャッシュをクリア
+            cachedActionDeltaHP = 0;
+            cachedActionDeltaMP = 0;
+            cachedActionDeltaCond = 0;
+            cachedActionDeltaEval = 0;
+            cachedActionDeltaLove = 0;
+            cachedActionDeltaPublicEye = 0;
+            cachedActionDeltaAbility = 0;
+
+            // 点滅処理を停止
+            StopBlinking();
+
+            // すべてのプレビュースライダーを非表示
+            if (husbandHealthPreviewSlider != null)
+            {
+                husbandHealthPreviewSlider.gameObject.SetActive(false);
+            }
+
+            if (husbandMentalPreviewSlider != null)
+            {
+                husbandMentalPreviewSlider.gameObject.SetActive(false);
+            }
+
+            // すべてのプレビューテキストを非表示
+            if (husbandHealthPreviewText != null)
+            {
+                husbandHealthPreviewText.gameObject.SetActive(false);
+            }
+
+            if (husbandMentalPreviewText != null)
+            {
+                husbandMentalPreviewText.gameObject.SetActive(false);
+            }
+
+            // すべての矢印テキストをクリア
+            if (conditionArrowText != null)
+            {
+                conditionArrowText.SetText("");
+                conditionArrowText.color = Color.white;
+            }
+
+            if (evaluationArrowText != null)
+            {
+                evaluationArrowText.SetText("");
+                evaluationArrowText.color = Color.white;
+            }
+
+            if (loveArrowText != null)
+            {
+                loveArrowText.SetText("");
+                loveArrowText.color = Color.white;
+            }
+
+            if (publicEyeArrowText != null)
+            {
+                publicEyeArrowText.SetText("");
+                publicEyeArrowText.color = Color.white;
+            }
+
+            // メインスライダーを現在値にリセット
+            RuntimePlayerStatus currentStatus = GameSimulationManager.Instance.Husband;
+            if (currentStatus != null)
+            {
+                if (husbandHealthSlider != null)
+                {
+                    husbandHealthSlider.value = currentStatus.CurrentHealth;
+                }
+                if (husbandMentalSlider != null)
+                {
+                    husbandMentalSlider.value = currentStatus.CurrentMental;
+                }
+            }
+        }
+
         // --- 内部メソッド ---
 
         private void UpdateGlobalInfo(RuntimeDate date, RuntimeHouseholdBudget budget)
