@@ -364,7 +364,7 @@ namespace Ambition.UI
         }
 
         /// <summary>
-        /// すべてのプレビュー表示を完全にリセットする（確定ボタン押下時などに使用）
+        /// すべてのプレビュー表示を完全にリセット
         /// </summary>
         public void ResetAllPreviews()
         {
@@ -729,6 +729,20 @@ namespace Ambition.UI
                             color.a = alpha;
                             husbandMentalPreviewFillImage.color = color;
                         }
+                    }
+
+                    if (husbandHealthPreviewText != null && husbandHealthPreviewText.gameObject.activeSelf)
+                    {
+                        var color = husbandHealthPreviewText.color;
+                        color.a = alpha;
+                        husbandHealthPreviewText.color = color;
+                    }
+
+                    if (husbandMentalPreviewText != null && husbandMentalPreviewText.gameObject.activeSelf)
+                    {
+                        var color = husbandMentalPreviewText.color;
+                        color.a = alpha;
+                        husbandMentalPreviewText.alpha = alpha;
                     }
 
                     await UniTask.Yield(PlayerLoopTiming.Update, token);

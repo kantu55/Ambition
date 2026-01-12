@@ -13,6 +13,7 @@ namespace Ambition.UI.Meal
     /// </summary>
     public class MealFlowController : MonoBehaviour
     {
+        [SerializeField] private MainGameView mainGameView;
 
         [Header("UI Panels")]
         [SerializeField] private MealTierPanel tierPanel;
@@ -235,6 +236,12 @@ namespace Ambition.UI.Meal
             {
                 resultBubble.ShowResult(menu);
             }
+
+            if (mainGameView != null)
+            {
+                mainGameView.UpdateSelectedMenu(menu);
+            }
+
 
             // ここで実際の食事処理を実行する（コストの適用など）
             // 例: RuntimeFixedCostの更新、プレイヤーステータスへの効果適用など
