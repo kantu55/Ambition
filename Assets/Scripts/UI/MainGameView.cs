@@ -358,31 +358,7 @@ namespace Ambition.UI
                 return;
             }
 
-            // 点滅処理を停止
-            StopBlinking();
-
-            if (husbandHealthPreviewSlider != null)
-            {
-                husbandHealthPreviewSlider.gameObject.SetActive(false);
-            }
-
-            if (husbandMentalPreviewSlider != null)
-            {
-                husbandMentalPreviewSlider.gameObject.SetActive(false);
-            }
-
-            if (husbandHealthPreviewText != null)
-            {
-                husbandHealthPreviewText.gameObject.SetActive(false);
-            }
-
-            if (husbandMentalPreviewText != null)
-            {
-                husbandMentalPreviewText.gameObject.SetActive(false);
-            }
-
-            ResetArrowTexts();
-            ResetSlidersToCurrentValues();
+            HidePreviewUI();
         }
 
         /// <summary>
@@ -399,6 +375,16 @@ namespace Ambition.UI
             cachedActionDeltaPublicEye = 0;
             cachedActionDeltaAbility = 0;
 
+            HidePreviewUI();
+        }
+
+        // --- 内部メソッド ---
+
+        /// <summary>
+        /// プレビュー UI を非表示にする
+        /// </summary>
+        private void HidePreviewUI()
+        {
             // 点滅処理を停止
             StopBlinking();
 
@@ -427,8 +413,6 @@ namespace Ambition.UI
             ResetArrowTexts();
             ResetSlidersToCurrentValues();
         }
-
-        // --- 内部メソッド ---
 
         /// <summary>
         /// 矢印テキストをすべてリセット
