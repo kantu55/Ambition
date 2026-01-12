@@ -178,13 +178,16 @@ namespace Ambition.UI
         {
             // 既存の点滅処理をキャンセル
             StopBlinking();
+            
+            // 新しいCancellationTokenSourceを作成
             blinkCancellationTokenSource = new CancellationTokenSource();
+            var token = blinkCancellationTokenSource.Token;
 
             float elapsedTime = 0f;
 
             try
             {
-                while (!blinkCancellationTokenSource.Token.IsCancellationRequested)
+                while (!token.IsCancellationRequested)
                 {
                     elapsedTime += Time.deltaTime;
                     float alpha = Mathf.Lerp(MIN_BLINK_ALPHA, MAX_BLINK_ALPHA, (Mathf.Sin(elapsedTime * Mathf.PI * 2f / BLINK_CYCLE) + 1f) * 0.5f);
@@ -213,7 +216,7 @@ namespace Ambition.UI
                         }
                     }
 
-                    await UniTask.Yield(PlayerLoopTiming.Update, blinkCancellationTokenSource.Token);
+                    await UniTask.Yield(PlayerLoopTiming.Update, token);
                 }
             }
             catch (OperationCanceledException)
@@ -227,9 +230,13 @@ namespace Ambition.UI
         /// </summary>
         private void StopBlinking()
         {
-            blinkCancellationTokenSource?.Cancel();
-            blinkCancellationTokenSource?.Dispose();
-            blinkCancellationTokenSource = null;
+            var cts = blinkCancellationTokenSource;
+            if (cts != null)
+            {
+                blinkCancellationTokenSource = null;
+                cts.Cancel();
+                cts.Dispose();
+            }
         }
 
         /// <summary>
