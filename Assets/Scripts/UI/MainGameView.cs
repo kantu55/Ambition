@@ -177,8 +177,7 @@ namespace Ambition.UI
         private async UniTaskVoid StartBlinkingAsync()
         {
             // 既存の点滅処理をキャンセル
-            blinkCancellationTokenSource?.Cancel();
-            blinkCancellationTokenSource?.Dispose();
+            StopBlinking();
             blinkCancellationTokenSource = new CancellationTokenSource();
 
             float elapsedTime = 0f;
@@ -217,7 +216,7 @@ namespace Ambition.UI
                     await UniTask.Yield(PlayerLoopTiming.Update, blinkCancellationTokenSource.Token);
                 }
             }
-            catch (System.OperationCanceledException)
+            catch (OperationCanceledException)
             {
                 // キャンセルされた場合は正常終了
             }
