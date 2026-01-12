@@ -185,7 +185,7 @@ namespace Ambition.UI.Meal
 
             if (mainView != null)
             {
-                mainView.ShowPreview(menu.MitigHP, menu.MitigMP, menu.MitigCOND, 0, GameSimulationManager.Instance.Husband);
+                mainView.ShowPreview(menu.MitigHP, menu.MitigMP, menu.MitigCOND);
             }
         }
 

@@ -78,6 +78,8 @@ namespace Ambition.UI
 
         [SerializeField] private TextMeshProUGUI conditionArrowText;
         [SerializeField] private TextMeshProUGUI evaluationArrowText;
+        [SerializeField] private TextMeshProUGUI loveArrowText;
+        [SerializeField] private TextMeshProUGUI publicEyeArrowText;
 
         // --- 色設定 ---
 
@@ -93,6 +95,15 @@ namespace Ambition.UI
 
         // 文字列生成時のGC Allocを避けるためのStringBuilder
         private StringBuilder stringBuilder = new StringBuilder(512);
+
+        // --- 行動による変動値のキャッシュ ---
+        private int cachedActionDeltaHP = 0;
+        private int cachedActionDeltaMP = 0;
+        private int cachedActionDeltaCond = 0;
+        private int cachedActionDeltaEval = 0;
+        private int cachedActionDeltaLove = 0;
+        private int cachedActionDeltaPublicEye = 0;
+        private int cachedActionDeltaAbility = 0;
 
         // --- プロパティ ---
 
@@ -165,6 +176,14 @@ namespace Ambition.UI
             {
                 // すべてのアクション情報パネルを非表示
                 HideAllActionInfo();
+
+                cachedActionDeltaHP = 0;
+                cachedActionDeltaMP = 0;
+                cachedActionDeltaCond = 0;
+                cachedActionDeltaEval = 0;
+                cachedActionDeltaLove = 0;
+                cachedActionDeltaPublicEye = 0;
+                cachedActionDeltaAbility = 0;
                 return;
             }
 
@@ -177,6 +196,14 @@ namespace Ambition.UI
             {
                 targetPanel.Show(action);
             }
+
+            cachedActionDeltaHP = action.DeltaHP;
+            cachedActionDeltaMP = action.DeltaMP;
+            cachedActionDeltaCond = action.DeltaCOND;
+            cachedActionDeltaEval = action.DeltaTeamEvaluation;
+            cachedActionDeltaLove = action.DeltaLove;
+            cachedActionDeltaPublicEye = action.DeltaPublicEye;
+            cachedActionDeltaAbility = 0;
         }
 
         /// <summary>
@@ -186,13 +213,20 @@ namespace Ambition.UI
         /// <param name="deltaMP">精神の増減値</param>
         /// <param name="deltaCond">調子の増減値</param>
         /// <param name="deltaEval">評価の増減値</param>
-        /// <param name="currentStatus">現在のステータス（基準値用）</param>
-        public void ShowPreview(int deltaHP, int deltaMP, int deltaCond, int deltaEval, RuntimePlayerStatus currentStatus)
+        public void ShowPreview(int deltaHP, int deltaMP, int deltaCond, int deltaEval = 0, int deltaLove = 0, int deltaPublicEyem = 0, int deltaAbility = 0)
         {
+            RuntimePlayerStatus currentStatus = GameSimulationManager.Instance.Husband;
             if (currentStatus == null)
             {
                 return;
             }
+
+            int totalDeltaHP = cachedActionDeltaHP + deltaHP;
+            int totalDeltaMP = cachedActionDeltaMP + deltaMP;
+            int totalDeltaCond = cachedActionDeltaCond + deltaCond;
+            int totalDeltaEval = cachedActionDeltaEval + deltaEval;
+            int totalDeltaLove = cachedActionDeltaLove + deltaLove;
+            int totalDeltaPublicEye = cachedActionDeltaPublicEye + deltaPublicEyem;
 
             UpdatePreviewSlider(
                 husbandHealthSlider,
@@ -200,7 +234,7 @@ namespace Ambition.UI
                 husbandHealthPreviewText,
                 currentStatus.CurrentHealth,
                 currentStatus.MAX_HEALTH,
-                deltaHP);
+                totalDeltaHP);
 
             UpdatePreviewSlider(
                 husbandMentalSlider,
@@ -208,10 +242,12 @@ namespace Ambition.UI
                 husbandMentalPreviewText,
                 currentStatus.CurrentMental,
                 currentStatus.MAX_MENTAL,
-                deltaMP);
+                totalDeltaMP);
 
-            UpdateArrowText(conditionArrowText, deltaCond);
-            UpdateArrowText(evaluationArrowText, deltaEval);
+            UpdateArrowText(conditionArrowText, totalDeltaCond);
+            UpdateArrowText(evaluationArrowText, totalDeltaEval);
+            UpdateArrowText(loveArrowText, totalDeltaLove);
+            UpdateArrowText(publicEyeArrowText, totalDeltaPublicEye);
         }
 
         /// <summary>

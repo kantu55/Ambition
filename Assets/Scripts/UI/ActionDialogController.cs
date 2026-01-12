@@ -1,4 +1,5 @@
 using Ambition.DataStructures;
+using Ambition.GameCore;
 using System;
 using TMPro;
 using UnityEngine;
@@ -11,6 +12,8 @@ namespace Ambition.UI
     /// </summary>
     public class ActionDialogController : MonoBehaviour
     {
+        [SerializeField] private MainGameView mainGameView;
+
         [Header("UI Components")]
         [SerializeField] private GameObject dialogPanel;
         [SerializeField] private TextMeshProUGUI actionNameText;
@@ -77,6 +80,7 @@ namespace Ambition.UI
             }
 
             UpdateDialogContent();
+            mainGameView.ShowPreview(action.DeltaHP, action.DeltaMP, action.DeltaCOND, action.DeltaTeamEvaluation, action.DeltaLove, action.DeltaPublicEye);
         }
 
         /// <summary>
