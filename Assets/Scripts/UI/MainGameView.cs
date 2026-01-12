@@ -1,7 +1,9 @@
 ﻿using Ambition.GameCore;
 using Ambition.RuntimeData;
 using Ambition.DataStructures;
+using Cysharp.Threading.Tasks;
 using System.Text;
+using System.Threading;
 using TMPro;
 using UnityEngine;
 using UnityEngine.Events;
@@ -106,13 +108,12 @@ namespace Ambition.UI
         private int cachedActionDeltaAbility = 0;
 
         // --- プレビュー点滅制御用 ---
-        private float blinkTimer = 0f;
         private const float BLINK_CYCLE = 1.0f; // 点滅周期（秒）
         private const float MIN_BLINK_ALPHA = 0.5f; // 点滅時の最小アルファ値
         private const float MAX_BLINK_ALPHA = 1.0f; // 点滅時の最大アルファ値
-        private bool isPreviewActive = false;
         private Image husbandHealthPreviewFillImage;
         private Image husbandMentalPreviewFillImage;
+        private CancellationTokenSource blinkCancellationTokenSource;
 
         // --- プロパティ ---
 
@@ -163,41 +164,73 @@ namespace Ambition.UI
         }
 
         /// <summary>
-        /// プレビュー点滅処理
+        /// コンポーネント破棄時の処理
         /// </summary>
-        private void Update()
+        private void OnDestroy()
         {
-            if (!isPreviewActive)
-            {
-                return;
-            }
+            StopBlinking();
+        }
 
-            blinkTimer += Time.deltaTime;
-            float alpha = Mathf.Lerp(MIN_BLINK_ALPHA, MAX_BLINK_ALPHA, (Mathf.Sin(blinkTimer * Mathf.PI * 2f / BLINK_CYCLE) + 1f) * 0.5f);
+        /// <summary>
+        /// プレビュー点滅処理（UniTask版）
+        /// </summary>
+        private async UniTaskVoid StartBlinkingAsync()
+        {
+            // 既存の点滅処理をキャンセル
+            blinkCancellationTokenSource?.Cancel();
+            blinkCancellationTokenSource?.Dispose();
+            blinkCancellationTokenSource = new CancellationTokenSource();
 
-            // HP プレビューの点滅
-            if (husbandHealthPreviewSlider != null && husbandHealthPreviewSlider.gameObject.activeSelf)
+            float elapsedTime = 0f;
+
+            try
             {
-                InitializeImageCacheIfNeeded(husbandHealthPreviewSlider, ref husbandHealthPreviewFillImage);
-                if (husbandHealthPreviewFillImage != null)
+                while (!blinkCancellationTokenSource.Token.IsCancellationRequested)
                 {
-                    Color color = husbandHealthPreviewFillImage.color;
-                    color.a = alpha;
-                    husbandHealthPreviewFillImage.color = color;
+                    elapsedTime += Time.deltaTime;
+                    float alpha = Mathf.Lerp(MIN_BLINK_ALPHA, MAX_BLINK_ALPHA, (Mathf.Sin(elapsedTime * Mathf.PI * 2f / BLINK_CYCLE) + 1f) * 0.5f);
+
+                    // HP プレビューの点滅
+                    if (husbandHealthPreviewSlider != null && husbandHealthPreviewSlider.gameObject.activeSelf)
+                    {
+                        InitializeImageCacheIfNeeded(husbandHealthPreviewSlider, ref husbandHealthPreviewFillImage);
+                        if (husbandHealthPreviewFillImage != null)
+                        {
+                            Color color = husbandHealthPreviewFillImage.color;
+                            color.a = alpha;
+                            husbandHealthPreviewFillImage.color = color;
+                        }
+                    }
+
+                    // MP プレビューの点滅
+                    if (husbandMentalPreviewSlider != null && husbandMentalPreviewSlider.gameObject.activeSelf)
+                    {
+                        InitializeImageCacheIfNeeded(husbandMentalPreviewSlider, ref husbandMentalPreviewFillImage);
+                        if (husbandMentalPreviewFillImage != null)
+                        {
+                            Color color = husbandMentalPreviewFillImage.color;
+                            color.a = alpha;
+                            husbandMentalPreviewFillImage.color = color;
+                        }
+                    }
+
+                    await UniTask.Yield(PlayerLoopTiming.Update, blinkCancellationTokenSource.Token);
                 }
             }
-
-            // MP プレビューの点滅
-            if (husbandMentalPreviewSlider != null && husbandMentalPreviewSlider.gameObject.activeSelf)
+            catch (System.OperationCanceledException)
             {
-                InitializeImageCacheIfNeeded(husbandMentalPreviewSlider, ref husbandMentalPreviewFillImage);
-                if (husbandMentalPreviewFillImage != null)
-                {
-                    Color color = husbandMentalPreviewFillImage.color;
-                    color.a = alpha;
-                    husbandMentalPreviewFillImage.color = color;
-                }
+                // キャンセルされた場合は正常終了
             }
+        }
+
+        /// <summary>
+        /// プレビュー点滅処理を停止
+        /// </summary>
+        private void StopBlinking()
+        {
+            blinkCancellationTokenSource?.Cancel();
+            blinkCancellationTokenSource?.Dispose();
+            blinkCancellationTokenSource = null;
         }
 
         /// <summary>
@@ -307,9 +340,8 @@ namespace Ambition.UI
             UpdateArrowText(loveArrowText, totalDeltaLove);
             UpdateArrowText(publicEyeArrowText, totalDeltaPublicEye);
 
-            // プレビュー表示中フラグを立てる
-            isPreviewActive = true;
-            blinkTimer = 0f;
+            // プレビュー点滅処理を開始
+            StartBlinkingAsync().Forget();
         }
 
         /// <summary>
@@ -327,8 +359,8 @@ namespace Ambition.UI
                 return;
             }
 
-            // キャッシュがない場合は完全非表示
-            isPreviewActive = false;
+            // 点滅処理を停止
+            StopBlinking();
 
             if (husbandHealthPreviewSlider != null)
             {
