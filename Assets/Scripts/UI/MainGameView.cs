@@ -108,6 +108,8 @@ namespace Ambition.UI
         // --- プレビュー点滅制御用 ---
         private float blinkTimer = 0f;
         private const float BLINK_CYCLE = 1.0f; // 点滅周期（秒）
+        private const float MIN_BLINK_ALPHA = 0.5f; // 点滅時の最小アルファ値
+        private const float MAX_BLINK_ALPHA = 1.0f; // 点滅時の最大アルファ値
         private bool isPreviewActive = false;
         private Image husbandHealthPreviewFillImage;
         private Image husbandMentalPreviewFillImage;
@@ -171,15 +173,12 @@ namespace Ambition.UI
             }
 
             blinkTimer += Time.deltaTime;
-            float alpha = Mathf.Lerp(0.5f, 1.0f, (Mathf.Sin(blinkTimer * Mathf.PI * 2f / BLINK_CYCLE) + 1f) * 0.5f); // 0.5〜1.0の範囲で点滅
+            float alpha = Mathf.Lerp(MIN_BLINK_ALPHA, MAX_BLINK_ALPHA, (Mathf.Sin(blinkTimer * Mathf.PI * 2f / BLINK_CYCLE) + 1f) * 0.5f);
 
             // HP プレビューの点滅
             if (husbandHealthPreviewSlider != null && husbandHealthPreviewSlider.gameObject.activeSelf)
             {
-                if (husbandHealthPreviewFillImage == null && husbandHealthPreviewSlider.fillRect != null)
-                {
-                    husbandHealthPreviewFillImage = husbandHealthPreviewSlider.fillRect.GetComponent<Image>();
-                }
+                InitializeImageCacheIfNeeded(husbandHealthPreviewSlider, ref husbandHealthPreviewFillImage);
                 if (husbandHealthPreviewFillImage != null)
                 {
                     Color color = husbandHealthPreviewFillImage.color;
@@ -191,16 +190,24 @@ namespace Ambition.UI
             // MP プレビューの点滅
             if (husbandMentalPreviewSlider != null && husbandMentalPreviewSlider.gameObject.activeSelf)
             {
-                if (husbandMentalPreviewFillImage == null && husbandMentalPreviewSlider.fillRect != null)
-                {
-                    husbandMentalPreviewFillImage = husbandMentalPreviewSlider.fillRect.GetComponent<Image>();
-                }
+                InitializeImageCacheIfNeeded(husbandMentalPreviewSlider, ref husbandMentalPreviewFillImage);
                 if (husbandMentalPreviewFillImage != null)
                 {
                     Color color = husbandMentalPreviewFillImage.color;
                     color.a = alpha;
                     husbandMentalPreviewFillImage.color = color;
                 }
+            }
+        }
+
+        /// <summary>
+        /// Image コンポーネントをキャッシュ（未キャッシュの場合のみ）
+        /// </summary>
+        private void InitializeImageCacheIfNeeded(Slider slider, ref Image cachedImage)
+        {
+            if (cachedImage == null && slider != null && slider.fillRect != null)
+            {
+                cachedImage = slider.fillRect.GetComponent<Image>();
             }
         }
 
@@ -583,25 +590,19 @@ namespace Ambition.UI
             Image fillImage = null;
             if (previewSlider == husbandHealthPreviewSlider)
             {
-                if (husbandHealthPreviewFillImage == null && previewSlider.fillRect != null)
-                {
-                    husbandHealthPreviewFillImage = previewSlider.fillRect.GetComponent<Image>();
-                }
+                InitializeImageCacheIfNeeded(previewSlider, ref husbandHealthPreviewFillImage);
                 fillImage = husbandHealthPreviewFillImage;
             }
             else if (previewSlider == husbandMentalPreviewSlider)
             {
-                if (husbandMentalPreviewFillImage == null && previewSlider.fillRect != null)
-                {
-                    husbandMentalPreviewFillImage = previewSlider.fillRect.GetComponent<Image>();
-                }
+                InitializeImageCacheIfNeeded(previewSlider, ref husbandMentalPreviewFillImage);
                 fillImage = husbandMentalPreviewFillImage;
             }
 
             if (fillImage != null)
             {
                 Color color = isIncrease ? increaseColor : decreaseColor;
-                color.a = 1.0f; // アルファ値は Update で制御するため初期値を1.0に
+                color.a = MAX_BLINK_ALPHA; // アルファ値は Update で制御するため初期値を最大に
                 fillImage.color = color;
             }
 
