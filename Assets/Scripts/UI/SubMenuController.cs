@@ -12,6 +12,8 @@ namespace Ambition.UI
     /// </summary>
     public class SubMenuController : MonoBehaviour
     {
+        [SerializeField] private MainGameView mainGameView;
+
         [Header("UI Components")]
         [SerializeField] private GameObject menuPanel;
         [SerializeField] private Transform contentContainer;
@@ -180,6 +182,12 @@ namespace Ambition.UI
             // {
             //     detailImage.sprite = action.Image;
             // }
+
+            // プレビュー表示を更新
+            if (mainGameView != null)
+            {
+                mainGameView.ShowPreview(action.DeltaHP, action.DeltaMP, action.DeltaCOND, action.DeltaTeamEvaluation, action.DeltaLove, action.DeltaPublicEye);
+            }
 
             // 従来のイベントも発火（互換性のため）
             OnActionSelected?.Invoke(action);
