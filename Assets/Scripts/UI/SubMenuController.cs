@@ -18,10 +18,23 @@ namespace Ambition.UI
         [SerializeField] private Button itemButtonPrefab;
         [SerializeField] private Button backButton;
 
+        [Header("Detail Panel Components")]
+        [SerializeField] private GameObject detailPanelRoot;
+        [SerializeField] private TextMeshProUGUI detailNameText;
+        [SerializeField] private TextMeshProUGUI detailCostText;
+        [SerializeField] private TextMeshProUGUI detailEffectText;
+        [SerializeField] private Image detailImage;
+        [SerializeField] private Button confirmButton;
+
         /// <summary>
         /// 行動が選択された時のコールバック
         /// </summary>
         public event Action<WifeActionModel> OnActionSelected;
+
+        /// <summary>
+        /// 行動が確定された時のコールバック
+        /// </summary>
+        public event Action<WifeActionModel> OnActionConfirmed;
 
         /// <summary>
         /// 戻るボタンが押された時のコールバック
@@ -29,6 +42,8 @@ namespace Ambition.UI
         public event Action OnBackPressed;
 
         private List<Button> instantiatedButtons = new List<Button>();
+        private WifeActionModel currentSelectedAction = null;
+        private System.Text.StringBuilder stringBuilder = new System.Text.StringBuilder(256);
 
         private void Awake()
         {
@@ -37,10 +52,21 @@ namespace Ambition.UI
                 backButton.onClick.AddListener(HandleBackPressed);
             }
 
+            if (confirmButton != null)
+            {
+                confirmButton.onClick.AddListener(HandleConfirmPressed);
+            }
+
             // 初期状態では非表示
             if (menuPanel != null)
             {
                 menuPanel.SetActive(false);
+            }
+
+            // 詳細パネルも初期状態では非表示
+            if (detailPanelRoot != null)
+            {
+                detailPanelRoot.SetActive(false);
             }
         }
 
@@ -62,6 +88,12 @@ namespace Ambition.UI
             {
                 CreateActionButton(action);
             }
+
+            // 最初のアクションを自動選択
+            if (actions != null && actions.Count > 0)
+            {
+                SelectAction(actions[0]);
+            }
         }
 
         /// <summary>
@@ -74,7 +106,13 @@ namespace Ambition.UI
                 menuPanel.SetActive(false);
             }
 
+            if (detailPanelRoot != null)
+            {
+                detailPanelRoot.SetActive(false);
+            }
+
             ClearButtons();
+            currentSelectedAction = null;
         }
 
         /// <summary>
@@ -97,15 +135,53 @@ namespace Ambition.UI
                 buttonText.text = action.Name;
             }
 
-            // クリックイベントを設定
-            button.onClick.AddListener(() => HandleActionSelected(action));
+            // クリックイベントを設定 - 詳細パネルを更新するように変更
+            button.onClick.AddListener(() => SelectAction(action));
         }
 
         /// <summary>
-        /// 行動が選択された時の処理
+        /// 行動を選択して詳細パネルを更新
         /// </summary>
-        private void HandleActionSelected(WifeActionModel action)
+        public void SelectAction(WifeActionModel action)
         {
+            if (action == null)
+            {
+                return;
+            }
+
+            currentSelectedAction = action;
+
+            // 詳細パネルを表示
+            if (detailPanelRoot != null)
+            {
+                detailPanelRoot.SetActive(true);
+            }
+
+            // アクション名
+            if (detailNameText != null)
+            {
+                detailNameText.text = action.Name;
+            }
+
+            // コスト情報
+            if (detailCostText != null)
+            {
+                detailCostText.text = BuildCostText(action);
+            }
+
+            // 効果情報
+            if (detailEffectText != null)
+            {
+                detailEffectText.text = BuildEffectsText(action);
+            }
+
+            // 画像（将来的に実装される場合のため）
+            // if (detailImage != null)
+            // {
+            //     detailImage.sprite = action.Image;
+            // }
+
+            // 従来のイベントも発火（互換性のため）
             OnActionSelected?.Invoke(action);
         }
 
@@ -115,6 +191,98 @@ namespace Ambition.UI
         private void HandleBackPressed()
         {
             OnBackPressed?.Invoke();
+        }
+
+        /// <summary>
+        /// 確定ボタンが押された時の処理
+        /// </summary>
+        private void HandleConfirmPressed()
+        {
+            if (currentSelectedAction != null)
+            {
+                OnActionConfirmed?.Invoke(currentSelectedAction);
+            }
+        }
+
+        /// <summary>
+        /// コスト情報のテキストを生成
+        /// </summary>
+        private string BuildCostText(WifeActionModel action)
+        {
+            stringBuilder.Clear();
+            stringBuilder.Append("【コスト】\n");
+
+            if (action.CashCost != 0)
+            {
+                stringBuilder.Append($"資金: {action.CashCost:N0}円\n");
+            }
+
+            if (stringBuilder.Length == "【コスト】\n".Length)
+            {
+                stringBuilder.Append("なし");
+            }
+
+            return stringBuilder.ToString();
+        }
+
+        /// <summary>
+        /// 効果情報のテキストを生成
+        /// </summary>
+        private string BuildEffectsText(WifeActionModel action)
+        {
+            stringBuilder.Clear();
+            stringBuilder.Append("【効果】\n");
+
+            // 夫への効果
+            if (action.DeltaHP != 0)
+            {
+                stringBuilder.Append($"夫体力: {FormatChangeValue(action.DeltaHP)}\n");
+            }
+
+            if (action.DeltaMP != 0)
+            {
+                stringBuilder.Append($"夫精神: {FormatChangeValue(action.DeltaMP)}\n");
+            }
+
+            if (action.DeltaCOND != 0)
+            {
+                stringBuilder.Append($"夫調子: {FormatChangeValue(action.DeltaCOND)}\n");
+            }
+
+            if (action.DeltaLove != 0)
+            {
+                stringBuilder.Append($"愛情: {FormatChangeValue(action.DeltaLove)}\n");
+            }
+
+            if (action.DeltaPublicEye != 0)
+            {
+                stringBuilder.Append($"世間の目: {FormatChangeValue(action.DeltaPublicEye)}\n");
+            }
+
+            if (action.DeltaTeamEvaluation != 0)
+            {
+                stringBuilder.Append($"チーム評価: {FormatChangeValue(action.DeltaTeamEvaluation)}\n");
+            }
+
+            if (stringBuilder.Length == "【効果】\n".Length)
+            {
+                stringBuilder.Append("なし");
+            }
+
+            return stringBuilder.ToString();
+        }
+
+        /// <summary>
+        /// 数値変化を表示用の文字列に変換（正の値には+を付ける）
+        /// </summary>
+        private string FormatChangeValue(int value)
+        {
+            if (value > 0)
+            {
+                return $"+{value}";
+            }
+
+            return value.ToString();
         }
 
         /// <summary>
@@ -138,6 +306,11 @@ namespace Ambition.UI
             if (backButton != null)
             {
                 backButton.onClick.RemoveListener(HandleBackPressed);
+            }
+
+            if (confirmButton != null)
+            {
+                confirmButton.onClick.RemoveListener(HandleConfirmPressed);
             }
         }
     }

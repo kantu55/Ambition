@@ -44,6 +44,7 @@ namespace Ambition.GameCore
             if (mainView.SubMenuController != null)
             {
                 mainView.SubMenuController.OnActionSelected += OnActionSelectedFromSubMenu;
+                mainView.SubMenuController.OnActionConfirmed += OnActionConfirmedFromSubMenu;
                 mainView.SubMenuController.OnBackPressed += OnSubMenuBackPressed;
             }
 
@@ -134,6 +135,30 @@ namespace Ambition.GameCore
             {
                 mainView.SubMenuController.Close();
             }
+        }
+
+        /// <summary>
+        /// サブメニューの確定ボタンが押された時
+        /// </summary>
+        private void OnActionConfirmedFromSubMenu(WifeActionModel action)
+        {
+            Debug.Log($"行動を保存: {action.Name}");
+            pendingAction = action;
+
+            // サブメニューを閉じる
+            if (mainView.SubMenuController != null)
+            {
+                mainView.SubMenuController.Close();
+            }
+
+            // 確定ボタンを有効化
+            if (mainView.ConfirmButton != null)
+            {
+                mainView.ConfirmButton.interactable = true;
+            }
+
+            // 選択されたアクション情報を表示
+            mainView.UpdateSelectedAction(action);
         }
 
         // --- アクションダイアログ関連 ---
@@ -252,6 +277,7 @@ namespace Ambition.GameCore
                 if (mainView.SubMenuController != null)
                 {
                     mainView.SubMenuController.OnActionSelected -= OnActionSelectedFromSubMenu;
+                    mainView.SubMenuController.OnActionConfirmed -= OnActionConfirmedFromSubMenu;
                     mainView.SubMenuController.OnBackPressed -= OnSubMenuBackPressed;
                 }
 
