@@ -65,12 +65,6 @@ namespace Ambition.UI.Meal
                 mealDetailPanel.OnBackPressed += OnSelectionBackPressed;
             }
 
-            if (confirmPanel != null)
-            {
-                confirmPanel.OnConfirmPressed += OnConfirmPressed;
-                confirmPanel.OnBackPressed += OnConfirmBackPressed;
-            }
-
             // 初期状態では全て非表示
             HideAllPanels();
         }
@@ -98,12 +92,6 @@ namespace Ambition.UI.Meal
             {
                 mealDetailPanel.OnMenuConfirmed -= OnMenuConfirmed;
                 mealDetailPanel.OnBackPressed -= OnSelectionBackPressed;
-            }
-
-            if (confirmPanel != null)
-            {
-                confirmPanel.OnConfirmPressed -= OnConfirmPressed;
-                confirmPanel.OnBackPressed -= OnConfirmBackPressed;
             }
         }
 
@@ -227,56 +215,6 @@ namespace Ambition.UI.Meal
         {
             // ティア選択に戻る
             ShowTierSelection();
-        }
-
-        /// <summary>
-        /// ③食事_確認ダイアログ を表示
-        /// </summary>
-        private void ShowConfirmation(FoodMitModel menu)
-        {
-            currentState = MealFlowState.Confirmation;
-
-            HideAllPanels();
-
-            if (confirmPanel != null)
-            {
-                confirmPanel.Show(menu);
-            }
-        }
-
-        /// <summary>
-        /// 確認画面で"確認"ボタンが押された時の処理
-        /// </summary>
-        private void OnConfirmPressed(FoodMitModel menu)
-        {
-            // 結果バブルを表示
-            if (resultBubble != null)
-            {
-                resultBubble.ShowResult(menu);
-            }
-
-            if (mainGameView != null)
-            {
-                mainGameView.UpdateSelectedMenu(menu);
-            }
-
-
-            // ここで実際の食事処理を実行する（コストの適用など）
-            // 例: RuntimeFixedCostの更新、プレイヤーステータスへの効果適用など
-            Debug.Log($"[MealFlowController] 食事を実行: {menu.MenuName}");
-
-            // 全パネルを閉じる
-            HideAllPanels();
-            currentState = MealFlowState.Hidden;
-        }
-
-        /// <summary>
-        /// 確認画面で"戻る"ボタンが押された時の処理
-        /// </summary>
-        private void OnConfirmBackPressed()
-        {
-            // メニュー選択に戻る
-            ShowMenuSelection(currentSelectedTier);
         }
 
         /// <summary>
