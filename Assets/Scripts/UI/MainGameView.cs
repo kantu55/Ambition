@@ -1,7 +1,9 @@
 ﻿using Ambition.GameCore;
 using Ambition.RuntimeData;
 using Ambition.DataStructures;
+using Cysharp.Threading.Tasks;
 using System.Text;
+using System.Threading;
 using TMPro;
 using UnityEngine;
 using UnityEngine.Events;
@@ -105,6 +107,14 @@ namespace Ambition.UI
         private int cachedActionDeltaPublicEye = 0;
         private int cachedActionDeltaAbility = 0;
 
+        // --- プレビュー点滅制御用 ---
+        private const float BLINK_CYCLE = 1.0f; // 点滅周期（秒）
+        private const float MIN_BLINK_ALPHA = 0.5f; // 点滅時の最小アルファ値
+        private const float MAX_BLINK_ALPHA = 1.0f; // 点滅時の最大アルファ値
+        private Image husbandHealthPreviewFillImage;
+        private Image husbandMentalPreviewFillImage;
+        private CancellationTokenSource blinkCancellationTokenSource;
+
         // --- プロパティ ---
 
         /// <summary>
@@ -150,6 +160,86 @@ namespace Ambition.UI
             if (buttonTalk != null)
             {
                 buttonTalk.onClick.AddListener(onTalk);
+            }
+        }
+
+        /// <summary>
+        /// コンポーネント破棄時の処理
+        /// </summary>
+        private void OnDestroy()
+        {
+            StopBlinking();
+        }
+
+        /// <summary>
+        /// プレビュー点滅処理（UniTask版）
+        /// </summary>
+        private async UniTaskVoid StartBlinkingAsync()
+        {
+            // 既存の点滅処理をキャンセル
+            StopBlinking();
+            
+            // 新しいCancellationTokenSourceを作成
+            blinkCancellationTokenSource = new CancellationTokenSource();
+            var token = blinkCancellationTokenSource.Token;
+
+            float elapsedTime = 0f;
+
+            while (!token.IsCancellationRequested)
+            {
+                elapsedTime += Time.deltaTime;
+                float alpha = Mathf.Lerp(MIN_BLINK_ALPHA, MAX_BLINK_ALPHA, (Mathf.Sin(elapsedTime * Mathf.PI * 2f / BLINK_CYCLE) + 1f) * 0.5f);
+
+                // HP プレビューの点滅
+                if (husbandHealthPreviewSlider != null && husbandHealthPreviewSlider.gameObject.activeSelf)
+                {
+                    InitializeImageCacheIfNeeded(husbandHealthPreviewSlider, ref husbandHealthPreviewFillImage);
+                    if (husbandHealthPreviewFillImage != null)
+                    {
+                        Color color = husbandHealthPreviewFillImage.color;
+                        color.a = alpha;
+                        husbandHealthPreviewFillImage.color = color;
+                    }
+                }
+
+                // MP プレビューの点滅
+                if (husbandMentalPreviewSlider != null && husbandMentalPreviewSlider.gameObject.activeSelf)
+                {
+                    InitializeImageCacheIfNeeded(husbandMentalPreviewSlider, ref husbandMentalPreviewFillImage);
+                    if (husbandMentalPreviewFillImage != null)
+                    {
+                        Color color = husbandMentalPreviewFillImage.color;
+                        color.a = alpha;
+                        husbandMentalPreviewFillImage.color = color;
+                    }
+                }
+
+                await UniTask.Yield(PlayerLoopTiming.Update, token);
+            }
+        }
+
+        /// <summary>
+        /// プレビュー点滅処理を停止
+        /// </summary>
+        private void StopBlinking()
+        {
+            var cts = blinkCancellationTokenSource;
+            if (cts != null)
+            {
+                blinkCancellationTokenSource = null;
+                cts.Cancel();
+                cts.Dispose();
+            }
+        }
+
+        /// <summary>
+        /// Image コンポーネントをキャッシュ（未キャッシュの場合のみ）
+        /// </summary>
+        private void InitializeImageCacheIfNeeded(Slider slider, ref Image cachedImage)
+        {
+            if (cachedImage == null && slider != null && slider.fillRect != null)
+            {
+                cachedImage = slider.fillRect.GetComponent<Image>();
             }
         }
 
@@ -213,7 +303,7 @@ namespace Ambition.UI
         /// <param name="deltaMP">精神の増減値</param>
         /// <param name="deltaCond">調子の増減値</param>
         /// <param name="deltaEval">評価の増減値</param>
-        public void ShowPreview(int deltaHP, int deltaMP, int deltaCond, int deltaEval = 0, int deltaLove = 0, int deltaPublicEyem = 0, int deltaAbility = 0)
+        public void ShowPreview(int deltaHP, int deltaMP, int deltaCond, int deltaEval = 0, int deltaLove = 0, int deltaPublicEye = 0, int deltaAbility = 0)
         {
             RuntimePlayerStatus currentStatus = GameSimulationManager.Instance.Husband;
             if (currentStatus == null)
@@ -226,7 +316,7 @@ namespace Ambition.UI
             int totalDeltaCond = cachedActionDeltaCond + deltaCond;
             int totalDeltaEval = cachedActionDeltaEval + deltaEval;
             int totalDeltaLove = cachedActionDeltaLove + deltaLove;
-            int totalDeltaPublicEye = cachedActionDeltaPublicEye + deltaPublicEyem;
+            int totalDeltaPublicEye = cachedActionDeltaPublicEye + deltaPublicEye;
 
             UpdatePreviewSlider(
                 husbandHealthSlider,
@@ -248,6 +338,9 @@ namespace Ambition.UI
             UpdateArrowText(evaluationArrowText, totalDeltaEval);
             UpdateArrowText(loveArrowText, totalDeltaLove);
             UpdateArrowText(publicEyeArrowText, totalDeltaPublicEye);
+
+            // プレビュー点滅処理を開始
+            StartBlinkingAsync().Forget();
         }
 
         /// <summary>
@@ -255,6 +348,47 @@ namespace Ambition.UI
         /// </summary>
         public void HidePreview()
         {
+            // キャッシュされた増減値がある場合は、それをプレビュー表示し続ける
+            if (cachedActionDeltaHP != 0 || cachedActionDeltaMP != 0 || cachedActionDeltaCond != 0 || 
+                cachedActionDeltaEval != 0 || cachedActionDeltaLove != 0 || cachedActionDeltaPublicEye != 0 || 
+                cachedActionDeltaAbility != 0)
+            {
+                // キャッシュ分のプレビューを表示
+                ShowPreview(0, 0, 0, 0, 0, 0, 0);
+                return;
+            }
+
+            HidePreviewUI();
+        }
+
+        /// <summary>
+        /// すべてのプレビュー表示を完全にリセットする（確定ボタン押下時などに使用）
+        /// </summary>
+        public void ResetAllPreviews()
+        {
+            // キャッシュをクリア
+            cachedActionDeltaHP = 0;
+            cachedActionDeltaMP = 0;
+            cachedActionDeltaCond = 0;
+            cachedActionDeltaEval = 0;
+            cachedActionDeltaLove = 0;
+            cachedActionDeltaPublicEye = 0;
+            cachedActionDeltaAbility = 0;
+
+            HidePreviewUI();
+        }
+
+        // --- 内部メソッド ---
+
+        /// <summary>
+        /// プレビュー UI を非表示にする
+        /// </summary>
+        private void HidePreviewUI()
+        {
+            // 点滅処理を停止
+            StopBlinking();
+
+            // すべてのプレビュースライダーを非表示
             if (husbandHealthPreviewSlider != null)
             {
                 husbandHealthPreviewSlider.gameObject.SetActive(false);
@@ -265,6 +399,7 @@ namespace Ambition.UI
                 husbandMentalPreviewSlider.gameObject.SetActive(false);
             }
 
+            // すべてのプレビューテキストを非表示
             if (husbandHealthPreviewText != null)
             {
                 husbandHealthPreviewText.gameObject.SetActive(false);
@@ -275,6 +410,15 @@ namespace Ambition.UI
                 husbandMentalPreviewText.gameObject.SetActive(false);
             }
 
+            ResetArrowTexts();
+            ResetSlidersToCurrentValues();
+        }
+
+        /// <summary>
+        /// 矢印テキストをすべてリセット
+        /// </summary>
+        private void ResetArrowTexts()
+        {
             if (conditionArrowText != null)
             {
                 conditionArrowText.SetText("");
@@ -286,9 +430,38 @@ namespace Ambition.UI
                 evaluationArrowText.SetText("");
                 evaluationArrowText.color = Color.white;
             }
+
+            if (loveArrowText != null)
+            {
+                loveArrowText.SetText("");
+                loveArrowText.color = Color.white;
+            }
+
+            if (publicEyeArrowText != null)
+            {
+                publicEyeArrowText.SetText("");
+                publicEyeArrowText.color = Color.white;
+            }
         }
 
-        // --- 内部メソッド ---
+        /// <summary>
+        /// メインスライダーを現在値にリセット
+        /// </summary>
+        private void ResetSlidersToCurrentValues()
+        {
+            RuntimePlayerStatus currentStatus = GameSimulationManager.Instance.Husband;
+            if (currentStatus != null)
+            {
+                if (husbandHealthSlider != null)
+                {
+                    husbandHealthSlider.value = currentStatus.CurrentHealth;
+                }
+                if (husbandMentalSlider != null)
+                {
+                    husbandMentalSlider.value = currentStatus.CurrentMental;
+                }
+            }
+        }
 
         private void UpdateGlobalInfo(RuntimeDate date, RuntimeHouseholdBudget budget)
         {
@@ -459,11 +632,11 @@ namespace Ambition.UI
 
             if (delta == 0)
             {
-                // 変化がない場合はプレビューを非表示にする
+                // 変化がない場合はプレビューを非表示にし、メインスライダーをリセット
                 previewSlider.gameObject.SetActive(false);
                 previewText.gameObject.SetActive(false);
+                mainSlider.value = current;
                 return;
-
             }
 
             previewSlider.gameObject.SetActive(true);
@@ -472,12 +645,38 @@ namespace Ambition.UI
             int nextValue = Mathf.Clamp(current + delta, 0, max);
             bool isIncrease = delta > 0;
 
-            previewSlider.value = isIncrease ? nextValue : current;
+            if (isIncrease)
+            {
+                // 増加時: プレビュースライダーを次の値に設定
+                previewSlider.value = nextValue;
+                // メインスライダーは現在値のまま
+                mainSlider.value = current;
+            }
+            else
+            {
+                // 減少時: メインスライダーを減少後の値に変更し、プレビュー（赤）が見えるようにする
+                previewSlider.value = current;
+                mainSlider.value = nextValue;
+            }
 
-            var fillImage = previewSlider.fillRect.GetComponent<Image>();
+            // キャッシュされたImage参照を使用、なければ取得してキャッシュ
+            Image fillImage = null;
+            if (previewSlider == husbandHealthPreviewSlider)
+            {
+                InitializeImageCacheIfNeeded(previewSlider, ref husbandHealthPreviewFillImage);
+                fillImage = husbandHealthPreviewFillImage;
+            }
+            else if (previewSlider == husbandMentalPreviewSlider)
+            {
+                InitializeImageCacheIfNeeded(previewSlider, ref husbandMentalPreviewFillImage);
+                fillImage = husbandMentalPreviewFillImage;
+            }
+
             if (fillImage != null)
             {
-                fillImage.color = isIncrease ? increaseColor : decreaseColor;
+                Color color = isIncrease ? increaseColor : decreaseColor;
+                color.a = MAX_BLINK_ALPHA; // アルファ値は Update で制御するため初期値を最大に
+                fillImage.color = color;
             }
 
             if (previewText != null)

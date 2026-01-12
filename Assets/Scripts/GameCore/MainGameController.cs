@@ -212,6 +212,9 @@ namespace Ambition.GameCore
                     // アクション情報パネルをクリア
                     mainView.UpdateSelectedAction(null);
 
+                    // すべてのプレビュー表示をリセット
+                    mainView.ResetAllPreviews();
+
                     // UIを更新
                     RefreshUI();
                 }
