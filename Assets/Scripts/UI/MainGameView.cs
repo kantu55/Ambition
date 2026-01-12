@@ -579,7 +579,25 @@ namespace Ambition.UI
                 mainSlider.value = nextValue;
             }
 
-            var fillImage = previewSlider.fillRect.GetComponent<Image>();
+            // キャッシュされたImage参照を使用、なければ取得してキャッシュ
+            Image fillImage = null;
+            if (previewSlider == husbandHealthPreviewSlider)
+            {
+                if (husbandHealthPreviewFillImage == null && previewSlider.fillRect != null)
+                {
+                    husbandHealthPreviewFillImage = previewSlider.fillRect.GetComponent<Image>();
+                }
+                fillImage = husbandHealthPreviewFillImage;
+            }
+            else if (previewSlider == husbandMentalPreviewSlider)
+            {
+                if (husbandMentalPreviewFillImage == null && previewSlider.fillRect != null)
+                {
+                    husbandMentalPreviewFillImage = previewSlider.fillRect.GetComponent<Image>();
+                }
+                fillImage = husbandMentalPreviewFillImage;
+            }
+
             if (fillImage != null)
             {
                 Color color = isIncrease ? increaseColor : decreaseColor;
