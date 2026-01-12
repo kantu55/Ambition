@@ -18,7 +18,6 @@ namespace Ambition.UI.Meal
         [Header("UI Panels")]
         [SerializeField] private MealTierPanel tierPanel;
         [SerializeField] private MealDetailPanelController mealDetailPanel;
-        [SerializeField] private MealConfirmPanel confirmPanel;
         [SerializeField] private MealResultBubble resultBubble;
 
         [Header("Main Button")]
@@ -38,8 +37,7 @@ namespace Ambition.UI.Meal
         {
             Hidden,
             TierSelection,
-            MenuSelection,
-            Confirmation
+            MenuSelection
         }
 
         private MealFlowState currentState = MealFlowState.Hidden;
@@ -230,11 +228,6 @@ namespace Ambition.UI.Meal
             if (mealDetailPanel != null)
             {
                 mealDetailPanel.Hide();
-            }
-
-            if (confirmPanel != null)
-            {
-                confirmPanel.Hide();
             }
         }
     }
