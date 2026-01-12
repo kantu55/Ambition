@@ -105,6 +105,11 @@ namespace Ambition.UI
         private int cachedActionDeltaPublicEye = 0;
         private int cachedActionDeltaAbility = 0;
 
+        // --- プレビュー点滅制御用 ---
+        private float blinkTimer = 0f;
+        private const float BLINK_CYCLE = 1.0f; // 点滅周期（秒）
+        private bool isPreviewActive = false;
+
         // --- プロパティ ---
 
         /// <summary>
@@ -150,6 +155,45 @@ namespace Ambition.UI
             if (buttonTalk != null)
             {
                 buttonTalk.onClick.AddListener(onTalk);
+            }
+        }
+
+        /// <summary>
+        /// プレビュー点滅処理
+        /// </summary>
+        private void Update()
+        {
+            if (!isPreviewActive)
+            {
+                return;
+            }
+
+            blinkTimer += Time.deltaTime;
+            float alpha = (Mathf.Sin(blinkTimer * Mathf.PI * 2f / BLINK_CYCLE) + 1f) * 0.5f;
+            alpha = Mathf.Lerp(0.5f, 1.0f, alpha); // 0.5〜1.0の範囲で点滅
+
+            // HP プレビューの点滅
+            if (husbandHealthPreviewSlider != null && husbandHealthPreviewSlider.gameObject.activeSelf)
+            {
+                var fillImage = husbandHealthPreviewSlider.fillRect.GetComponent<Image>();
+                if (fillImage != null)
+                {
+                    Color color = fillImage.color;
+                    color.a = alpha;
+                    fillImage.color = color;
+                }
+            }
+
+            // MP プレビューの点滅
+            if (husbandMentalPreviewSlider != null && husbandMentalPreviewSlider.gameObject.activeSelf)
+            {
+                var fillImage = husbandMentalPreviewSlider.fillRect.GetComponent<Image>();
+                if (fillImage != null)
+                {
+                    Color color = fillImage.color;
+                    color.a = alpha;
+                    fillImage.color = color;
+                }
             }
         }
 
@@ -248,6 +292,10 @@ namespace Ambition.UI
             UpdateArrowText(evaluationArrowText, totalDeltaEval);
             UpdateArrowText(loveArrowText, totalDeltaLove);
             UpdateArrowText(publicEyeArrowText, totalDeltaPublicEye);
+
+            // プレビュー表示中フラグを立てる
+            isPreviewActive = true;
+            blinkTimer = 0f;
         }
 
         /// <summary>
@@ -255,6 +303,18 @@ namespace Ambition.UI
         /// </summary>
         public void HidePreview()
         {
+            // キャッシュされた増減値がある場合は、それをプレビュー表示し続ける
+            if (cachedActionDeltaHP != 0 || cachedActionDeltaMP != 0 || cachedActionDeltaCond != 0 || 
+                cachedActionDeltaEval != 0 || cachedActionDeltaLove != 0 || cachedActionDeltaPublicEye != 0)
+            {
+                // キャッシュ分のプレビューを表示
+                ShowPreview(0, 0, 0, 0, 0, 0, 0);
+                return;
+            }
+
+            // キャッシュがない場合は完全非表示
+            isPreviewActive = false;
+
             if (husbandHealthPreviewSlider != null)
             {
                 husbandHealthPreviewSlider.gameObject.SetActive(false);
@@ -285,6 +345,32 @@ namespace Ambition.UI
             {
                 evaluationArrowText.SetText("");
                 evaluationArrowText.color = Color.white;
+            }
+
+            if (loveArrowText != null)
+            {
+                loveArrowText.SetText("");
+                loveArrowText.color = Color.white;
+            }
+
+            if (publicEyeArrowText != null)
+            {
+                publicEyeArrowText.SetText("");
+                publicEyeArrowText.color = Color.white;
+            }
+
+            // メインスライダーを現在値にリセット
+            RuntimePlayerStatus currentStatus = GameSimulationManager.Instance.Husband;
+            if (currentStatus != null)
+            {
+                if (husbandHealthSlider != null)
+                {
+                    husbandHealthSlider.value = currentStatus.CurrentHealth;
+                }
+                if (husbandMentalSlider != null)
+                {
+                    husbandMentalSlider.value = currentStatus.CurrentMental;
+                }
             }
         }
 
@@ -459,9 +545,10 @@ namespace Ambition.UI
 
             if (delta == 0)
             {
-                // 変化がない場合はプレビューを非表示にする
+                // 変化がない場合はプレビューを非表示にし、メインスライダーをリセット
                 previewSlider.gameObject.SetActive(false);
                 previewText.gameObject.SetActive(false);
+                mainSlider.value = current;
                 return;
 
             }
@@ -472,12 +559,26 @@ namespace Ambition.UI
             int nextValue = Mathf.Clamp(current + delta, 0, max);
             bool isIncrease = delta > 0;
 
-            previewSlider.value = isIncrease ? nextValue : current;
+            if (isIncrease)
+            {
+                // 増加時: プレビュースライダーを次の値に設定
+                previewSlider.value = nextValue;
+                // メインスライダーは現在値のまま
+                mainSlider.value = current;
+            }
+            else
+            {
+                // 減少時: メインスライダーを減少後の値に変更し、プレビュー（赤）が見えるようにする
+                previewSlider.value = current;
+                mainSlider.value = nextValue;
+            }
 
             var fillImage = previewSlider.fillRect.GetComponent<Image>();
             if (fillImage != null)
             {
-                fillImage.color = isIncrease ? increaseColor : decreaseColor;
+                Color color = isIncrease ? increaseColor : decreaseColor;
+                color.a = 1.0f; // アルファ値は Update で制御するため初期値を1.0に
+                fillImage.color = color;
             }
 
             if (previewText != null)
