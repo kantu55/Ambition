@@ -271,7 +271,7 @@ namespace Ambition.UI
         /// <param name="deltaMP">精神の増減値</param>
         /// <param name="deltaCond">調子の増減値</param>
         /// <param name="deltaEval">評価の増減値</param>
-        public void ShowPreview(int deltaHP, int deltaMP, int deltaCond, int deltaEval = 0, int deltaLove = 0, int deltaPublicEyem = 0, int deltaAbility = 0)
+        public void ShowPreview(int deltaHP, int deltaMP, int deltaCond, int deltaEval = 0, int deltaLove = 0, int deltaPublicEye = 0, int deltaAbility = 0)
         {
             RuntimePlayerStatus currentStatus = GameSimulationManager.Instance.Husband;
             if (currentStatus == null)
@@ -284,7 +284,7 @@ namespace Ambition.UI
             int totalDeltaCond = cachedActionDeltaCond + deltaCond;
             int totalDeltaEval = cachedActionDeltaEval + deltaEval;
             int totalDeltaLove = cachedActionDeltaLove + deltaLove;
-            int totalDeltaPublicEye = cachedActionDeltaPublicEye + deltaPublicEyem;
+            int totalDeltaPublicEye = cachedActionDeltaPublicEye + deltaPublicEye;
 
             UpdatePreviewSlider(
                 husbandHealthSlider,
