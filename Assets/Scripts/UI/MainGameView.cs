@@ -319,7 +319,8 @@ namespace Ambition.UI
         {
             // キャッシュされた増減値がある場合は、それをプレビュー表示し続ける
             if (cachedActionDeltaHP != 0 || cachedActionDeltaMP != 0 || cachedActionDeltaCond != 0 || 
-                cachedActionDeltaEval != 0 || cachedActionDeltaLove != 0 || cachedActionDeltaPublicEye != 0)
+                cachedActionDeltaEval != 0 || cachedActionDeltaLove != 0 || cachedActionDeltaPublicEye != 0 || 
+                cachedActionDeltaAbility != 0)
             {
                 // キャッシュ分のプレビューを表示
                 ShowPreview(0, 0, 0, 0, 0, 0, 0);
