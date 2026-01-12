@@ -185,43 +185,36 @@ namespace Ambition.UI
 
             float elapsedTime = 0f;
 
-            try
+            while (!token.IsCancellationRequested)
             {
-                while (!token.IsCancellationRequested)
+                elapsedTime += Time.deltaTime;
+                float alpha = Mathf.Lerp(MIN_BLINK_ALPHA, MAX_BLINK_ALPHA, (Mathf.Sin(elapsedTime * Mathf.PI * 2f / BLINK_CYCLE) + 1f) * 0.5f);
+
+                // HP プレビューの点滅
+                if (husbandHealthPreviewSlider != null && husbandHealthPreviewSlider.gameObject.activeSelf)
                 {
-                    elapsedTime += Time.deltaTime;
-                    float alpha = Mathf.Lerp(MIN_BLINK_ALPHA, MAX_BLINK_ALPHA, (Mathf.Sin(elapsedTime * Mathf.PI * 2f / BLINK_CYCLE) + 1f) * 0.5f);
-
-                    // HP プレビューの点滅
-                    if (husbandHealthPreviewSlider != null && husbandHealthPreviewSlider.gameObject.activeSelf)
+                    InitializeImageCacheIfNeeded(husbandHealthPreviewSlider, ref husbandHealthPreviewFillImage);
+                    if (husbandHealthPreviewFillImage != null)
                     {
-                        InitializeImageCacheIfNeeded(husbandHealthPreviewSlider, ref husbandHealthPreviewFillImage);
-                        if (husbandHealthPreviewFillImage != null)
-                        {
-                            Color color = husbandHealthPreviewFillImage.color;
-                            color.a = alpha;
-                            husbandHealthPreviewFillImage.color = color;
-                        }
+                        Color color = husbandHealthPreviewFillImage.color;
+                        color.a = alpha;
+                        husbandHealthPreviewFillImage.color = color;
                     }
-
-                    // MP プレビューの点滅
-                    if (husbandMentalPreviewSlider != null && husbandMentalPreviewSlider.gameObject.activeSelf)
-                    {
-                        InitializeImageCacheIfNeeded(husbandMentalPreviewSlider, ref husbandMentalPreviewFillImage);
-                        if (husbandMentalPreviewFillImage != null)
-                        {
-                            Color color = husbandMentalPreviewFillImage.color;
-                            color.a = alpha;
-                            husbandMentalPreviewFillImage.color = color;
-                        }
-                    }
-
-                    await UniTask.Yield(PlayerLoopTiming.Update, token);
                 }
-            }
-            catch (OperationCanceledException)
-            {
-                // キャンセルされた場合は正常終了
+
+                // MP プレビューの点滅
+                if (husbandMentalPreviewSlider != null && husbandMentalPreviewSlider.gameObject.activeSelf)
+                {
+                    InitializeImageCacheIfNeeded(husbandMentalPreviewSlider, ref husbandMentalPreviewFillImage);
+                    if (husbandMentalPreviewFillImage != null)
+                    {
+                        Color color = husbandMentalPreviewFillImage.color;
+                        color.a = alpha;
+                        husbandMentalPreviewFillImage.color = color;
+                    }
+                }
+
+                await UniTask.Yield(PlayerLoopTiming.Update, token);
             }
         }
 
