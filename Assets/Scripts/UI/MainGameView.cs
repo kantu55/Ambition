@@ -1,7 +1,9 @@
-﻿using Ambition.GameCore;
+﻿using Ambition.DataStructures;
+using Ambition.GameCore;
 using Ambition.RuntimeData;
-using Ambition.DataStructures;
+using Cysharp.Threading.Tasks;
 using System.Text;
+using System.Threading;
 using TMPro;
 using UnityEngine;
 using UnityEngine.Events;
@@ -14,6 +16,25 @@ namespace Ambition.UI
     /// </summary>
     public class MainGameView : MonoBehaviour
     {
+        // --- 定数 ---
+
+        /// <summary>
+        /// 点滅周期
+        /// </summary>
+        private const float BLINK_CYCLE = 1.0f;
+
+        /// <summary>
+        /// 点滅時の最小アルファ値
+        /// </summary>
+        private const float MIN_BLINK_ALPHA = 0.5f;
+
+        /// <summary>
+        /// 点滅時の最大アルファ値
+        /// </summary>
+        private const float MAX_BLINK_ALPHA = 1.0f;
+
+        // --- UIコンポーネントへの参照 ---
+
         [Header("Global Info")]
         [SerializeField] private TextMeshProUGUI dateText;
         [SerializeField] private TextMeshProUGUI totalMoneyText;
@@ -105,6 +126,11 @@ namespace Ambition.UI
         private int cachedActionDeltaPublicEye = 0;
         private int cachedActionDeltaAbility = 0;
 
+        // --- プレビュー点滅制御 ---
+        private Image husbandHealthPreviewFillImage;
+        private Image husbandMentalPreviewFillImage;
+        private CancellationTokenSource blinkCancellationTokenSource;
+
         // --- プロパティ ---
 
         /// <summary>
@@ -121,6 +147,15 @@ namespace Ambition.UI
         /// アクションダイアログコントローラーへのアクセス
         /// </summary>
         public ActionDialogController ActionDialogController => actionDialogController;
+
+        // --- MonoBehaviourコールバック ---
+
+        private void OnDestroy()
+        {
+            StopBlinking();
+        }
+
+        // --- 公開メソッド ---
 
         /// <summary>
         /// ボタンクリック時のコールバックを登録
@@ -164,8 +199,6 @@ namespace Ambition.UI
             UpdateEvaluationInfo(reputation);
         }
 
-
-
         /// <summary>
         /// 選択されたアクションを表示
         /// </summary>
@@ -197,13 +230,20 @@ namespace Ambition.UI
                 targetPanel.Show(action);
             }
 
-            cachedActionDeltaHP = action.DeltaHP;
-            cachedActionDeltaMP = action.DeltaMP;
-            cachedActionDeltaCond = action.DeltaCOND;
+            cachedActionDeltaHP += action.DeltaHP;
+            cachedActionDeltaMP += action.DeltaMP;
+            cachedActionDeltaCond += action.DeltaCOND;
             cachedActionDeltaEval = action.DeltaTeamEvaluation;
             cachedActionDeltaLove = action.DeltaLove;
             cachedActionDeltaPublicEye = action.DeltaPublicEye;
             cachedActionDeltaAbility = 0;
+        }
+
+        public void UpdateSelectedMenu(FoodMitModel menu)
+        {
+            cachedActionDeltaHP += menu.MitigHP;
+            cachedActionDeltaMP += menu.MitigMP;
+            cachedActionDeltaCond += menu.MitigCOND;
         }
 
         /// <summary>
@@ -213,7 +253,7 @@ namespace Ambition.UI
         /// <param name="deltaMP">精神の増減値</param>
         /// <param name="deltaCond">調子の増減値</param>
         /// <param name="deltaEval">評価の増減値</param>
-        public void ShowPreview(int deltaHP, int deltaMP, int deltaCond, int deltaEval = 0, int deltaLove = 0, int deltaPublicEyem = 0, int deltaAbility = 0)
+        public void ShowPreview(int deltaHP, int deltaMP, int deltaCond, int deltaEval = 0, int deltaLove = 0, int deltaPublicEye = 0, int deltaAbility = 0)
         {
             RuntimePlayerStatus currentStatus = GameSimulationManager.Instance.Husband;
             if (currentStatus == null)
@@ -226,7 +266,7 @@ namespace Ambition.UI
             int totalDeltaCond = cachedActionDeltaCond + deltaCond;
             int totalDeltaEval = cachedActionDeltaEval + deltaEval;
             int totalDeltaLove = cachedActionDeltaLove + deltaLove;
-            int totalDeltaPublicEye = cachedActionDeltaPublicEye + deltaPublicEyem;
+            int totalDeltaPublicEye = cachedActionDeltaPublicEye + deltaPublicEye;
 
             UpdatePreviewSlider(
                 husbandHealthSlider,
@@ -248,6 +288,8 @@ namespace Ambition.UI
             UpdateArrowText(evaluationArrowText, totalDeltaEval);
             UpdateArrowText(loveArrowText, totalDeltaLove);
             UpdateArrowText(publicEyeArrowText, totalDeltaPublicEye);
+
+            StartBlinkingAsync().Forget();
         }
 
         /// <summary>
@@ -255,6 +297,13 @@ namespace Ambition.UI
         /// </summary>
         public void HidePreview()
         {
+            if (cachedActionDeltaHP != 0 || cachedActionDeltaMP != 0 || cachedActionDeltaCond != 0 ||
+                cachedActionDeltaEval != 0 || cachedActionDeltaLove != 0 || cachedActionDeltaPublicEye != 0)
+            {
+                ShowPreview(0, 0, 0, 0, 0, 0);
+                return;
+            }
+
             if (husbandHealthPreviewSlider != null)
             {
                 husbandHealthPreviewSlider.gameObject.SetActive(false);
@@ -285,6 +334,111 @@ namespace Ambition.UI
             {
                 evaluationArrowText.SetText("");
                 evaluationArrowText.color = Color.white;
+            }
+
+            if (loveArrowText != null)
+            {
+                loveArrowText.SetText("");
+                loveArrowText.color = Color.white;
+            }
+
+            if (publicEyeArrowText != null)
+            {
+                publicEyeArrowText.SetText("");
+                publicEyeArrowText.color = Color.white;
+            }
+
+            RuntimePlayerStatus currentStatus = GameSimulationManager.Instance.Husband;
+            if (currentStatus != null)
+            {
+                if (husbandHealthSlider != null)
+                {
+                    husbandHealthSlider.value = currentStatus.CurrentHealth;
+                }
+
+                if (husbandMentalSlider != null)
+                {
+                    husbandMentalSlider.value = currentStatus.CurrentMental;
+                }
+            }
+        }
+
+        /// <summary>
+        /// すべてのプレビュー表示を完全にリセットする（確定ボタン押下時などに使用）
+        /// </summary>
+        public void ResetAllPreviews()
+        {
+            // キャッシュをクリア
+            cachedActionDeltaHP = 0;
+            cachedActionDeltaMP = 0;
+            cachedActionDeltaCond = 0;
+            cachedActionDeltaEval = 0;
+            cachedActionDeltaLove = 0;
+            cachedActionDeltaPublicEye = 0;
+            cachedActionDeltaAbility = 0;
+
+            // 点滅処理を停止
+            StopBlinking();
+
+            // すべてのプレビュースライダーを非表示
+            if (husbandHealthPreviewSlider != null)
+            {
+                husbandHealthPreviewSlider.gameObject.SetActive(false);
+            }
+
+            if (husbandMentalPreviewSlider != null)
+            {
+                husbandMentalPreviewSlider.gameObject.SetActive(false);
+            }
+
+            // すべてのプレビューテキストを非表示
+            if (husbandHealthPreviewText != null)
+            {
+                husbandHealthPreviewText.gameObject.SetActive(false);
+            }
+
+            if (husbandMentalPreviewText != null)
+            {
+                husbandMentalPreviewText.gameObject.SetActive(false);
+            }
+
+            // すべての矢印テキストをクリア
+            if (conditionArrowText != null)
+            {
+                conditionArrowText.SetText("");
+                conditionArrowText.color = Color.white;
+            }
+
+            if (evaluationArrowText != null)
+            {
+                evaluationArrowText.SetText("");
+                evaluationArrowText.color = Color.white;
+            }
+
+            if (loveArrowText != null)
+            {
+                loveArrowText.SetText("");
+                loveArrowText.color = Color.white;
+            }
+
+            if (publicEyeArrowText != null)
+            {
+                publicEyeArrowText.SetText("");
+                publicEyeArrowText.color = Color.white;
+            }
+
+            // メインスライダーを現在値にリセット
+            RuntimePlayerStatus currentStatus = GameSimulationManager.Instance.Husband;
+            if (currentStatus != null)
+            {
+                if (husbandHealthSlider != null)
+                {
+                    husbandHealthSlider.value = currentStatus.CurrentHealth;
+                }
+                if (husbandMentalSlider != null)
+                {
+                    husbandMentalSlider.value = currentStatus.CurrentMental;
+                }
             }
         }
 
@@ -462,8 +616,8 @@ namespace Ambition.UI
                 // 変化がない場合はプレビューを非表示にする
                 previewSlider.gameObject.SetActive(false);
                 previewText.gameObject.SetActive(false);
+                mainSlider.value = current;
                 return;
-
             }
 
             previewSlider.gameObject.SetActive(true);
@@ -472,12 +626,35 @@ namespace Ambition.UI
             int nextValue = Mathf.Clamp(current + delta, 0, max);
             bool isIncrease = delta > 0;
 
-            previewSlider.value = isIncrease ? nextValue : current;
+            if (isIncrease)
+            {
+                previewSlider.value = nextValue;
+                mainSlider.value = current;
+            }
+            else
+            {
+                // 減少時: メインスライダーを減少後の値に変更し、プレビュー（赤）が見えるようにする
+                previewSlider.value = current;
+                mainSlider.value = nextValue;
+            }
 
-            var fillImage = previewSlider.fillRect.GetComponent<Image>();
+            Image fillImage = null;
+            if (previewSlider == husbandHealthPreviewSlider)
+            {
+                InitializeImageCacheIfNeeded(previewSlider, ref husbandHealthPreviewFillImage);
+                fillImage = husbandHealthPreviewFillImage;
+            }
+            else if (previewSlider == husbandMentalPreviewSlider)
+            {
+                InitializeImageCacheIfNeeded(previewSlider, ref husbandMentalPreviewFillImage);
+                fillImage = husbandMentalPreviewFillImage;
+            }
+
             if (fillImage != null)
             {
-                fillImage.color = isIncrease ? increaseColor : decreaseColor;
+                Color color = isIncrease ? increaseColor : decreaseColor;
+                color.a = MAX_BLINK_ALPHA;
+                fillImage.color = color;
             }
 
             if (previewText != null)
@@ -517,6 +694,64 @@ namespace Ambition.UI
             {
                 arrowText.SetText("-");
                 arrowText.color = Color.white;
+            }
+        }
+
+        private async UniTaskVoid StartBlinkingAsync()
+        {
+            StopBlinking();
+
+            blinkCancellationTokenSource = new CancellationTokenSource();
+            var token = blinkCancellationTokenSource.Token;
+
+            float elapsedTime = 0f;
+            while (token.IsCancellationRequested == false)
+            {
+                elapsedTime += Time.deltaTime;
+                float alpha = Mathf.Lerp(MIN_BLINK_ALPHA, MAX_BLINK_ALPHA, Mathf.Sin((elapsedTime * Mathf.PI * 2 / BLINK_CYCLE) + 1) * 0.5f);
+
+                if (husbandHealthPreviewSlider != null && husbandHealthPreviewSlider.gameObject.activeSelf)
+                {
+                    InitializeImageCacheIfNeeded(husbandHealthPreviewSlider, ref husbandHealthPreviewFillImage);
+                    if (husbandHealthPreviewFillImage != null)
+                    {
+                        var color = husbandHealthPreviewFillImage.color;
+                        color.a = alpha;
+                        husbandHealthPreviewFillImage.color = color;
+                    }
+
+                    if (husbandMentalPreviewSlider != null && husbandMentalPreviewSlider.gameObject.activeSelf)
+                    {
+                        InitializeImageCacheIfNeeded(husbandMentalPreviewSlider, ref husbandMentalPreviewFillImage);
+                        if (husbandMentalPreviewFillImage != null)
+                        {
+                            var color = husbandMentalPreviewFillImage.color;
+                            color.a = alpha;
+                            husbandMentalPreviewFillImage.color = color;
+                        }
+                    }
+
+                    await UniTask.Yield(PlayerLoopTiming.Update, token);
+                }
+            }
+        }
+
+        private void StopBlinking()
+        {
+            var cts = blinkCancellationTokenSource;
+            if (cts != null)
+            {
+                blinkCancellationTokenSource = null;
+                cts.Cancel();
+                cts.Dispose();
+            }
+        }
+
+        private void InitializeImageCacheIfNeeded(Slider slider, ref Image cachedImage)
+        {
+            if (cachedImage == null && slider != null && slider.fillRect != null)
+            {
+                cachedImage = slider.fillRect.GetComponent<Image>();
             }
         }
     }
