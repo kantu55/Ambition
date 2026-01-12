@@ -381,43 +381,8 @@ namespace Ambition.UI
                 husbandMentalPreviewText.gameObject.SetActive(false);
             }
 
-            if (conditionArrowText != null)
-            {
-                conditionArrowText.SetText("");
-                conditionArrowText.color = Color.white;
-            }
-
-            if (evaluationArrowText != null)
-            {
-                evaluationArrowText.SetText("");
-                evaluationArrowText.color = Color.white;
-            }
-
-            if (loveArrowText != null)
-            {
-                loveArrowText.SetText("");
-                loveArrowText.color = Color.white;
-            }
-
-            if (publicEyeArrowText != null)
-            {
-                publicEyeArrowText.SetText("");
-                publicEyeArrowText.color = Color.white;
-            }
-
-            // メインスライダーを現在値にリセット
-            RuntimePlayerStatus currentStatus = GameSimulationManager.Instance.Husband;
-            if (currentStatus != null)
-            {
-                if (husbandHealthSlider != null)
-                {
-                    husbandHealthSlider.value = currentStatus.CurrentHealth;
-                }
-                if (husbandMentalSlider != null)
-                {
-                    husbandMentalSlider.value = currentStatus.CurrentMental;
-                }
-            }
+            ResetArrowTexts();
+            ResetSlidersToCurrentValues();
         }
 
         /// <summary>
@@ -459,7 +424,17 @@ namespace Ambition.UI
                 husbandMentalPreviewText.gameObject.SetActive(false);
             }
 
-            // すべての矢印テキストをクリア
+            ResetArrowTexts();
+            ResetSlidersToCurrentValues();
+        }
+
+        // --- 内部メソッド ---
+
+        /// <summary>
+        /// 矢印テキストをすべてリセット
+        /// </summary>
+        private void ResetArrowTexts()
+        {
             if (conditionArrowText != null)
             {
                 conditionArrowText.SetText("");
@@ -483,8 +458,13 @@ namespace Ambition.UI
                 publicEyeArrowText.SetText("");
                 publicEyeArrowText.color = Color.white;
             }
+        }
 
-            // メインスライダーを現在値にリセット
+        /// <summary>
+        /// メインスライダーを現在値にリセット
+        /// </summary>
+        private void ResetSlidersToCurrentValues()
+        {
             RuntimePlayerStatus currentStatus = GameSimulationManager.Instance.Husband;
             if (currentStatus != null)
             {
@@ -498,8 +478,6 @@ namespace Ambition.UI
                 }
             }
         }
-
-        // --- 内部メソッド ---
 
         private void UpdateGlobalInfo(RuntimeDate date, RuntimeHouseholdBudget budget)
         {
