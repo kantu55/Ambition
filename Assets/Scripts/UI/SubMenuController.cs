@@ -51,6 +51,7 @@ namespace Ambition.UI
         private const string COST_HEADER = "【コスト】\n";
         private const string EFFECTS_HEADER = "【効果】\n";
         private const string NONE_TEXT = "なし";
+        private const string CURRENCY_UNIT = "円";
 
         private void Awake()
         {
@@ -227,7 +228,7 @@ namespace Ambition.UI
 
             if (action.CashCost != 0)
             {
-                stringBuilder.Append($"資金: {action.CashCost:N0}円\n");
+                stringBuilder.Append($"資金: {action.CashCost:N0}{CURRENCY_UNIT}\n");
             }
 
             if (stringBuilder.Length == COST_HEADER.Length)
