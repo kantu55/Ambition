@@ -1,5 +1,5 @@
-﻿using Ambition.DataStructures;
-using Ambition.GameCore;
+﻿using Ambition.Data.Master;
+using Ambition.Core.Managers;
 using UnityEngine;
 
 namespace Ambition.DebugTools
