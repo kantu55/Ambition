@@ -1,4 +1,5 @@
 using Ambition.DataStructures;
+using System;
 using TMPro;
 using UnityEngine;
 
@@ -11,77 +12,55 @@ namespace Ambition.UI
     public class ActionInfoPanel : MonoBehaviour
     {
         [Header("UI Components")]
-        [SerializeField] private GameObject panelRoot;
-        [SerializeField] private TextMeshProUGUI actionNameText;
-        [SerializeField] private TextMeshProUGUI costMoneyText;
-        [SerializeField] private TextMeshProUGUI costWifeHealthText;
+        [SerializeField] private GameObject bubbleRoot;
+        [SerializeField] private TextMeshProUGUI resultText;
+
+        /// <summary>
+        /// 確認ボタンが押された時のコールバック
+        /// </summary>
+        public event Action<WifeActionModel> OnConfirmPressed;
 
         private System.Text.StringBuilder stringBuilder = new System.Text.StringBuilder(128);
 
         private void Awake()
         {
-            // 初期状態では非表示
-            if (panelRoot != null)
+            if (bubbleRoot != null)
             {
-                panelRoot.SetActive(false);
+                bubbleRoot.SetActive(false);
             }
         }
 
-        /// <summary>
-        /// アクション情報を表示
-        /// </summary>
-        /// <param name="action">表示するアクション</param>
-        public void Show(WifeActionModel action)
+        public void ShowResult(WifeActionModel wifeAction)
         {
-            if (action == null)
+            if (wifeAction == null)
             {
-                Hide();
                 return;
             }
 
-            if (panelRoot != null)
+            if (bubbleRoot != null)
             {
-                panelRoot.SetActive(true);
+                bubbleRoot.SetActive(true);
             }
 
-            UpdateContent(action);
-        }
-
-        /// <summary>
-        /// パネルを非表示にする
-        /// </summary>
-        public void Hide()
-        {
-            if (panelRoot != null)
+            if (resultText != null)
             {
-                panelRoot.SetActive(false);
+                resultText.text = BuildResultText(wifeAction);
             }
         }
 
-        /// <summary>
-        /// パネルの内容を更新
-        /// </summary>
-        private void UpdateContent(WifeActionModel action)
+        public void HideResult()
         {
-            // アクション名
-            if (actionNameText != null)
+            if (bubbleRoot != null)
             {
-                actionNameText.text = action.Name;
+                bubbleRoot.SetActive(false);
             }
+        }
 
-            // コスト（資金）
-            if (costMoneyText != null)
-            {
-                stringBuilder.Clear();
-                stringBuilder.Append("資金: ");
-                if (action.CashCost > 0)
-                {
-                    stringBuilder.Append("-");
-                }
-                stringBuilder.Append(action.CashCost.ToString("N0"));
-                stringBuilder.Append("円");
-                costMoneyText.text = stringBuilder.ToString();
-            }
+        private string BuildResultText(WifeActionModel wifeAction)
+        {
+            stringBuilder.Clear();
+            stringBuilder.Append(wifeAction.Name);
+            return stringBuilder.ToString();
         }
     }
 }

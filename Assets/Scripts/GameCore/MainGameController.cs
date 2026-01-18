@@ -48,13 +48,6 @@ namespace Ambition.GameCore
                 mainView.SubMenuController.OnBackPressed += OnSubMenuBackPressed;
             }
 
-            // アクションダイアログコントローラーのイベントを設定
-            if (mainView.ActionDialogController != null)
-            {
-                mainView.ActionDialogController.OnExecutePressed += OnActionExecutePressed;
-                mainView.ActionDialogController.OnBackPressed += OnActionDialogBackPressed;
-            }
-
             RefreshUI();
         }
 
@@ -143,10 +136,22 @@ namespace Ambition.GameCore
         private void OnActionSelectedFromSubMenu(WifeActionModel action)
         {
             Debug.Log($"行動選択: {action.Name}");
-            if (mainView.ActionDialogController != null)
+            pendingAction = action;
+
+            // サブメニューを閉じる
+            if (mainView.SubMenuController != null)
             {
-                mainView.ActionDialogController.Open(action);
+                mainView.SubMenuController.Close();
             }
+
+            // 確定ボタンを有効化
+            if (mainView.ConfirmButton != null)
+            {
+                mainView.ConfirmButton.interactable = true;
+            }
+
+            // 選択されたアクション情報を表示
+            mainView.UpdateSelectedAction(action);
         }
 
         /// <summary>
@@ -172,11 +177,6 @@ namespace Ambition.GameCore
             pendingAction = action;
 
             // ダイアログとサブメニューを閉じる
-            if (mainView.ActionDialogController != null)
-            {
-                mainView.ActionDialogController.Close();
-            }
-
             if (mainView.SubMenuController != null)
             {
                 mainView.SubMenuController.Close();
@@ -198,10 +198,6 @@ namespace Ambition.GameCore
         private void OnActionDialogBackPressed()
         {
             Debug.Log("アクションダイアログを閉じます");
-            if (mainView.ActionDialogController != null)
-            {
-                mainView.ActionDialogController.Close();
-            }
         }
 
         // --- 確定ボタン関連 ---
@@ -279,12 +275,6 @@ namespace Ambition.GameCore
                     mainView.SubMenuController.OnActionSelected -= OnActionSelectedFromSubMenu;
                     mainView.SubMenuController.OnBackPressed -= OnSubMenuBackPressed;
                     mainView.SubMenuController.OnActionConfirmed -= OnActionConfirmedFromSubMenu;
-                }
-
-                if (mainView.ActionDialogController != null)
-                {
-                    mainView.ActionDialogController.OnExecutePressed -= OnActionExecutePressed;
-                    mainView.ActionDialogController.OnBackPressed -= OnActionDialogBackPressed;
                 }
             }
         }

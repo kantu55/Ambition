@@ -73,7 +73,7 @@ namespace Ambition.UI
 
         [Header("Sub Controllers")]
         [SerializeField] private SubMenuController subMenuController;
-        [SerializeField] private ActionDialogController actionDialogController;
+        [SerializeField] private ActionFlowController actionFlowController;
 
         [Header("Preview UI")]
 
@@ -136,9 +136,9 @@ namespace Ambition.UI
         public SubMenuController SubMenuController => subMenuController;
 
         /// <summary>
-        /// アクションダイアログコントローラーへのアクセス
+        /// アクションフローコントローラーへのアクセス
         /// </summary>
-        public ActionDialogController ActionDialogController => actionDialogController;
+        public ActionFlowController ActionFlowController => actionFlowController;
 
         // --- MonoBehaviourコールバック ---
 

@@ -164,7 +164,6 @@ namespace Ambition.UI.Meal
                 mainGameView.UpdateSelectedMenu(menu);
             }
 
-
             // ここで実際の食事処理を実行する（コストの適用など）
             // 例: RuntimeFixedCostの更新、プレイヤーステータスへの効果適用など
             Debug.Log($"[MealFlowController] 食事を実行: {menu.MenuName}");
