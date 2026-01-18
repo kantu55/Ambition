@@ -58,35 +58,7 @@ namespace Ambition.UI.Meal
             int cost = food != null ? food.MonthlyCost : 0;
 
             stringBuilder.Clear();
-            stringBuilder.Append(menu.MenuName).Append("\n");
-            stringBuilder.Append("ティア: ").Append(menu.Tier).Append("\n");
-            stringBuilder.Append("食費: ").Append(cost).Append("\n");
-            stringBuilder.Append("\n");
-
-            const string effectHeader = "【効果】\n";
-            int effectHeaderStart = stringBuilder.Length;
-            stringBuilder.Append(effectHeader);
-
-            if (menu.MitigHP != 0)
-            {
-                stringBuilder.Append($"体力回復: {FormatChangeValue(menu.MitigHP)}\n");
-            }
-
-            if (menu.MitigMP != 0)
-            {
-                stringBuilder.Append($"精神回復: {FormatChangeValue(menu.MitigMP)}\n");
-            }
-
-            if (menu.MitigCOND != 0)
-            {
-                stringBuilder.Append($"調子改善: {FormatChangeValue(menu.MitigCOND)}\n");
-            }
-
-            if (stringBuilder.Length == effectHeaderStart + effectHeader.Length)
-            {
-                stringBuilder.Append("なし");
-            }
-
+            stringBuilder.Append(menu.MenuName);
             return stringBuilder.ToString();
         }
 

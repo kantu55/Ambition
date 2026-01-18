@@ -17,13 +17,7 @@ namespace Ambition.UI.Meal
     {
         [Header("UI Components")]
         [SerializeField] private GameObject panelRoot;
-        [SerializeField] private Transform tierButtonContainer;
         [SerializeField] private Button tierButtonPrefab;
-        [SerializeField] private Button backButton;
-
-        [Header("Food Expenses Panel")]
-        [SerializeField] private GameObject expensesPanelRoot;
-        [SerializeField] private TextMeshProUGUI expensesText;
 
         /// <summary>
         /// ティアが選択された時のコールバック
@@ -40,28 +34,9 @@ namespace Ambition.UI.Meal
 
         private void Awake()
         {
-            if (backButton != null)
-            {
-                backButton.onClick.AddListener(HandleBackPressed);
-            }
-
-            // 初期状態では非表示
             if (panelRoot != null)
             {
                 panelRoot.SetActive(false);
-            }
-
-            if (expensesPanelRoot != null)
-            {
-                expensesPanelRoot.SetActive(false);
-            }
-        }
-
-        private void OnDestroy()
-        {
-            if (backButton != null)
-            {
-                backButton.onClick.RemoveListener(HandleBackPressed);
             }
         }
 
@@ -80,9 +55,6 @@ namespace Ambition.UI.Meal
 
             // Tier 1-4 のボタンを生成
             CreateTierButtons(foodModels);
-
-            // 食費情報を表示
-            ShowExpenses(fixedCost);
         }
 
         /// <summary>
@@ -95,11 +67,6 @@ namespace Ambition.UI.Meal
                 panelRoot.SetActive(false);
             }
 
-            if (expensesPanelRoot != null)
-            {
-                expensesPanelRoot.SetActive(false);
-            }
-
             ClearButtons();
         }
 
@@ -108,7 +75,7 @@ namespace Ambition.UI.Meal
         /// </summary>
         private void CreateTierButtons(List<FoodModel> foodModels)
         {
-            if (tierButtonPrefab == null || tierButtonContainer == null)
+            if (tierButtonPrefab == null || panelRoot == null)
             {
                 Debug.LogWarning("[MealTierPanel] tierButtonPrefab or tierButtonContainer is null");
                 return;
@@ -130,7 +97,7 @@ namespace Ambition.UI.Meal
         /// </summary>
         private void CreateTierButton(string tier, List<FoodModel> foodModels)
         {
-            Button button = Instantiate(tierButtonPrefab, tierButtonContainer);
+            Button button = Instantiate(tierButtonPrefab, panelRoot.transform);
             instantiatedButtons.Add(button);
 
             // ボタンのテキストを設定
@@ -154,40 +121,11 @@ namespace Ambition.UI.Meal
         }
 
         /// <summary>
-        /// 食費情報を表示
-        /// </summary>
-        private void ShowExpenses(RuntimeFixedCost fixedCost)
-        {
-            if (expensesPanelRoot != null)
-            {
-                expensesPanelRoot.SetActive(true);
-            }
-
-            if (expensesText != null && fixedCost != null)
-            {
-                stringBuilder.Clear();
-                stringBuilder.Append("【食費】\n");
-                stringBuilder.Append("現在の食費: ¥");
-                stringBuilder.Append(fixedCost.FoodCost.ToString("N0"));
-                stringBuilder.Append(" / 月");
-                expensesText.text = stringBuilder.ToString();
-            }
-        }
-
-        /// <summary>
         /// ティアが選択された時の処理
         /// </summary>
         private void HandleTierSelected(string tier)
         {
             OnTierSelected?.Invoke(tier);
-        }
-
-        /// <summary>
-        /// 戻るボタンが押された時の処理
-        /// </summary>
-        private void HandleBackPressed()
-        {
-            OnBackPressed?.Invoke();
         }
 
         /// <summary>

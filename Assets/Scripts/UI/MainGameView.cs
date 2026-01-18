@@ -71,14 +71,6 @@ namespace Ambition.UI
         [Header("Confirm Button")]
         [SerializeField] private Button confirmButton;
 
-        [Header("Action Info Panels")]
-        [SerializeField] private ActionInfoPanel actionInfoCare;
-        [SerializeField] private ActionInfoPanel actionInfoSupport;
-        [SerializeField] private ActionInfoPanel actionInfoSNS;
-        [SerializeField] private ActionInfoPanel actionInfoDiscipline;
-        [SerializeField] private ActionInfoPanel actionInfoTalk;
-        [SerializeField] private ActionInfoPanel actionInfoRest;
-
         [Header("Sub Controllers")]
         [SerializeField] private SubMenuController subMenuController;
         [SerializeField] private ActionDialogController actionDialogController;
@@ -207,9 +199,6 @@ namespace Ambition.UI
         {
             if (action == null)
             {
-                // すべてのアクション情報パネルを非表示
-                HideAllActionInfo();
-
                 cachedActionDeltaHP = 0;
                 cachedActionDeltaMP = 0;
                 cachedActionDeltaCond = 0;
@@ -218,16 +207,6 @@ namespace Ambition.UI
                 cachedActionDeltaPublicEye = 0;
                 cachedActionDeltaAbility = 0;
                 return;
-            }
-
-            // まず全て非表示
-            HideAllActionInfo();
-
-            // アクションのカテゴリに応じて対応するパネルを表示
-            ActionInfoPanel targetPanel = GetActionInfoPanelForCategory(action.GetMainCategory());
-            if (targetPanel != null)
-            {
-                targetPanel.Show(action);
             }
 
             cachedActionDeltaHP += action.DeltaHP;
@@ -521,66 +500,6 @@ namespace Ambition.UI
             stringBuilder.Append("当年契約: ¥");
             stringBuilder.Append(husband.Salary.ToString("N0"));
             salaryText.SetText(stringBuilder);
-        }
-
-        /// <summary>
-        /// アクションのカテゴリに対応するアクション情報パネルを取得
-        /// </summary>
-        private ActionInfoPanel GetActionInfoPanelForCategory(WifeActionModel.ActionMainCategory category)
-        {
-            switch (category)
-            {
-                case WifeActionModel.ActionMainCategory.CARE:
-                    return actionInfoCare;
-                case WifeActionModel.ActionMainCategory.SUPPORT:
-                    return actionInfoSupport;
-                case WifeActionModel.ActionMainCategory.SNS:
-                    return actionInfoSNS;
-                case WifeActionModel.ActionMainCategory.DISCIPLINE:
-                    return actionInfoDiscipline;
-                case WifeActionModel.ActionMainCategory.TALK:
-                    return actionInfoTalk;
-                case WifeActionModel.ActionMainCategory.REST:
-                    return actionInfoRest;
-                default:
-                    return null;
-            }
-        }
-
-        /// <summary>
-        /// すべてのアクション情報パネルを非表示にする
-        /// </summary>
-        private void HideAllActionInfo()
-        {
-            if (actionInfoCare != null)
-            {
-                actionInfoCare.Hide();
-            }
-
-            if (actionInfoSupport != null)
-            {
-                actionInfoSupport.Hide();
-            }
-
-            if (actionInfoSNS != null)
-            {
-                actionInfoSNS.Hide();
-            }
-
-            if (actionInfoDiscipline != null)
-            {
-                actionInfoDiscipline.Hide();
-            }
-
-            if (actionInfoTalk != null)
-            {
-                actionInfoTalk.Hide();
-            }
-
-            if (actionInfoRest != null)
-            {
-                actionInfoRest.Hide();
-            }
         }
 
         private void UpdateWifeInfo(RuntimeWifeStatus wife)

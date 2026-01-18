@@ -1,22 +1,15 @@
 using Ambition.DataStructures;
 using System;
-using System.Collections.Generic;
-using TMPro;
 using UnityEngine;
-using UnityEngine.UI;
 
 namespace Ambition.UI
 {
     /// <summary>
     /// サブメニュー（行動リスト）を表示・管理するコントローラー
     /// </summary>
-    public class SubMenuController : MonoBehaviour
+    public class SubMenuController : DetailPanelController<WifeActionModel>
     {
-        [Header("UI Components")]
-        [SerializeField] private GameObject menuPanel;
-        [SerializeField] private Transform contentContainer;
-        [SerializeField] private Button itemButtonPrefab;
-        [SerializeField] private Button backButton;
+        [SerializeField] MainGameView mainGameView;
 
         /// <summary>
         /// 行動が選択された時のコールバック
@@ -24,120 +17,101 @@ namespace Ambition.UI
         public event Action<WifeActionModel> OnActionSelected;
 
         /// <summary>
-        /// 戻るボタンが押された時のコールバック
+        /// 行動が確定された時のコールバック
         /// </summary>
-        public event Action OnBackPressed;
+        public event Action<WifeActionModel> OnActionConfirmed;
 
-        private List<Button> instantiatedButtons = new List<Button>();
-
-        private void Awake()
+        protected override void Awake()
         {
-            if (backButton != null)
-            {
-                backButton.onClick.AddListener(HandleBackPressed);
-            }
+            base.Awake();
 
-            // 初期状態では非表示
-            if (menuPanel != null)
-            {
-                menuPanel.SetActive(false);
-            }
+            // 基底クラスのイベントを新イベントにブリッジ
+            OnItemSelected += (action) => OnActionSelected?.Invoke(action);
+            OnItemConfirmed += (action) => OnActionConfirmed?.Invoke(action);
         }
+
 
         /// <summary>
-        /// サブメニューを開き、指定されたカテゴリの行動リストを表示
+        /// 行動を選択して詳細パネルを更新
         /// </summary>
-        public void Open(List<WifeActionModel> actions)
+        public void SelectAction(WifeActionModel action)
         {
-            if (menuPanel != null)
-            {
-                menuPanel.SetActive(true);
-            }
-
-            // 既存のボタンをクリア
-            ClearButtons();
-
-            // 行動リストからボタンを生成
-            foreach (var action in actions)
-            {
-                CreateActionButton(action);
-            }
+            SelectItem(action);
         }
 
-        /// <summary>
-        /// サブメニューを閉じる
-        /// </summary>
-        public void Close()
+        protected override string GetItemName(WifeActionModel action)
         {
-            if (menuPanel != null)
+            return action.Name;
+        }
+
+        protected override string BuildCostText(WifeActionModel action)
+        {
+            stringBuilder.Clear();
+            stringBuilder.Append(COST_HEADER);
+
+            if (action.CashCost != 0)
             {
-                menuPanel.SetActive(false);
+                stringBuilder.Append($"資金: {action.CashCost:N0}{CURRENCY_UNIT}\n");
             }
 
-            ClearButtons();
-        }
-
-        /// <summary>
-        /// 行動選択ボタンを生成
-        /// </summary>
-        private void CreateActionButton(WifeActionModel action)
-        {
-            if (itemButtonPrefab == null || contentContainer == null)
+            if (stringBuilder.Length == COST_HEADER.Length)
             {
-                return;
+                stringBuilder.Append(NONE_TEXT);
             }
 
-            Button button = Instantiate(itemButtonPrefab, contentContainer);
-            instantiatedButtons.Add(button);
+            return stringBuilder.ToString();
+        }
 
-            // ボタンのテキストを設定
-            TextMeshProUGUI buttonText = button.GetComponentInChildren<TextMeshProUGUI>();
-            if (buttonText != null)
+        protected override string BuildEffectsText(WifeActionModel action)
+        {
+            stringBuilder.Clear();
+            stringBuilder.Append(EFFECTS_HEADER);
+            if (action.DeltaHP != 0)
             {
-                buttonText.text = action.Name;
+                stringBuilder.Append($"体力: {FormatChangeValue(action.DeltaHP)}\n");
             }
-
-            // クリックイベントを設定
-            button.onClick.AddListener(() => HandleActionSelected(action));
-        }
-
-        /// <summary>
-        /// 行動が選択された時の処理
-        /// </summary>
-        private void HandleActionSelected(WifeActionModel action)
-        {
-            OnActionSelected?.Invoke(action);
-        }
-
-        /// <summary>
-        /// 戻るボタンが押された時の処理
-        /// </summary>
-        private void HandleBackPressed()
-        {
-            OnBackPressed?.Invoke();
-        }
-
-        /// <summary>
-        /// 生成されたボタンをすべて削除
-        /// </summary>
-        private void ClearButtons()
-        {
-            foreach (var button in instantiatedButtons)
+            if (action.DeltaMP != 0)
             {
-                if (button != null)
-                {
-                    Destroy(button.gameObject);
-                }
+                stringBuilder.Append($"精神: {FormatChangeValue(action.DeltaMP)}\n");
             }
-
-            instantiatedButtons.Clear();
+            if (action.DeltaCOND != 0)
+            {
+                stringBuilder.Append($"調子: {FormatChangeValue(action.DeltaCOND)}\n");
+            }
+            if (action.DeltaLove != 0)
+            {
+                stringBuilder.Append($"夫婦仲: {FormatChangeValue(action.DeltaLove)}\n");
+            }
+            if (action.DeltaPublicEye != 0)
+            {
+                stringBuilder.Append($"世間の目: {FormatChangeValue(action.DeltaPublicEye)}\n");
+            }
+            if (action.DeltaTeamEvaluation != 0)
+            {
+                stringBuilder.Append($"チーム評価: {FormatChangeValue(action.DeltaTeamEvaluation)}\n");
+            }
+            if (stringBuilder.Length == EFFECTS_HEADER.Length)
+            {
+                stringBuilder.Append(NONE_TEXT);
+            }
+            return stringBuilder.ToString();
         }
 
-        private void OnDestroy()
+        protected override void UpdateItemImage(WifeActionModel action)
         {
-            if (backButton != null)
+            // 画像（将来的に実装される場合のため）
+            // if (detailImage != null)
+            // {
+            //     detailImage.sprite = action.Image;
+            // }
+        }
+
+        protected override void ShowPreview(WifeActionModel action)
+        {
+            // プレビュー表示
+            if (mainGameView != null)
             {
-                backButton.onClick.RemoveListener(HandleBackPressed);
+                mainGameView.ShowPreview(action.DeltaHP, action.DeltaMP, action.DeltaTeamEvaluation, action.DeltaLove, action.DeltaPublicEye);
             }
         }
     }

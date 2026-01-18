@@ -1,7 +1,9 @@
 ﻿using Ambition.DataStructures;
 using Ambition.GameCore;
 using Ambition.RuntimeData;
+using System;
 using System.Collections.Generic;
+using System.Text;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -17,12 +19,9 @@ namespace Ambition.UI.Meal
 
         [Header("UI Panels")]
         [SerializeField] private MealTierPanel tierPanel;
-        [SerializeField] private MealSelectionPanel selectionPanel;
+        [SerializeField] private MealDetailPanelController mealDetailPanel;
         [SerializeField] private MealConfirmPanel confirmPanel;
         [SerializeField] private MealResultBubble resultBubble;
-
-        [Header("Main Button")]
-        [SerializeField] private Button mealMenuButton;
 
         private RuntimeFixedCost runtimeFixedCost;
         private List<FoodModel> foodModels;
@@ -39,71 +38,41 @@ namespace Ambition.UI.Meal
             Hidden,
             TierSelection,
             MenuSelection,
-            Confirmation
         }
 
         private MealFlowState currentState = MealFlowState.Hidden;
 
         private void Awake()
         {
-            // ボタンのイベントリスナー登録
-            if (mealMenuButton != null)
-            {
-                mealMenuButton.onClick.AddListener(OnMealMenuButtonClicked);
-            }
+            Initialize();
 
             // パネルのイベントリスナー登録
             if (tierPanel != null)
             {
                 tierPanel.OnTierSelected += OnTierSelected;
-                tierPanel.OnBackPressed += OnTierBackPressed;
             }
 
-            if (selectionPanel != null)
+            if (mealDetailPanel != null)
             {
-                selectionPanel.OnMenuSelected += OnMenuSelected;
-                selectionPanel.OnBackPressed += OnSelectionBackPressed;
-            }
-
-            if (confirmPanel != null)
-            {
-                confirmPanel.OnConfirmPressed += OnConfirmPressed;
-                confirmPanel.OnBackPressed += OnConfirmBackPressed;
+                mealDetailPanel.OnMenuSelected += OnMenuConfirmed;
+                mealDetailPanel.OnBackPressed += OnSelectionBackPressed;
             }
 
             // 初期状態では全て非表示
             HideAllPanels();
         }
 
-        private void Start()
-        {
-            Initialize();
-        }
-
         private void OnDestroy()
         {
-            // イベントリスナーのクリーンアップ
-            if (mealMenuButton != null)
-            {
-                mealMenuButton.onClick.RemoveListener(OnMealMenuButtonClicked);
-            }
-
             if (tierPanel != null)
             {
                 tierPanel.OnTierSelected -= OnTierSelected;
-                tierPanel.OnBackPressed -= OnTierBackPressed;
             }
 
-            if (selectionPanel != null)
+            if (mealDetailPanel != null)
             {
-                selectionPanel.OnMenuSelected -= OnMenuSelected;
-                selectionPanel.OnBackPressed -= OnSelectionBackPressed;
-            }
-
-            if (confirmPanel != null)
-            {
-                confirmPanel.OnConfirmPressed -= OnConfirmPressed;
-                confirmPanel.OnBackPressed -= OnConfirmBackPressed;
+                mealDetailPanel.OnMenuSelected -= OnMenuConfirmed;
+                mealDetailPanel.OnBackPressed -= OnSelectionBackPressed;
             }
         }
 
@@ -132,13 +101,6 @@ namespace Ambition.UI.Meal
                 foodModels = new List<FoodModel>();
                 foodMitModels = new List<FoodMitModel>();
             }
-        }
-
-        /// <summary>
-        /// "食事メニュー"ボタンがクリックされた時の処理
-        /// </summary>
-        private void OnMealMenuButtonClicked()
-        {
             ShowTierSelection();
         }
 
@@ -153,6 +115,7 @@ namespace Ambition.UI.Meal
 
             if (tierPanel != null)
             {
+                tierPanel.gameObject.SetActive(true);
                 tierPanel.Show(foodModels, runtimeFixedCost);
             }
         }
@@ -167,16 +130,6 @@ namespace Ambition.UI.Meal
         }
 
         /// <summary>
-        /// ティア選択画面で"戻る"ボタンが押された時の処理
-        /// </summary>
-        private void OnTierBackPressed()
-        {
-            // ホームに戻る（全パネルを非表示にする）
-            HideAllPanels();
-            currentState = MealFlowState.Hidden;
-        }
-
-        /// <summary>
         /// ②食事_メニュー選択 を表示
         /// </summary>
         private void ShowMenuSelection(string tier)
@@ -185,52 +138,21 @@ namespace Ambition.UI.Meal
 
             HideAllPanels();
 
-            if (selectionPanel != null)
+            if (mealDetailPanel != null)
             {
                 // 選択されたティアのメニューのみをフィルタリング
                 List<FoodMitModel> menusForTier = foodMitModels.FindAll(m => m.Tier == tier);
-                selectionPanel.Show(menusForTier);
+                mealDetailPanel.Show(menusForTier);
             }
         }
 
         /// <summary>
         /// メニューが選択された時の処理
         /// </summary>
-        private void OnMenuSelected(FoodMitModel menu)
+        private void OnMenuConfirmed(FoodMitModel menu)
         {
             currentSelectedMenu = menu;
-            ShowConfirmation(menu);
-        }
 
-        /// <summary>
-        /// メニュー選択画面で"戻る"ボタンが押された時の処理
-        /// </summary>
-        private void OnSelectionBackPressed()
-        {
-            // ティア選択に戻る
-            ShowTierSelection();
-        }
-
-        /// <summary>
-        /// ③食事_確認ダイアログ を表示
-        /// </summary>
-        private void ShowConfirmation(FoodMitModel menu)
-        {
-            currentState = MealFlowState.Confirmation;
-
-            HideAllPanels();
-
-            if (confirmPanel != null)
-            {
-                confirmPanel.Show(menu);
-            }
-        }
-
-        /// <summary>
-        /// 確認画面で"確認"ボタンが押された時の処理
-        /// </summary>
-        private void OnConfirmPressed(FoodMitModel menu)
-        {
             // 結果バブルを表示
             if (resultBubble != null)
             {
@@ -255,10 +177,8 @@ namespace Ambition.UI.Meal
         /// <summary>
         /// 確認画面で"戻る"ボタンが押された時の処理
         /// </summary>
-        private void OnConfirmBackPressed()
+        private void OnSelectionBackPressed()
         {
-            // メニュー選択に戻る
-            ShowMenuSelection(currentSelectedTier);
         }
 
         /// <summary>
@@ -266,14 +186,9 @@ namespace Ambition.UI.Meal
         /// </summary>
         private void HideAllPanels()
         {
-            if (tierPanel != null)
+            if (mealDetailPanel != null)
             {
-                tierPanel.Hide();
-            }
-
-            if (selectionPanel != null)
-            {
-                selectionPanel.Hide();
+                mealDetailPanel.Hide();
             }
 
             if (confirmPanel != null)
