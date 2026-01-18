@@ -1,5 +1,7 @@
 ﻿using Ambition.Data.Master;
 using Ambition.Data.Runtime;
+using Ambition.Core.Config;
+using Ambition.Core.Constants;
 using Cysharp.Threading.Tasks;
 using System.IO;
 using UnityEngine;
@@ -130,7 +132,7 @@ namespace Ambition.GameCore
             this.husband = new RuntimePlayerStatus(playerMaster);
             this.wife = new RuntimeWifeStatus(wifeMaster);
             this.environment = new RuntimeEnvironmentStatus(initialHouseId);
-            int initialMoney = GameSettings.GetInt("Initial_Money", 1000000);
+            int initialMoney = GameSettings.GetInt(SettingKeys.InitialMoney, 1000000);
             this.budget = new RuntimeHouseholdBudget(initialMoney);
             this.date = new RuntimeDate(1, 3);
             this.reputation = new RuntimeReputation();
