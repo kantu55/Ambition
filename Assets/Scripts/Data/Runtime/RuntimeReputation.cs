@@ -1,7 +1,7 @@
-﻿using Ambition.DataStructures;
+﻿using Ambition.Data.Master;
 using UnityEngine;
 
-namespace Ambition.RuntimeData
+namespace Ambition.Data.Runtime
 {
     [System.Serializable]
     public class RuntimeReputation

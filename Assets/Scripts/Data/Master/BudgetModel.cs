@@ -1,7 +1,7 @@
-﻿using Ambition.Utility;
+﻿using Ambition.Utils;
 using System;
 
-namespace Ambition.DataStructures
+namespace Ambition.Data.Master
 {
     /// <summary>
     /// 家計の初期ステータス定義

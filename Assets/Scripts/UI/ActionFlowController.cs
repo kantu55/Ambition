@@ -1,4 +1,4 @@
-using Ambition.DataStructures;
+using Ambition.Data.Master;
 using UnityEngine;
 
 namespace Ambition.UI

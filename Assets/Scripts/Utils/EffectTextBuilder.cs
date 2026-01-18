@@ -1,6 +1,6 @@
 ﻿using System.Text;
 
-namespace Ambition.Utility
+namespace Ambition.Utils
 {
     public static class EffectTextBuilder
     {

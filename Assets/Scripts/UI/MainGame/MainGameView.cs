@@ -1,6 +1,6 @@
-﻿using Ambition.DataStructures;
-using Ambition.GameCore;
-using Ambition.RuntimeData;
+﻿using Ambition.Data.Master;
+using Ambition.Core.Managers;
+using Ambition.Data.Runtime;
 using Cysharp.Threading.Tasks;
 using System.Text;
 using System.Threading;
@@ -9,7 +9,7 @@ using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.UI;
 
-namespace Ambition.UI
+namespace Ambition.UI.MainGame
 {
     /// <summary>
     /// メイン画面のUI表示を管理するクラス

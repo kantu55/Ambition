@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Ambition.DataStructures
+namespace Ambition.Data.Master
 {
     /// <summary>
     /// セーブファイルに記録されるデータ構造

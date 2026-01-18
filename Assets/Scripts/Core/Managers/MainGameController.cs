@@ -1,8 +1,8 @@
-﻿using Ambition.DataStructures;
+﻿using Ambition.Data.Master;
 using Ambition.UI;
 using UnityEngine;
 
-namespace Ambition.GameCore
+namespace Ambition.Core.Managers
 {
     /// <summary>
     /// メイン画面のロジックを制御するコントローラー

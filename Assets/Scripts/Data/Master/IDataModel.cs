@@ -1,6 +1,6 @@
-﻿using Ambition.Utility;
+﻿using Ambition.Utils;
 
-namespace Ambition.DataStructures
+namespace Ambition.Data.Master
 {
     /// <summary>
     /// 全てのCSVベースのデータモデルが実装すべきインターフェース

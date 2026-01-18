@@ -1,5 +1,5 @@
-﻿using Ambition.DataStructures;
-using Ambition.Utility;
+﻿using Ambition.Data.Master;
+using Ambition.Utils;
 using Cysharp.Threading.Tasks;
 using System;
 using System.Collections;
@@ -8,7 +8,7 @@ using System.Linq;
 using UnityEngine;
 using UnityEngine.AddressableAssets;
 
-namespace Ambition.GameCore
+namespace Ambition.Core.Managers
 {
     /// <summary>
     /// ゲームで使用する全ての静的データ（CSVデータなど）を管理・保持するクラス

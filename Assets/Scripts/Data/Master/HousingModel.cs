@@ -1,8 +1,8 @@
 ﻿
-using Ambition.Utility;
+using Ambition.Utils;
 using System;
 
-namespace Ambition.DataStructures
+namespace Ambition.Data.Master
 {
     /// <summary>
     /// 物件データの定義（CSV読み込み用）

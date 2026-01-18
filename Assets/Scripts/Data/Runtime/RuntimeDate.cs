@@ -1,7 +1,7 @@
 ﻿using UnityEngine.Rendering;
-using Ambition.DataStructures;
+using Ambition.Data.Master;
 
-namespace Ambition.RuntimeData
+namespace Ambition.Data.Runtime
 {
     [System.Serializable]
     public class RuntimeDate

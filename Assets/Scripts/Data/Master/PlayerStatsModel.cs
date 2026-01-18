@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
-using Ambition.Utility;
+using Ambition.Utils;
 
-namespace Ambition.DataStructures
+namespace Ambition.Data.Master
 {
     /// <summary>
     /// プロ野球選手（夫）の基礎能力値と情報を格納するデータモデル

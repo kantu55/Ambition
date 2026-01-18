@@ -1,8 +1,8 @@
 ﻿using UnityEngine;
 using System.Collections.Generic;
-using Ambition.DataStructures;
+using Ambition.Data.Master;
 
-namespace Ambition.GameCore
+namespace Ambition.Core.Config
 {
     /// <summary>
     /// GameSettingsデータを辞書化し、コード内のどこからでも

@@ -1,8 +1,8 @@
-﻿using Ambition.DataStructures;
+﻿using Ambition.Data.Master;
 using System;
 using UnityEngine;
 
-namespace Ambition.RuntimeData
+namespace Ambition.Data.Runtime
 {
     [Serializable]
     public class RuntimeWifeStatus

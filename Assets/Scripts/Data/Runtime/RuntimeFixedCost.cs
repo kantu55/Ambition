@@ -1,8 +1,8 @@
-﻿using Ambition.DataStructures;
-using Ambition.GameCore;
+﻿using Ambition.Data.Master;
+using Ambition.Core.Config;
 using System;
 
-namespace Ambition.RuntimeData
+namespace Ambition.Data.Runtime
 {
     [Serializable]
 	public class RuntimeFixedCost

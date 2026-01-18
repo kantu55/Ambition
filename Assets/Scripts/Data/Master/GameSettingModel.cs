@@ -1,8 +1,8 @@
 ﻿using UnityEngine;
 using UnityEditor;
-using Ambition.Utility;
+using Ambition.Utils;
 
-namespace Ambition.DataStructures
+namespace Ambition.Data.Master
 {
     /// <summary>
     /// ゲーム内の定数や設定値を定義するモデル

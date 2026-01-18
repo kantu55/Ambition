@@ -1,8 +1,8 @@
-﻿using Ambition.DataStructures;
+﻿using Ambition.Data.Master;
 using System;
 using UnityEngine;
 
-namespace Ambition.GameCore
+namespace Ambition.Data.Runtime
 {
     /// <summary>
     /// ゲーム実行中に変動する選手のステータスを管理するクラス

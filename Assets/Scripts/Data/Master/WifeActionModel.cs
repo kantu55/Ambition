@@ -1,13 +1,13 @@
-using Ambition.Utility;
+using Ambition.Utils;
 using System;
 
-namespace Ambition.DataStructures
+namespace Ambition.Data.Master
 {
     [Serializable]
     public class WifeActionModel : IDataModel
     {
         /// <summary>
-        /// ƒAƒNƒVƒ‡ƒ“‚ÌƒƒCƒ“ƒJƒeƒSƒŠi‘å€–Új
+        /// ï¿½Aï¿½Nï¿½Vï¿½ï¿½ï¿½ï¿½ï¿½Ìƒï¿½ï¿½Cï¿½ï¿½ï¿½Jï¿½eï¿½Sï¿½ï¿½ï¿½iï¿½å€ï¿½Új
         /// </summary>
         public enum ActionMainCategory
         {
@@ -20,17 +20,17 @@ namespace Ambition.DataStructures
             TALK,
         }
 
-        // --- ƒƒ“ƒo•Ï” ---
+        // --- ï¿½ï¿½ï¿½ï¿½ï¿½oï¿½Ïï¿½ ---
         private int id;
         private string actionId;
         private string name;
         private string tag;
         private string req;
 
-        // ƒRƒXƒg
+        // ï¿½Rï¿½Xï¿½g
         private int cashCost;
 
-        // •v‚Ö‚ÌŒø‰Ê
+        // ï¿½vï¿½Ö‚ÌŒï¿½ï¿½ï¿½
         private int deltaHP;
         private int deltaMP;
         private int deltaCOND;
@@ -38,15 +38,15 @@ namespace Ambition.DataStructures
         private int deltaPublicEye;
         private int deltaTeamEvaluation;
 
-        // ¬’·•â³
+        // ï¿½ï¿½ï¿½ï¿½ï¿½â³
         private float growthAdd;
         private float growthMul;
 
-        // ‚»‚Ì‘¼
+        // ï¿½ï¿½ï¿½Ì‘ï¿½
         private string successModel;
         private string note;
 
-        // --- ƒvƒƒpƒeƒB ---
+        // --- ï¿½vï¿½ï¿½ï¿½pï¿½eï¿½B ---
         public int Id => id;
         public string ActionId => actionId;
         public string Name => name;

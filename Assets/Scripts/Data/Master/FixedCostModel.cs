@@ -1,8 +1,8 @@
 ﻿using UnityEngine;
 using UnityEditor;
-using Ambition.Utility;
+using Ambition.Utils;
 
-namespace Ambition.DataStructures
+namespace Ambition.Data.Master
 {
 	public class FixedCostModel : IDataModel
 	{
