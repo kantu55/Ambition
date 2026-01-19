@@ -1,5 +1,5 @@
-﻿using Ambition.Data.Master;
-using Ambition.Core.Config;
+﻿using Ambition.Core.Config;
+using Ambition.Data.Master;
 using System;
 
 namespace Ambition.Data.Runtime
