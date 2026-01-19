@@ -1,4 +1,5 @@
-﻿using Ambition.DataStructures;
+﻿using Ambition.Data.Master;
+using Ambition.UI.MainGame;
 
 namespace Ambition.UI.Meal
 {

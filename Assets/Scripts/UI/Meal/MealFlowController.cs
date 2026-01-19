@@ -1,11 +1,9 @@
-﻿using Ambition.DataStructures;
-using Ambition.GameCore;
-using Ambition.RuntimeData;
-using System;
+﻿using Ambition.Core.Managers;
+using Ambition.Data.Master;
+using Ambition.Data.Runtime;
+using Ambition.UI.MainGame;
 using System.Collections.Generic;
-using System.Text;
 using UnityEngine;
-using UnityEngine.UI;
 
 namespace Ambition.UI.Meal
 {

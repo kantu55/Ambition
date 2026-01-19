@@ -1,5 +1,5 @@
-﻿using Ambition.DataStructures;
-using Ambition.RuntimeData;
+﻿using Ambition.Data.Master;
+using Ambition.Data.Runtime;
 using System;
 using System.Collections.Generic;
 using System.Text;

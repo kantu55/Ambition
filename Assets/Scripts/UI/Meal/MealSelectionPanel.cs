@@ -1,10 +1,9 @@
-﻿using Ambition.DataStructures;
-using Ambition.GameCore;
+﻿using Ambition.Data.Master;
+using Ambition.UI.MainGame;
 using System;
 using System.Collections.Generic;
 using System.Text;
 using TMPro;
-using UnityEditor;
 using UnityEngine;
 using UnityEngine.UI;
 

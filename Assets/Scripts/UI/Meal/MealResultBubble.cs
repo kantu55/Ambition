@@ -1,5 +1,5 @@
-﻿using Ambition.DataStructures;
-using Ambition.GameCore;
+﻿using Ambition.Core.Managers;
+using Ambition.Data.Master;
 using System.Linq;
 using System.Text;
 using TMPro;
