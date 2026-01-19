@@ -1,4 +1,5 @@
 ﻿using Ambition.Core.Config;
+using Ambition.Core.Constants;
 using Ambition.Data.Master;
 using System;
 
@@ -60,7 +61,7 @@ namespace Ambition.Data.Runtime
         /// <param name="annualSalary">年俸</param>
         public void UpdateTax(int annualSalary)
         {
-            float taxRate = GameSettings.GetFloat("Tax_Rate", 0.3f);
+            float taxRate = GameSettings.GetFloat(SettingKeys.TaxRate, 0.3f);
             int estimatedAnnualTax = (int)(annualSalary * taxRate);
             Tax = estimatedAnnualTax / 12;
         }
@@ -81,7 +82,7 @@ namespace Ambition.Data.Runtime
             int cost = 0;
 
             // CSVから単価を取得
-            int costGym = GameSettings.GetInt("Cost_Maint_Gym", 5000);
+            int costGym = GameSettings.GetInt(SettingKeys.CostMaintGym, 5000);
 
             // 設備のレベルに応じて維持費がかかる設定
             cost += environmentStatus.GymLevel * costGym;
@@ -98,7 +99,7 @@ namespace Ambition.Data.Runtime
         public void RecalculateFoodCost(int rank)
         {
             // 動的にキーを生成 (例: Cost_Food_Lv1)
-            string key = $"Cost_Food_Lv{rank}";
+            string key = $"{SettingKeys.CostFoodPrefix}{rank}";
 
             // デフォルト値は 1万 (Lv0相当)
             int cost = GameSettings.GetInt(key, 10000);
