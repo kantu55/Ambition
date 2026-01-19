@@ -1,6 +1,7 @@
 ﻿using Ambition.Data.Master;
 using Ambition.Data.Runtime;
 using Ambition.GameCore;
+using Ambition.UI.MainGame.Parts;
 using Cysharp.Threading.Tasks;
 using System.Text;
 using System.Threading;
@@ -39,26 +40,15 @@ namespace Ambition.UI.MainGame
         [SerializeField] private TextMeshProUGUI dateText;
         [SerializeField] private TextMeshProUGUI totalMoneyText;
         [SerializeField] private TextMeshProUGUI fixedCostText;
-        [SerializeField] private TextMeshProUGUI salaryText;
 
         [Header("Reputation UI")]
         [SerializeField] private TextMeshProUGUI loveText;
         [SerializeField] private TextMeshProUGUI teamEvaluationText;
         [SerializeField] private TextMeshProUGUI publicEyeText;
 
-        [Header("Husband UI")]
-        [SerializeField] private Slider husbandHealthSlider;
-        [SerializeField] private Slider husbandMentalSlider;
-        [SerializeField] private TextMeshProUGUI husbandHealthText;
-        [SerializeField] private TextMeshProUGUI husbandMentalText;
-        [SerializeField] private TextMeshProUGUI husbandAgeText;
-        [SerializeField] private TextMeshProUGUI husbandAbilityText;
-
-        [Header("Wife UI")]
-        [SerializeField] private TextMeshProUGUI wifeCookingLevelText;
-        [SerializeField] private TextMeshProUGUI wifeCareLevelText;
-        [SerializeField] private TextMeshProUGUI wifePRLevelText;
-        [SerializeField] private TextMeshProUGUI wifeCaochLevelText;
+        [Header("Status Views")]
+        [SerializeField] private HusbandStatusView husbandStatusView;
+        [SerializeField] private WifeStatusView wifeStatusView;
 
         [Header("Command Buttons")]
         [SerializeField] private Button buttonCare;
@@ -147,6 +137,11 @@ namespace Ambition.UI.MainGame
             StopBlinking();
         }
 
+        private void Start()
+        {
+            HidePreview();
+        }
+
         // --- 公開メソッド ---
 
         /// <summary>
@@ -186,9 +181,16 @@ namespace Ambition.UI.MainGame
         public void RefreshView(RuntimeDate date, RuntimeHouseholdBudget budget, RuntimePlayerStatus husband, RuntimeWifeStatus wife, RuntimeReputation reputation)
         {
             UpdateGlobalInfo(date, budget);
-            UpdateHusbandInfo(husband);
-            UpdateWifeInfo(wife);
             UpdateEvaluationInfo(reputation);
+            if (husbandStatusView != null)
+            {
+                husbandStatusView.UpdateHusbandInfo(husband);
+            }
+
+            if (wifeStatusView != null)
+            {
+                wifeStatusView.UpdateWifeInfo(wife);
+            }
         }
 
         /// <summary>
@@ -247,21 +249,24 @@ namespace Ambition.UI.MainGame
             int totalDeltaLove = cachedActionDeltaLove + deltaLove;
             int totalDeltaPublicEye = cachedActionDeltaPublicEye + deltaPublicEye;
 
-            UpdatePreviewSlider(
-                husbandHealthSlider,
-                husbandHealthPreviewSlider,
-                husbandHealthPreviewText,
-                currentStatus.CurrentHealth,
-                currentStatus.MAX_HEALTH,
-                totalDeltaHP);
+            if (husbandStatusView != null)
+            {
+                UpdatePreviewSlider(
+                    husbandStatusView.HealthSlider,
+                    husbandHealthPreviewSlider,
+                    husbandHealthPreviewText,
+                    currentStatus.CurrentHealth,
+                    currentStatus.MAX_HEALTH,
+                    totalDeltaHP);
 
-            UpdatePreviewSlider(
-                husbandMentalSlider,
-                husbandMentalPreviewSlider,
-                husbandMentalPreviewText,
-                currentStatus.CurrentMental,
-                currentStatus.MAX_MENTAL,
-                totalDeltaMP);
+                UpdatePreviewSlider(
+                    husbandStatusView.MentalSlider,
+                    husbandMentalPreviewSlider,
+                    husbandMentalPreviewText,
+                    currentStatus.CurrentMental,
+                    currentStatus.MAX_MENTAL,
+                    totalDeltaMP);
+            }
 
             UpdateArrowText(conditionArrowText, totalDeltaCond);
             UpdateArrowText(evaluationArrowText, totalDeltaEval);
@@ -328,16 +333,16 @@ namespace Ambition.UI.MainGame
             }
 
             RuntimePlayerStatus currentStatus = GameSimulationManager.Instance.Husband;
-            if (currentStatus != null)
+            if (currentStatus != null && husbandStatusView != null)
             {
-                if (husbandHealthSlider != null)
+                if (husbandStatusView.HealthSlider != null)
                 {
-                    husbandHealthSlider.value = currentStatus.CurrentHealth;
+                    husbandStatusView.HealthSlider.value = currentStatus.CurrentHealth;
                 }
 
-                if (husbandMentalSlider != null)
+                if (husbandStatusView.MentalSlider != null)
                 {
-                    husbandMentalSlider.value = currentStatus.CurrentMental;
+                    husbandStatusView.MentalSlider.value = currentStatus.CurrentMental;
                 }
             }
         }
@@ -408,15 +413,15 @@ namespace Ambition.UI.MainGame
 
             // メインスライダーを現在値にリセット
             RuntimePlayerStatus currentStatus = GameSimulationManager.Instance.Husband;
-            if (currentStatus != null)
+            if (currentStatus != null && husbandStatusView != null)
             {
-                if (husbandHealthSlider != null)
+                if (husbandStatusView.HealthSlider != null)
                 {
-                    husbandHealthSlider.value = currentStatus.CurrentHealth;
+                    husbandStatusView.HealthSlider.value = currentStatus.CurrentHealth;
                 }
-                if (husbandMentalSlider != null)
+                if (husbandStatusView.MentalSlider != null)
                 {
-                    husbandMentalSlider.value = currentStatus.CurrentMental;
+                    husbandStatusView.MentalSlider.value = currentStatus.CurrentMental;
                 }
             }
         }
@@ -463,64 +468,6 @@ namespace Ambition.UI.MainGame
             stringBuilder.Clear();
             stringBuilder.Append(reputation.CurrentPublicEye.ToString("F1"));
             publicEyeText.SetText(stringBuilder);
-        }
-
-        private void UpdateHusbandInfo(RuntimePlayerStatus husband)
-        {
-            if (husband == null)
-            {
-                return;
-            }
-
-            // スライダー更新 (最大値に対する現在値)
-            husbandHealthSlider.maxValue = (float)husband.MAX_HEALTH;
-            husbandHealthSlider.value = husband.CurrentHealth;
-            stringBuilder.Clear();
-            stringBuilder.Append("体力: ").Append(husband.CurrentHealth).Append(" / ").Append(husband.MAX_HEALTH);
-            husbandHealthText.SetText(stringBuilder);
-
-            // マジックナンバー(100)を定数に置き換え
-            husbandMentalSlider.maxValue = (float)husband.MAX_MENTAL;
-            husbandMentalSlider.value = husband.CurrentMental;
-            stringBuilder.Clear();
-            stringBuilder.Append("精神: ").Append(husband.CurrentMental).Append(" / ").Append(husband.MAX_MENTAL);
-            husbandMentalText.SetText(stringBuilder);
-
-            // 能力テキスト整形
-            stringBuilder.Clear();
-            stringBuilder.Append("選手能力: ").Append(husband.CurrentAbility);
-            husbandAbilityText.SetText(stringBuilder);
-
-            stringBuilder.Clear();
-            stringBuilder.Append("年齢: ").Append(husband.CurrentAge).Append("歳");
-            husbandAgeText.SetText(stringBuilder);
-
-            // 契約金表示
-            stringBuilder.Clear();
-            stringBuilder.Append("当年契約: ¥");
-            stringBuilder.Append(husband.Salary.ToString("N0"));
-            salaryText.SetText(stringBuilder);
-        }
-
-        private void UpdateWifeInfo(RuntimeWifeStatus wife)
-        {
-            if (wife == null)
-            {
-                return;
-            }
-
-            // スキル一覧
-            wifeCookingLevelText.SetText(GetWifeSkillText("料理: Lv", wife.CookingLevel));
-            wifeCareLevelText.SetText(GetWifeSkillText("ケア: Lv", wife.CareLevel));
-            wifePRLevelText.SetText(GetWifeSkillText("PR: Lv", wife.PRLevel));
-            wifeCaochLevelText.SetText(GetWifeSkillText("コーチ: Lv", wife.CoachLevel));
-        }
-
-        private string GetWifeSkillText(string titleName, int level)
-        {
-            stringBuilder.Clear();
-            stringBuilder.Append(titleName).Append(level);
-            return stringBuilder.ToString();
         }
 
         private void UpdatePreviewSlider(Slider mainSlider, Slider previewSlider, TextMeshProUGUI previewText, int current, int max, int delta)

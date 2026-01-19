@@ -1178,6 +1178,7 @@ GameObject:
   - component: {fileID: 190538019}
   - component: {fileID: 190538022}
   - component: {fileID: 190538021}
+  - component: {fileID: 190538023}
   m_Layer: 5
   m_Name: HusbandPanel
   m_TagString: Untagged
@@ -1289,6 +1290,25 @@ MonoBehaviour:
   m_ChildScaleWidth: 0
   m_ChildScaleHeight: 0
   m_ReverseArrangement: 0
+--- !u!114 &190538023
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 190538017}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 692b6e3c0b0deb54ebc6fd4f6e906092, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  husbandHealthSlider: {fileID: 747204922}
+  husbandMentalSlider: {fileID: 474069823}
+  husbandHealthText: {fileID: 7433026499287768458}
+  husbandMentalText: {fileID: 474069824}
+  husbandAgeText: {fileID: 1580389343}
+  husbandAbilityText: {fileID: 758950875}
+  salaryText: {fileID: 428979787}
 --- !u!1 &197144015
 GameObject:
   m_ObjectHideFlags: 0
@@ -5052,20 +5072,11 @@ MonoBehaviour:
   dateText: {fileID: 2061719057}
   totalMoneyText: {fileID: 66184739}
   fixedCostText: {fileID: 960139940}
-  salaryText: {fileID: 428979787}
   loveText: {fileID: 754814662}
   teamEvaluationText: {fileID: 383365089}
   publicEyeText: {fileID: 1523198150}
-  husbandHealthSlider: {fileID: 747204922}
-  husbandMentalSlider: {fileID: 474069823}
-  husbandHealthText: {fileID: 7433026499287768458}
-  husbandMentalText: {fileID: 474069824}
-  husbandAgeText: {fileID: 1580389343}
-  husbandAbilityText: {fileID: 758950875}
-  wifeCookingLevelText: {fileID: 1416075723}
-  wifeCareLevelText: {fileID: 2123936174}
-  wifePRLevelText: {fileID: 1356021311}
-  wifeCaochLevelText: {fileID: 608739952}
+  husbandStatusView: {fileID: 190538023}
+  wifeStatusView: {fileID: 1154021958}
   buttonCare: {fileID: 1572926035}
   buttonSupport: {fileID: 1610941621}
   buttonSNS: {fileID: 640570780}
@@ -5074,6 +5085,7 @@ MonoBehaviour:
   buttonRest: {fileID: 764554028}
   confirmButton: {fileID: 1301035538}
   subMenuController: {fileID: 1765121434}
+  actionFlowController: {fileID: 2129076017}
   husbandHealthPreviewSlider: {fileID: 7433026499287768460}
   husbandMentalPreviewSlider: {fileID: 474069826}
   husbandHealthPreviewText: {fileID: 7433026499287768459}
@@ -6126,6 +6138,7 @@ GameObject:
   - component: {fileID: 1154021954}
   - component: {fileID: 1154021957}
   - component: {fileID: 1154021956}
+  - component: {fileID: 1154021958}
   m_Layer: 5
   m_Name: WifePanel
   m_TagString: Untagged
@@ -6234,6 +6247,22 @@ MonoBehaviour:
   m_ChildScaleWidth: 0
   m_ChildScaleHeight: 0
   m_ReverseArrangement: 0
+--- !u!114 &1154021958
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1154021952}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 05cac6e41697ad44ab742256b4eb4780, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  wifeCookingLevelText: {fileID: 1416075723}
+  wifeCareLevelText: {fileID: 2123936174}
+  wifePRLevelText: {fileID: 1356021311}
+  wifeCaochLevelText: {fileID: 608739952}
 --- !u!1001 &1160557261
 PrefabInstance:
   m_ObjectHideFlags: 0
