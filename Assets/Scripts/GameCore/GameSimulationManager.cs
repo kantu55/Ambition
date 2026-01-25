@@ -155,7 +155,7 @@ namespace Ambition.GameCore
         // --- 行動ロジック ---
 
         /// <summary>
-        /// 妻の行動を実行
+        /// 妻の行動を実行（11ステップのゲームフロー）
         /// </summary>
         public bool ExecuteWifeAction(WifeActionModel action)
         {
@@ -169,14 +169,46 @@ namespace Ambition.GameCore
                 return false;
             }
 
+            // 1. イベント/試合（当月）
+            ProcessMonthlyEvent(action);
+
+            // 2. 当月結果確定
+            ConfirmMonthlyResults();
+
+            // 3. パラメータ変動適用
             ConsumeResources(action, false);
             ApplyEffectsToHusband(action);
             ApplyEffectsToWife(action);
             ApplySpecialLogic(action);
 
-            Debug.Log($"行動実行完了: {action.Name} (Main:{action.GetMainCategory()}, Sub:{action.Name})");
+            // 4. 状態異常更新
+            UpdateStatusAilments();
 
+            // 5. 怪我判定/更新
+            UpdateInjuryStatus();
+
+            // 6. 年次処理（必要月のみ）
+            ProcessAnnualEvents();
+
+            // 7. 収入確定
+            ProcessIncome();
+
+            // 8. 支出確定
+            ProcessExpenses();
+
+            // 9. ゲームオーバー判定
+            if (!CheckGameOver())
+            {
+                return false;
+            }
+
+            // 10. 妻スキルexp/Lv更新
+            UpdateWifeSkill();
+
+            // 11. 次月へ
             ProceedTurn();
+
+            Debug.Log($"行動実行完了: {action.Name} (Main:{action.GetMainCategory()}, Sub:{action.Name})");
 
             return true;
         }
@@ -269,18 +301,100 @@ namespace Ambition.GameCore
         }
 
         /// <summary>
-        /// ターンを進める
+        /// ターンを進める（次月へ）
         /// </summary>
         private void ProceedTurn()
         {
             this.currentTurn++;
-
             this.date.AdvanceMonth();
 
-            Debug.Log("--- 月末処理: 固定費支払い ---");
-            this.budget.PayMonthlyFixedCosts();
-
             Debug.Log($"ターンが進みました: {this.currentTurn}ターン目");
+        }
+
+        // --- 11ステップゲームフロー用のメソッド ---
+
+        /// <summary>
+        /// 1. イベント/試合（当月）
+        /// </summary>
+        private void ProcessMonthlyEvent(WifeActionModel action)
+        {
+            // TODO: イベントや試合の処理を実装
+            Debug.Log("--- 1. イベント/試合（当月） ---");
+        }
+
+        /// <summary>
+        /// 2. 当月結果確定
+        /// </summary>
+        private void ConfirmMonthlyResults()
+        {
+            // TODO: 当月の結果を確定する処理を実装
+            Debug.Log("--- 2. 当月結果確定 ---");
+        }
+
+        /// <summary>
+        /// 4. 状態異常更新
+        /// </summary>
+        private void UpdateStatusAilments()
+        {
+            // TODO: 状態異常の更新処理を実装
+            Debug.Log("--- 4. 状態異常更新 ---");
+        }
+
+        /// <summary>
+        /// 5. 怪我判定/更新
+        /// </summary>
+        private void UpdateInjuryStatus()
+        {
+            // TODO: 怪我の判定と更新処理を実装
+            Debug.Log("--- 5. 怪我判定/更新 ---");
+        }
+
+        /// <summary>
+        /// 6. 年次処理（必要月のみ）
+        /// </summary>
+        private void ProcessAnnualEvents()
+        {
+            // TODO: 年次処理（特定の月のみ実行）を実装
+            Debug.Log("--- 6. 年次処理（必要月のみ） ---");
+        }
+
+        /// <summary>
+        /// 7. 収入確定
+        /// </summary>
+        private void ProcessIncome()
+        {
+            // TODO: 収入の確定処理を実装
+            Debug.Log("--- 7. 収入確定 ---");
+        }
+
+        /// <summary>
+        /// 8. 支出確定
+        /// </summary>
+        private void ProcessExpenses()
+        {
+            // TODO: 支出の確定処理を実装（固定費支払いを含む）
+            Debug.Log("--- 8. 支出確定: 固定費支払い ---");
+            this.budget.PayMonthlyFixedCosts();
+        }
+
+        /// <summary>
+        /// 9. ゲームオーバー判定
+        /// </summary>
+        /// <returns>ゲーム継続可能ならtrue、ゲームオーバーならfalse</returns>
+        private bool CheckGameOver()
+        {
+            // TODO: ゲームオーバー条件のチェックを実装
+            Debug.Log("--- 9. ゲームオーバー判定 ---");
+            return true; // デフォルトではゲーム継続
+        }
+
+        /// <summary>
+        /// 10. 妻スキルexp/Lv更新
+        /// </summary>
+        private void UpdateWifeSkill()
+        {
+            // TODO: 妻のスキル経験値とレベルの更新処理を実装
+            Debug.Log("--- 10. 妻スキルexp/Lv更新 ---");
         }
 
         /// <summary>
