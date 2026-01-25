@@ -86,7 +86,7 @@ namespace Ambition.UI.Common
         {
             if (IsButtonInteractable())
             {
-                eventData.selectedObject = gameObject;
+                targetButton.Select();
             }
 
             PlayScaleAnimation(hoverScale, selectedColor);
