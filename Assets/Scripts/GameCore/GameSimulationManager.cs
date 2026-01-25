@@ -7,6 +7,7 @@ using Cysharp.Threading.Tasks;
 using System.IO;
 using UnityEngine;
 using UnityEngine.Accessibility;
+using UnityEngine.SceneManagement;
 
 namespace Ambition.GameCore
 {
@@ -62,6 +63,12 @@ namespace Ambition.GameCore
         /// </summary>
         private int currentTurn;
 
+        /// <summary>
+        /// 発生したイベントデータ
+        /// </summary>
+        public EventModel currentEventData = null;
+
+
         // --- プロパティ ---
 
         public RuntimePlayerStatus Husband => husband;
@@ -70,6 +77,7 @@ namespace Ambition.GameCore
         public RuntimeHouseholdBudget Budget => budget;
         public RuntimeDate Date => date;
         public RuntimeReputation Reputation => reputation;
+        public EventModel CurrentEventData => currentEventData;
 
         /// <summary>
         /// 夫の名前を取得するヘルパープロパティ
@@ -317,17 +325,40 @@ namespace Ambition.GameCore
         {
             Debug.Log("--- (3)イベント/試合 ---");
 
-            ProcessMonthlyScheduledEvents();
+            bool hasScheduledEvent = ProcessMonthlyScheduledEvents();
+            if (hasScheduledEvent)
+            {
+                return;
+            }
+
+            EventModel randomEvent = PickRandomEvent();
+            if (randomEvent != null)
+            {
+                this.currentEventData = randomEvent;
+                SceneManager.LoadScene("EventScene");
+            }
         }
 
-        private void ProcessMonthlyScheduledEvents()
+        /// <summary>
+        /// ランダムイベントを抽出する
+        /// </summary>
+        private EventModel PickRandomEvent()
+        {
+            // todo: DataManagerなどからイベントリストを取得してランダムに抽選するロジックを実装
+            return null;
+        }
+
+        private bool ProcessMonthlyScheduledEvents()
         {
             int currentMonth = this.date.Month;
+            bool isEventOccurred = false;
+
             switch (currentMonth)
             {
                 case 1: // 1月：年棒入金
                     Debug.Log($"<color=yellow>【1月】年俸が入金されました: ¥{husband.Salary:N0}</color>");
                     budget.AddIncome(husband.Salary);
+                    isEventOccurred = true;
                     break;
 
                 case 3: // 3月：所得税支払い
@@ -338,6 +369,7 @@ namespace Ambition.GameCore
                         Debug.LogWarning("資金不足で所得税が払えません！借金イベントなどを検討してください。");
                     }
 
+                    isEventOccurred = true;
                     break;
 
                 case 5: // 5月：固定資産税支払い
@@ -347,6 +379,8 @@ namespace Ambition.GameCore
                     {
                         Debug.LogWarning("資金不足で固定資産税が払えません！");
                     }
+
+                    isEventOccurred = true;
                     break;
 
                 case 12: // 12月：契約更改
@@ -354,9 +388,12 @@ namespace Ambition.GameCore
                     int newSalary = CalculateNewSalary(husband.TeamEvaluation, husband.Salary);
                     husband.UpdateSalary(newSalary);
                     Debug.Log($"来年の年俸が ¥{newSalary:N0} に決定しました。");
+                    isEventOccurred = true;
                     break;
 
             }
+
+            return isEventOccurred;
         }
 
         /// <summary>
