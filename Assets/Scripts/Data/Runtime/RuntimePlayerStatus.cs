@@ -141,5 +141,14 @@ namespace Ambition.Data.Runtime
         {
             this.CurrentAge++;
         }
+
+        /// <summary>
+        /// 年棒の更新
+        /// </summary>
+        /// <param name="newSalary"></param>
+        public void UpdateSalary(int newSalary)
+        {
+            this.Salary = newSalary;
+        }
     }
 }

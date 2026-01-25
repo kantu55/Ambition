@@ -106,5 +106,27 @@ namespace Ambition.Data.Runtime
 
             this.FoodCost = cost;
         }
+
+        /// <summary>
+        /// 所得税を計算
+        /// </summary>
+        /// <param name="annualSalary"></param>
+        /// <returns></returns>
+        public int CalculateIncomeTax(int annualSalary)
+        {
+            float taxRate = GameSettings.GetFloat(SettingKeys.TaxRate, 0.3f);
+            int estimatedAnnualTax = (int)(annualSalary * taxRate);
+            return estimatedAnnualTax;
+        }
+
+        /// <summary>
+        /// 固定資産税を計算
+        /// </summary>
+        /// <returns></returns>
+        public int CalculateFixedAssetTax()
+        {
+            // todo: 固定資産税の計算ロジックを実装
+            return Maintenance * 10;
+        }
     }
 }

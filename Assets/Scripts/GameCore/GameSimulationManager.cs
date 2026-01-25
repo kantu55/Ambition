@@ -6,6 +6,7 @@ using Ambition.Data.Runtime;
 using Cysharp.Threading.Tasks;
 using System.IO;
 using UnityEngine;
+using UnityEngine.Accessibility;
 
 namespace Ambition.GameCore
 {
@@ -315,6 +316,60 @@ namespace Ambition.GameCore
         private void ProcessMonthlyEvents(WifeActionModel action)
         {
             Debug.Log("--- (3)イベント/試合 ---");
+
+            ProcessMonthlyScheduledEvents();
+        }
+
+        private void ProcessMonthlyScheduledEvents()
+        {
+            int currentMonth = this.date.Month;
+            switch (currentMonth)
+            {
+                case 1: // 1月：年棒入金
+                    Debug.Log($"<color=yellow>【1月】年俸が入金されました: ¥{husband.Salary:N0}</color>");
+                    budget.AddIncome(husband.Salary);
+                    break;
+
+                case 3: // 3月：所得税支払い
+                    int incomeTax = budget.FixedCost.CalculateIncomeTax(husband.Salary);
+                    Debug.Log($"<color=red>【3月】所得税の支払い: ¥{incomeTax:N0}</color>");
+                    if (!budget.TrySpend(incomeTax))
+                    {
+                        Debug.LogWarning("資金不足で所得税が払えません！借金イベントなどを検討してください。");
+                    }
+
+                    break;
+
+                case 5: // 5月：固定資産税支払い
+                    int assetTax = budget.FixedCost.CalculateFixedAssetTax();
+                    Debug.Log($"<color=red>【5月】固定資産税の支払い: ¥{assetTax:N0}</color>");
+                    if (!budget.TrySpend(assetTax))
+                    {
+                        Debug.LogWarning("資金不足で固定資産税が払えません！");
+                    }
+                    break;
+
+                case 12: // 12月：契約更改
+                    Debug.Log("<color=cyan>【12月】契約更改</color>");
+                    int newSalary = CalculateNewSalary(husband.TeamEvaluation, husband.Salary);
+                    husband.UpdateSalary(newSalary);
+                    Debug.Log($"来年の年俸が ¥{newSalary:N0} に決定しました。");
+                    break;
+
+            }
+        }
+
+        /// <summary>
+        /// 契約更改時の新年俸計算ロジック
+        /// </summary>
+        /// <param name="evaluation"></param>
+        /// <param name="currentSalary"></param>
+        /// <returns></returns>
+        private int CalculateNewSalary(int evaluation, int currentSalary)
+        {
+            // 評価1につき 1% アップなどのロジック
+            float increaseRate = 1.0f + (evaluation * 0.01f);
+            return (int)(currentSalary * increaseRate);
         }
 
         /// <summary>
