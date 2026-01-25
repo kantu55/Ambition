@@ -169,14 +169,46 @@ namespace Ambition.GameCore
                 return false;
             }
 
-            ConsumeResources(action, false);
-            ApplyEffectsToHusband(action);
-            ApplyEffectsToWife(action);
-            ApplySpecialLogic(action);
+            // --- 行動実行フェーズ ---
+
+            // イベント/試合処理
+            ProcessMonthlyEvents(action);
+
+            // 当月結果確定
+            ConfirmMonthlyResults();
+
+            // パラメータ変動適用
+            ApplyParam(action);
+
+            // 状態異常更新
+            UpdateStatusAilments();
+
+            // 怪我判定と更新
+            UpdateInjuryStatus();
+
+            // 年次処理（必要月のみ）
+            ProcessAnnualEvents();
+
+            // 収入確定
+            ProcessIncome();
+
+            // 支出処理
+            ProcessExpenses();
+
+            // ゲームオーバー判定
+            if (CheckGameOver() == false)
+            {
+                Debug.LogError("ゲームオーバー判定: ゲームを終了します。");
+                return false;
+            }
+
+            // 妻スキルexp/Lv更新
+            UpdateWifeSkill();
+
+            // ターン進行
+            ProceedTurn();
 
             Debug.Log($"行動実行完了: {action.Name} (Main:{action.GetMainCategory()}, Sub:{action.Name})");
-
-            ProceedTurn();
 
             return true;
         }
@@ -277,10 +309,92 @@ namespace Ambition.GameCore
 
             this.date.AdvanceMonth();
 
-            Debug.Log("--- 月末処理: 固定費支払い ---");
-            this.budget.PayMonthlyFixedCosts();
-
             Debug.Log($"ターンが進みました: {this.currentTurn}ターン目");
+        }
+
+        private void ProcessMonthlyEvents(WifeActionModel action)
+        {
+            Debug.Log("--- (3)イベント/試合 ---");
+        }
+
+        /// <summary>
+        /// 当月結果確定
+        /// </summary>
+        private void ConfirmMonthlyResults()
+        {
+            Debug.Log("--- (4-A)当月結果確定 ---");
+        }
+
+        /// <summary>
+        /// パラメータ変動適用
+        /// </summary>
+        private void ApplyParam(WifeActionModel action)
+        {
+            Debug.Log("--- (4-B)パラメータ変動適用 ---");
+            ConsumeResources(action, false);
+            ApplyEffectsToHusband(action);
+            ApplyEffectsToWife(action);
+            ApplySpecialLogic(action);
+
+        }
+
+        /// <summary>
+        /// 状態異常更新
+        /// </summary>
+        private void UpdateStatusAilments()
+        {
+            Debug.Log("--- (4-C)状態異常更新 ---");
+        }
+
+        /// <summary>
+        /// 怪我判定と更新
+        /// </summary>
+        private void UpdateInjuryStatus()
+        {
+            Debug.Log("--- (4-D)怪我判定/更新 ---");
+        }
+
+        /// <summary>
+        /// 年次処理（必要月のみ）
+        /// </summary>
+        private void ProcessAnnualEvents()
+        {
+            Debug.Log("--- (4-E)年次処理 ---");
+        }
+
+        /// <summary>
+        /// 収入確定
+        /// </summary>
+        private void ProcessIncome()
+        {
+            Debug.Log("--- (4-F)収入確定 ---");
+        }
+
+        /// <summary>
+        /// 支出処理
+        /// </summary>
+        private void ProcessExpenses()
+        {
+            Debug.Log("--- (4-G)支出確定 ---");
+            this.budget.PayMonthlyFixedCosts();
+        }
+
+        /// <summary>
+        /// ゲームオーバー判定
+        /// </summary>
+        /// <returns>ゲーム継続可能ならtrue、ゲームオーバーならfalse</returns>
+        private bool CheckGameOver()
+        {
+            Debug.Log("--- (4-H)エンド判定 ---");
+            return true;
+        }
+
+        /// <summary>
+        /// 妻スキルexp/Lv更新
+        /// </summary>
+        private void UpdateWifeSkill()
+        {
+            Debug.Log("--- (5)妻スキルexp/Lv更新 ---");
         }
 
         /// <summary>
