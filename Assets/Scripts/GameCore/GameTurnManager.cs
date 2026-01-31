@@ -248,6 +248,7 @@ namespace Ambition.GameCore
 
                 if (action.CashCost != 0)
                 {
+                    // Invert the sign: CashCost > 0 means spending (show negative), CashCost < 0 means gaining (show positive)
                     changes["予算"] = -action.CashCost;
                 }
 
