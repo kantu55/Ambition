@@ -1,0 +1,21 @@
+id,event_id,title,tags,weight,cond,effect,note
+1,RND_FAN_GIFT,ファンから差し入れ,"NORMAL, ECON_POS, LOSS_POS",10,none,"cash_delta:+30_000, param_delta:{RP:+1}",小さなご祝儀。運が良いと助かる。
+2,RND_SMALL_SPONSOR,小口スポンサー,"NORMAL, ECON_POS, LOSS_POS",6,rp_min:2,"cash_delta:+120_000, param_delta:{RP:+1, T:+1}",評判が出てきたときの臨時収入。
+3,RND_MEDIA_OPPORTUNITY,メディア出演依頼,"NORMAL, PR, LOSS_POS",5,t_min:50,"cash_delta:+80_000, param_delta:{RP:+2, MP:+1}",露出でMPが上がりやすい（天狗寄りの下地）。
+4,RND_MINOR_INJURY_SCARE,ヒヤリ（軽い不調）,"NORMAL, RISK, LOSS_NEG1",8,none,"cash_delta:0, param_delta:{COND:-4, MP:-1}",体調の揺らぎ。試合月だと痛い。
+5,RND_EQUIP_BREAK,設備の故障,"NORMAL, ECON_NEG, LOSS_NEG1",6,none,cash_delta:-90_000,予想外の出費。金欠時は致命傷。
+6,RND_HOME_REPAIR,家の修繕費,"NORMAL, ECON_NEG, LOSS_NEG1",5,none,cash_delta:-120_000,固定費とは別の突然の出費。
+7,RND_FOOD_PRICE_SPIKE,食材高騰,"NORMAL, ECON_NEG, LOSS_NEG1",7,none,cash_delta:-20_000,生活費の地味な上振れ。
+8,RND_AGENT_FEE,代理人費用（臨時）,"NORMAL, ECON_NEG, LOSS_NEG1",5,none,cash_delta:-70_000,手数料の取りこぼし。
+9,RND_COMMUNITY_EVENT,地域イベント参加,"NORMAL, FAMILY, LOSS_NEU",4,none,"cash_delta:-10_000, param_delta:{RP:+1, RL:+1}",小さな好感度稼ぎ。
+10,RND_WEATHER_BAD,天候不良,"NORMAL, LOSS_NEG1",6,none,"cash_delta:0, param_delta:{COND:-2}",体調が崩れやすい月。
+11,RND_RIVAL_PRAISE,ライバルの称賛,"NORMAL, LOSS_POS",4,none,"cash_delta:0, param_delta:{MP:+1, T:+1}",気分は上がるが、過剰は危険。
+12,RND_RIVAL_TRASH,ライバルの挑発,"NORMAL, LOSS_NEG1",4,none,"cash_delta:0, param_delta:{MP:-1, T:-1}",余計なストレス。
+13,RND_FREE_CLINIC,無料の検査,"NORMAL, LOSS_POS",3,none,"cash_delta:0, param_delta:{COND:+2}",少し得した気分。
+14,RND_SMALL_BONUS,チームから寸志,"NORMAL, ECON_POS, LOSS_POS",4,none,cash_delta:+50_000,ちょっとした上振れ。
+15,RND_CANCELLED_EVENT,予定キャンセル,"NORMAL, LOSS_NEG1",3,none,"cash_delta:0, param_delta:{T:-1}",予定が飛ぶと評価が落ちる。
+16,RND_PRACTICE_HIT,練習が噛み合う,"NORMAL, TRAIN, LOSS_POS",3,none,"cash_delta:0, param_delta:{COND:+2, MP:+1}",いい波が来る。
+17,RND_PRACTICE_MISS,練習が噛み合わない,"NORMAL, TRAIN, LOSS_NEG1",3,none,"cash_delta:0, param_delta:{COND:-2, MP:-1}",小さな不調。
+18,RND_LOCAL_INTERVIEW,地元取材,"NORMAL, PR, LOSS_POS",3,none,"cash_delta:+20_000, param_delta:{RP:+1, MP:+1}",露出は天狗の下地にもなる。
+19,RND_FAMILY_TRIP,近場の小旅行,"NORMAL, ECON_NEG, FAMILY, LOSS_NEU",4,cash_min:80_000,"cash_delta:-60_000, param_delta:{RL:+2, MP:+2, T:-1}",息抜きだが、チーム評価が少し落ちる。
+20,RND_LUCKY_BONUS,ラッキーボーナス,"NORMAL, ECON_POS, LOSS_NEU",2,none,cash_delta:+300_000,かなり稀な救済枠。期待しないこと。

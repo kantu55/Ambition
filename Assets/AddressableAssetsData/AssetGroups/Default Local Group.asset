@@ -15,6 +15,12 @@ MonoBehaviour:
   m_GroupName: Default Local Group
   m_GUID: 2858fe8658e44c84caca1a033ee1caa5
   m_SerializeEntries:
+  - m_GUID: 119717e5f90c7d5408e35977ca8f9550
+    m_Address: EventsRandom
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - MasterData
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 15a3538b735b8bd49989e6075ed229a9
     m_Address: PlayerStats
     m_ReadOnly: 0

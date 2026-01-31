@@ -5,6 +5,7 @@ using Ambition.Data.Master;
 using Ambition.Data.Runtime;
 using Cysharp.Threading.Tasks;
 using System.IO;
+using System.Linq;
 using UnityEngine;
 using UnityEngine.Accessibility;
 using UnityEngine.SceneManagement;
@@ -328,7 +329,6 @@ namespace Ambition.GameCore
             bool hasScheduledEvent = ProcessMonthlyScheduledEvents();
             if (hasScheduledEvent)
             {
-                return;
             }
 
             EventModel randomEvent = PickRandomEvent();
@@ -344,8 +344,16 @@ namespace Ambition.GameCore
         /// </summary>
         private EventModel PickRandomEvent()
         {
-            // todo: DataManagerなどからイベントリストを取得してランダムに抽選するロジックを実装
-            return null;
+            var eventDataList = DataManager.Instance.GetDatas<EventModel>();
+            if (eventDataList == null || eventDataList.Any() == false)
+            {
+                return null;
+            }
+
+            var eventData = eventDataList[Random.Range(0, eventDataList.Count)];
+            Debug.Log($"ランダムイベント発生: {eventData.Title} (ID:{eventData.EventId})");
+
+            return eventData;
         }
 
         private bool ProcessMonthlyScheduledEvents()

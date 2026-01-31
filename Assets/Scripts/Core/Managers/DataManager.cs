@@ -36,6 +36,7 @@ namespace Ambition.Core.Managers
             { typeof(WifeActionModel), "WifeActions" },
             { typeof(FoodMitModel), "FoodMit" },
             { typeof(FoodModel), "MasterFood" },
+            { typeof(EventModel), "EventsRandom" },
         };
 
         /// <summary>
@@ -121,6 +122,10 @@ namespace Ambition.Core.Managers
             else if (type == typeof(FoodMitModel))
             {
                 ParseCsvData<FoodMitModel>(address);
+            }
+            else if (type == typeof(EventModel))
+            {
+                ParseCsvData<EventModel>(address);
             }
             else
             {
