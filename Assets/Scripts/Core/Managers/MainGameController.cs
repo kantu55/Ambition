@@ -257,11 +257,7 @@ namespace Ambition.Core.Managers
             // UIを更新
             RefreshUI();
 
-            // 確定ボタンを再度有効化
-            if (mainView.ConfirmButton != null)
-            {
-                mainView.ConfirmButton.interactable = false;
-            }
+            // 確定ボタンは無効状態を維持（新しいアクションが選択されるまで）
         }
 
         // --- 画面更新 ---

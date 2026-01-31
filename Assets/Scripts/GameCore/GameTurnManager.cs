@@ -375,9 +375,9 @@ namespace Ambition.GameCore
                     {
                         GameSimulationManager.Instance.Budget.AddIncome(eventData.DeltaBudget);
                     }
-                    else
+                    else if (eventData.DeltaBudget < 0)
                     {
-                        GameSimulationManager.Instance.Budget.TrySpend(-eventData.DeltaBudget);
+                        GameSimulationManager.Instance.Budget.TrySpend(Mathf.Abs(eventData.DeltaBudget));
                     }
                 }
             }
