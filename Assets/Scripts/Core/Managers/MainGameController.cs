@@ -1,6 +1,7 @@
 ﻿using Ambition.Data.Master;
 using Ambition.UI.MainGame;
 using Ambition.GameCore;
+using Cysharp.Threading.Tasks;
 using UnityEngine;
 
 namespace Ambition.Core.Managers
@@ -11,6 +12,7 @@ namespace Ambition.Core.Managers
     public class MainGameController : MonoBehaviour
     {
         [SerializeField] private MainGameView mainView;
+        [SerializeField] private GameTurnManager gameTurnManager;
 
         /// <summary>
         /// 保留中の行動（ユーザーが「実行」を選択した行動）
@@ -47,6 +49,12 @@ namespace Ambition.Core.Managers
                 mainView.SubMenuController.OnActionSelected += OnActionSelectedFromSubMenu;
                 mainView.SubMenuController.OnActionConfirmed += OnActionConfirmedFromSubMenu;
                 mainView.SubMenuController.OnBackPressed += OnSubMenuBackPressed;
+            }
+
+            // GameTurnManagerのイベントを設定
+            if (gameTurnManager != null)
+            {
+                gameTurnManager.OnTurnCompleted += OnTurnCompleted;
             }
 
             RefreshUI();
@@ -206,7 +214,7 @@ namespace Ambition.Core.Managers
         /// <summary>
         /// 確定ボタンが押された時
         /// </summary>
-        private void OnConfirmClicked()
+        private async void OnConfirmClicked()
         {
             if (pendingAction == null)
             {
@@ -216,33 +224,43 @@ namespace Ambition.Core.Managers
 
             Debug.Log($"行動を実行: {pendingAction.Name}");
 
-            // 行動を実行
-            if (GameSimulationManager.Instance != null)
+            // 行動を実行 - GameTurnManagerに委譲
+            if (gameTurnManager != null)
             {
-                bool success = GameSimulationManager.Instance.ExecuteWifeAction(pendingAction);
-                if (success)
+                // 確定ボタンを無効化（処理中）
+                if (mainView.ConfirmButton != null)
                 {
-                    // 行動をクリア
-                    pendingAction = null;
-
-                    // 確定ボタンを無効化
-                    if (mainView.ConfirmButton != null)
-                    {
-                        mainView.ConfirmButton.interactable = false;
-                    }
-
-                    // アクション情報パネルをクリア
-                    mainView.UpdateSelectedAction(null);
-
-                    mainView.ResetAllPreviews();
-
-                    // UIを更新
-                    RefreshUI();
+                    mainView.ConfirmButton.interactable = false;
                 }
-                else
-                {
-                    Debug.LogWarning("行動の実行に失敗しました。");
-                }
+
+                // GameTurnManagerを使用してターンを実行
+                await gameTurnManager.ExecuteTurnAsync(pendingAction);
+            }
+            else
+            {
+                Debug.LogWarning("GameTurnManager が見つかりません。");
+            }
+        }
+
+        /// <summary>
+        /// ターン完了時の処理
+        /// </summary>
+        private void OnTurnCompleted()
+        {
+            // 行動をクリア
+            pendingAction = null;
+
+            // アクション情報パネルをクリア
+            mainView.UpdateSelectedAction(null);
+            mainView.ResetAllPreviews();
+
+            // UIを更新
+            RefreshUI();
+
+            // 確定ボタンを再度有効化
+            if (mainView.ConfirmButton != null)
+            {
+                mainView.ConfirmButton.interactable = false;
             }
         }
 
@@ -277,6 +295,11 @@ namespace Ambition.Core.Managers
                     mainView.SubMenuController.OnBackPressed -= OnSubMenuBackPressed;
                     mainView.SubMenuController.OnActionConfirmed -= OnActionConfirmedFromSubMenu;
                 }
+            }
+
+            if (gameTurnManager != null)
+            {
+                gameTurnManager.OnTurnCompleted -= OnTurnCompleted;
             }
         }
     }
