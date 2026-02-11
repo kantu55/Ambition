@@ -33,6 +33,11 @@ MonoBehaviour:
     m_SerializedLabels:
     - MasterData
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 1f34d8404f0872b4f98c18ff6420f6fe
+    m_Address: AbGrowthMultByFoodPlan
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 2965779a3c39da34fae9c4f22fdd40f6
     m_Address: Housing
     m_ReadOnly: 0
@@ -75,10 +80,23 @@ MonoBehaviour:
     m_SerializedLabels:
     - MasterData
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: a3f1fa8b4a5c96a40978d7ce4da58aaf
+    m_Address: Assets/GameAssets/MasterData/Csv/AbBaseGrowthPerMonth.csv
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - MasterData
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: b15a8e189416d604e931ef8699eefd2b
+    m_Address: Assets/GameAssets/MasterData/Csv/AbGrowthMultByCondStage.csv
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - MasterData
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: ba2e589ad6e7c454d9ece5e01ed91759
     m_Address: BaseDecayPerMonth
     m_ReadOnly: 0
-    m_SerializedLabels: []
+    m_SerializedLabels:
+    - MasterData
     FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: d735887e43e037c46976ef345b8eba50
     m_Address: MatchMonthExtraDecay
@@ -106,6 +124,12 @@ MonoBehaviour:
     FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: dfe99a42e67e80d4282e927f6498ccf8
     m_Address: MasterFood
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - MasterData
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: f0deac2266a434e46ad7dc153bd5140b
+    m_Address: Assets/GameAssets/MasterData/Csv/AbGrowthCapPerMonth.csv
     m_ReadOnly: 0
     m_SerializedLabels:
     - MasterData

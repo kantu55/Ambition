@@ -37,7 +37,7 @@ namespace Ambition.UI.Panels
             }
         }
 
-        public void ShowChanges(string title, Dictionary<string, int> changes)
+        public void ShowChanges(string title, Dictionary<string, double> changes)
         {
             Show();
 
@@ -57,7 +57,7 @@ namespace Ambition.UI.Panels
             }
         }
 
-        private void CreateChangeItem(string paramName, int changeValue)
+        private void CreateChangeItem(string paramName, double changeValue)
         {
             GameObject item = Instantiate(changeItemPrefab, changesContainer);
             instantiatedItems.Add(item);
@@ -83,7 +83,7 @@ namespace Ambition.UI.Panels
             }
         }
 
-        private string FormatChange(int value)
+        private string FormatChange(double value)
         {
             return value >= 0 ? $"+{value}" : value.ToString();
         }

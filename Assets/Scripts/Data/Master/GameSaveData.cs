@@ -32,8 +32,8 @@ namespace Ambition.Data.Master
         public int Age;
         public int Health;
         public int Mental;
-        public int Ability;
         public int Condition;
+        public float Ability;
         public int TeamEvaluation;
         public int Salary;
         public int Love;

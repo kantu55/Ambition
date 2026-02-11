@@ -27,7 +27,7 @@ namespace Ambition.Data.Runtime
         public int CurrentCondition { get; private set; }
 
         // 成長する能力値
-        public int CurrentAbility { get; private set; }
+        public float CurrentAbility { get; private set; }
 
         // 評価
         public int TeamEvaluation { get; private set; }
@@ -129,7 +129,7 @@ namespace Ambition.Data.Runtime
         /// <summary>
         /// 能力値を成長
         /// </summary>
-        public void GrowAbility(int deltaAbility)
+        public void GrowAbility(float deltaAbility)
         {
             this.CurrentAbility += deltaAbility;
         }

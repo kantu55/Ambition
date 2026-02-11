@@ -7,6 +7,8 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEditor;
 using UnityEngine;
+using static UnityEditor.PlayerSettings;
+using static UnityEngine.Rendering.DebugUI.Table;
 
 namespace Ambition.GameCore
 {
@@ -44,6 +46,25 @@ namespace Ambition.GameCore
             MP,
             COND,
             AB,
+        }
+
+        public enum FoodTier
+        {
+            POVERTY = 1,
+            Q0,
+            Q1,
+            Q2,
+            Q3,
+            Q4,
+        }
+
+        public enum CondStage
+        {
+            STAGE0 = 1,
+            STAGE1,
+            STAGE2,
+            STAGE3,
+            STAGE4,
         }
 
         [SerializeField] private MatchResultPanel matchPanel;
@@ -303,6 +324,7 @@ namespace Ambition.GameCore
 
             // キャリア
             // phase_id = f(career_month, rookie_graduation, veteran_threshold)
+            // TODO:正しいキャリア判定ロジックに置き換え
             int year = GameSimulationManager.Instance.Date.Year;
             CareerType careerType = CareerType.ROOKIE;
             if (year > 12)
@@ -359,19 +381,16 @@ namespace Ambition.GameCore
             float veteranExtraDecayHP = 0f;
             float veteranExtraDecayMP = 0f;
             float veteranExtraDecayCOND = 0f;
-            float veteranExtraDecayAB = 0f;
             if (careerType == CareerType.VETERAN)
             {
                 veteranExtraDecayHP = veteranExtraDecayDatas.FirstOrDefault(v => (StatType)v.StatType == StatType.HP)?.Value ?? 0f;
                 veteranExtraDecayMP = veteranExtraDecayDatas.FirstOrDefault(v => (StatType)v.StatType == StatType.MP)?.Value ?? 0f;
                 veteranExtraDecayCOND = veteranExtraDecayDatas.FirstOrDefault(v => (StatType)v.StatType == StatType.COND)?.Value ?? 0f;
-                veteranExtraDecayAB = veteranExtraDecayDatas.FirstOrDefault(v => (StatType)v.StatType == StatType.AB)?.Value ?? 0f;
             }
 
             var baseDeltaForFoodHP = (int)(phaseBaseDecayHP + matchExtraDecayHP + veteranExtraDecayHP);
             var baseDeltaForFoodMP = (int)(phaseBaseDecayMP + matchExtraDecayMP + veteranExtraDecayMP);
             var baseDeltaForFoodCOND = (int)(phaseBaseDecayCOND + matchExtraDecayCOND + veteranExtraDecayCOND);
-            var baseDeltaForFoodAB = veteranExtraDecayAB;
             Debug.Log($"Base Delta for Food - HP: {baseDeltaForFoodHP}, MP: {baseDeltaForFoodMP}, COND: {baseDeltaForFoodCOND}");
 
             // 3 - B) 食事軽減（mitig）を算出（HP / MP / COND）
@@ -392,6 +411,51 @@ namespace Ambition.GameCore
             var foogDeltaAppliedCOND = Math.Min(0, baseDeltaForFoodCOND + mitigCOND);
             Debug.Log($"Food Delta Applied - HP: {foogDeltaAppliedHP}, MP: {foogDeltaAppliedMP}, COND: {foogDeltaAppliedCOND}");
 
+            // 5) AB成長（別枠。月末で確定）
+            // ABは「行動による成長補正」「食事倍率」「COND段階倍率」が乗ります。
+            // base = ab_base_growth_per_month[phase]
+            // raw = base + AB_growth_from_action（＝行動の growth_add）
+            // mult = ab_growth_mult_by_food_plan[food_plan] * ab_growth_mult_by_cond_stage[cond_stage]
+            // pos = min(ab_growth_cap_per_month.cap, raw * mult)
+            // AB_next = clamp(0..100, AB + pos + (is_veteran ? veteran_extra_decay.AB : 0))
+            var abBaseGrowthDatas = DataManager.Instance.GetDatas<AbBaseGrowthPerMonthModel>();
+            if (abBaseGrowthDatas == null || abBaseGrowthDatas.Count == 0)
+            {
+                Debug.LogError("[GameTurnManager] AbBaseGrowthPerMonthModel data not found");
+                return;
+            }
+
+            var foodGrowthMultDatas = DataManager.Instance.GetDatas<AbGrowthMultByFoodPlanModel>();
+            if (foodGrowthMultDatas == null || foodGrowthMultDatas.Count == 0)
+            {
+                Debug.LogError("[GameTurnManager] AbGrowthMultByFoodPlanModel data not found");
+                return;
+            }
+
+            var condGrowthMultDatas = DataManager.Instance.GetDatas<AbGrowthMultByCondStageModel>();
+            if (condGrowthMultDatas == null || condGrowthMultDatas.Count == 0)
+            {
+                Debug.LogError("[GameTurnManager] AbGrowthMultByCondStageModel data not found");
+                return;
+            }
+
+            float abBase = abBaseGrowthDatas.FirstOrDefault(v => (CareerType)v.PlayerCareerStage == careerType)?.Value ?? 1f;
+            float foodMult = foodGrowthMultDatas.FirstOrDefault(v => (FoodTier)v.FoodTier == FoodTier.Q1)?.GrowthMulti ?? 1f;
+            float condMult = condGrowthMultDatas.FirstOrDefault(v => (CondStage)v.CondStage == CondStage.STAGE2)?.GrowthMulti ?? 1f;
+            float cap = DataManager.Instance.GetDatas<AbGrowthCapPerMonth>().FirstOrDefault()?.Cap ?? 10f;
+            float veteranExtraDecayAB = 0f;
+            if (careerType == CareerType.VETERAN)
+            {
+                veteranExtraDecayAB = veteranExtraDecayDatas.FirstOrDefault(v => (StatType)v.StatType == StatType.AB)?.Value ?? 0f;
+            }
+
+            float rawABGrowth = abBase + action.GrowthAdd;
+            float mult = foodMult * condMult;
+            float pos = Math.Min(cap, rawABGrowth * mult);
+            float AbNext = Mathf.Clamp((float)GameSimulationManager.Instance.Husband.CurrentAbility + pos + veteranExtraDecayAB, 0, 100);
+            Debug.Log($"AB Growth Calculation: base[{abBase}] + action_growth[{action.GrowthAdd}] = raw[{rawABGrowth}] * mult[{mult}] = pos[{pos}] + veteran_extra[{veteranExtraDecayAB}] = AB_next[{AbNext}]");
+
+
             // param_next[x] = param_prev[x] + food_delta_applied[x] + action_delta[x] + event_param_delta[x] + match_param_delta[x] + abnormal_delta[x]...
             // 注意点：
             // food_delta_applied があるのは HP / MP / CONDのみ
@@ -400,12 +464,20 @@ namespace Ambition.GameCore
             var paramNextMP = foogDeltaAppliedMP + action.DeltaMP;
             var paramNextCOND = foogDeltaAppliedCOND + action.DeltaCOND;
 
+            var husband = GameSimulationManager.Instance.Husband;
+            husband.ChangeHealth(paramNextHP);
+            husband.ChangeMental(paramNextMP);
+            husband.ChangeCondition(paramNextCOND);
+            husband.GrowAbility(AbNext);
+
             if (parameterChangePanel != null && GameSimulationManager.Instance != null)
             {
-                Dictionary<string, int> changes = new Dictionary<string, int>();
+                Dictionary<string, double> changes = new Dictionary<string, double>();
                 changes["体力"] = paramNextHP;
                 changes["メンタル"] = paramNextMP;
                 changes["コンディション"] = paramNextCOND;
+                changes["能力値"] = AbNext;
+
                 if (changes.Count > 0)
                 {
                     var tcs = new UniTaskCompletionSource();

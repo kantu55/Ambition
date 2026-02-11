@@ -49,6 +49,10 @@ namespace Ambition.Core.Managers
             { typeof(BaseDecayPerMonthModel), "BaseDecayPerMonth" },
             { typeof(MatchMonthExtraDecayModel), "MatchMonthExtraDecay" },
             { typeof(VeteranExtraDecayModel), "VeteranExtraDecay" },
+            { typeof(AbBaseGrowthPerMonthModel), "AbBaseGrowthPerMonth" },
+            { typeof(AbGrowthMultByFoodPlanModel), "AbGrowthMultByFoodPlan"  },
+            { typeof(AbGrowthMultByCondStageModel), "AbGrowthMultByCondStage" },
+            { typeof(AbGrowthCapPerMonth), "AbGrowthCapPerMonth" },
         };
 
         /// <summary>
@@ -170,6 +174,22 @@ namespace Ambition.Core.Managers
             else if (type == typeof(VeteranExtraDecayModel))
             {
                 ParseCsvData<VeteranExtraDecayModel>(address);
+            }
+            else if (type == typeof(AbBaseGrowthPerMonthModel))
+            {
+                ParseCsvData<AbBaseGrowthPerMonthModel>(address);
+            }
+            else if (type == typeof(AbGrowthMultByFoodPlanModel))
+            {
+                ParseCsvData<AbGrowthMultByFoodPlanModel>(address);
+            }
+            else if (type == typeof(AbGrowthMultByCondStageModel))
+            {
+                ParseCsvData<AbGrowthMultByCondStageModel>(address);
+            }
+            else if (type == typeof(AbGrowthCapPerMonth))
+            {
+                ParseCsvData<AbGrowthCapPerMonth>(address);
             }
             else
             {
