@@ -11,11 +11,14 @@ namespace Ambition.Core.Managers
     public class MainGameController : MonoBehaviour
     {
         [SerializeField] private MainGameView mainView;
+        [SerializeField] private GameTurnManager gameTurnManager;
 
         /// <summary>
         /// 保留中の行動（ユーザーが「実行」を選択した行動）
         /// </summary>
         private WifeActionModel pendingAction = null;
+
+        private FoodMitModel pendingFood = null;
 
         private void Start()
         {
@@ -47,6 +50,20 @@ namespace Ambition.Core.Managers
                 mainView.SubMenuController.OnActionSelected += OnActionSelectedFromSubMenu;
                 mainView.SubMenuController.OnActionConfirmed += OnActionConfirmedFromSubMenu;
                 mainView.SubMenuController.OnBackPressed += OnSubMenuBackPressed;
+
+            }
+
+            if (mainView.FoodMenuController != null)
+            {
+                mainView.FoodMenuController.OnMenuSelected += OnSelectFoodFromMenu;
+            }
+
+            mainView.SetHomeLayerActive(true);
+            mainView.SetTurnEventLayerActive(false);
+
+            if (gameTurnManager != null)
+            {
+                gameTurnManager.OnTurnCompleted += OnTurnCompleted;
             }
 
             RefreshUI();
@@ -104,6 +121,11 @@ namespace Ambition.Core.Managers
                 mainView.SubMenuController.Close();
             }
 
+            if (pendingFood == null)
+            {
+                return;
+            }
+
             // 確定ボタンを有効化
             if (mainView.ConfirmButton != null)
             {
@@ -145,6 +167,11 @@ namespace Ambition.Core.Managers
                 mainView.SubMenuController.Close();
             }
 
+            if (pendingFood == null)
+            {
+                return;
+            }
+
             // 確定ボタンを有効化
             if (mainView.ConfirmButton != null)
             {
@@ -165,6 +192,34 @@ namespace Ambition.Core.Managers
             {
                 mainView.SubMenuController.Close();
             }
+        }
+
+        /// <summary>
+        /// 食事詳細メニューから食事が選択された時
+        /// </summary>
+        private void OnSelectFoodFromMenu(FoodMitModel food)
+        {
+            Debug.Log($"食事選択: {food.MenuName}");
+
+            pendingFood = food;
+            if (mainView.FoodMenuController != null)
+            {
+                mainView.FoodMenuController.Close();
+            }
+
+            if (pendingAction == null)
+            {
+                return;
+            }
+
+            // 確定ボタンを有効化
+            if (mainView.ConfirmButton != null)
+            {
+                mainView.ConfirmButton.interactable = true;
+            }
+
+            // 選択された食事情報を表示
+            mainView.UpdateSelectedMenu(food);
         }
 
         // --- アクションダイアログ関連 ---
@@ -206,7 +261,7 @@ namespace Ambition.Core.Managers
         /// <summary>
         /// 確定ボタンが押された時
         /// </summary>
-        private void OnConfirmClicked()
+        private async void OnConfirmClicked()
         {
             if (pendingAction == null)
             {
@@ -217,33 +272,41 @@ namespace Ambition.Core.Managers
             Debug.Log($"行動を実行: {pendingAction.Name}");
 
             // 行動を実行
-            if (GameSimulationManager.Instance != null)
+            if (gameTurnManager != null)
             {
-                bool success = GameSimulationManager.Instance.ExecuteWifeAction(pendingAction);
-                if (success)
+                // 確定ボタンを無効化
+                if (mainView.ConfirmButton != null)
                 {
-                    // 行動をクリア
-                    pendingAction = null;
-
-                    // 確定ボタンを無効化
-                    if (mainView.ConfirmButton != null)
-                    {
-                        mainView.ConfirmButton.interactable = false;
-                    }
-
-                    // アクション情報パネルをクリア
-                    mainView.UpdateSelectedAction(null);
-
-                    mainView.ResetAllPreviews();
-
-                    // UIを更新
-                    RefreshUI();
+                    mainView.ConfirmButton.interactable = false;
                 }
-                else
-                {
-                    Debug.LogWarning("行動の実行に失敗しました。");
-                }
+
+                mainView.SetHomeLayerActive(false);
+                mainView.SetTurnEventLayerActive(true);
+
+                // GameTurnManagerを使用してターンを実行
+                await gameTurnManager.ExecuteTurnAsync(pendingAction, pendingFood);
             }
+        }
+
+        /// <summary>
+        /// ターン完了時の処理
+        /// </summary>
+        private void OnTurnCompleted()
+        {
+            // 行動をクリア
+            pendingAction = null;
+            pendingFood = null;
+
+            mainView.SetHomeLayerActive(true);
+            mainView.SetTurnEventLayerActive(false);
+
+            // アクション情報パネルをクリア
+            mainView.UpdateSelectedAction(null);
+
+            mainView.ResetAllPreviews();
+
+            // UIを更新
+            RefreshUI();
         }
 
         // --- 画面更新 ---
@@ -277,6 +340,11 @@ namespace Ambition.Core.Managers
                     mainView.SubMenuController.OnBackPressed -= OnSubMenuBackPressed;
                     mainView.SubMenuController.OnActionConfirmed -= OnActionConfirmedFromSubMenu;
                 }
+            }
+
+            if (gameTurnManager != null)
+            {
+                gameTurnManager.OnTurnCompleted -= OnTurnCompleted;
             }
         }
     }

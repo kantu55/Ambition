@@ -105,5 +105,6 @@ namespace Ambition.Data.Master
         public int Love;
         public int TeamEvaluation;
         public int PublicEye;
+        public int CP;
     }
 }

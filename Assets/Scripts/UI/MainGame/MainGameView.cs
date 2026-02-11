@@ -2,6 +2,7 @@
 using Ambition.Data.Runtime;
 using Ambition.GameCore;
 using Ambition.UI.MainGame.Parts;
+using Ambition.UI.Meal;
 using Cysharp.Threading.Tasks;
 using System.Text;
 using System.Threading;
@@ -36,6 +37,10 @@ namespace Ambition.UI.MainGame
 
         // --- UIコンポーネントへの参照 ---
 
+        [Header("Layer")]
+        [SerializeField] private CanvasGroup HomeCanvasGroup;
+        [SerializeField] private CanvasGroup TurnEventCanvasGroup;
+
         [Header("Global Info")]
         [SerializeField] private TextMeshProUGUI dateText;
         [SerializeField] private TextMeshProUGUI totalMoneyText;
@@ -64,6 +69,7 @@ namespace Ambition.UI.MainGame
         [Header("Sub Controllers")]
         [SerializeField] private SubMenuController subMenuController;
         [SerializeField] private ActionFlowController actionFlowController;
+        [SerializeField] private MealDetailPanelController foodMenuController;
 
         [Header("Preview UI")]
 
@@ -129,6 +135,11 @@ namespace Ambition.UI.MainGame
         /// アクションフローコントローラーへのアクセス
         /// </summary>
         public ActionFlowController ActionFlowController => actionFlowController;
+
+        /// <summary>
+        /// 食事メニューコントローラーへのアクセス
+        /// </summary>
+        public MealDetailPanelController FoodMenuController => foodMenuController;
 
         // --- MonoBehaviourコールバック ---
 
@@ -632,6 +643,26 @@ namespace Ambition.UI.MainGame
             if (cachedImage == null && slider != null && slider.fillRect != null)
             {
                 cachedImage = slider.fillRect.GetComponent<Image>();
+            }
+        }
+
+        public void SetHomeLayerActive(bool isActive)
+        {
+            if (HomeCanvasGroup != null)
+            {
+                HomeCanvasGroup.alpha = isActive ? 1f : 0f;
+                HomeCanvasGroup.interactable = isActive;
+                HomeCanvasGroup.blocksRaycasts = isActive;
+            }
+        }
+
+        public void SetTurnEventLayerActive(bool isActive)
+        {
+            if (TurnEventCanvasGroup != null)
+            {
+                TurnEventCanvasGroup.alpha = isActive ? 1f : 0f;
+                TurnEventCanvasGroup.interactable = isActive;
+                TurnEventCanvasGroup.blocksRaycasts = isActive;
             }
         }
     }

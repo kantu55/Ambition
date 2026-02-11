@@ -37,6 +37,18 @@ namespace Ambition.Core.Managers
             { typeof(FoodMitModel), "FoodMit" },
             { typeof(FoodModel), "MasterFood" },
             { typeof(EventModel), "EventsRandom" },
+
+            // 試合関連
+            { typeof(MatchDifficultyModel), "MatchDifficulty" },
+            { typeof(BaselineAbByYearModel), "BaselineAbByYear" },
+            { typeof(PerformanceRatingThresholdsModel), "PerformanceRatingThresholds" },
+            { typeof(MatchTierDeltaModel), "MatchTierDelta" },
+            { typeof(MatchInjBaseModel), "MatchInjBase" },
+
+            // パラメータ変動関連
+            { typeof(BaseDecayPerMonthModel), "BaseDecayPerMonth" },
+            { typeof(MatchMonthExtraDecayModel), "MatchMonthExtraDecay" },
+            { typeof(VeteranExtraDecayModel), "VeteranExtraDecay" },
         };
 
         /// <summary>
@@ -126,6 +138,38 @@ namespace Ambition.Core.Managers
             else if (type == typeof(EventModel))
             {
                 ParseCsvData<EventModel>(address);
+            }
+            else if (type == typeof(MatchDifficultyModel))
+            {
+                ParseCsvData<MatchDifficultyModel>(address);
+            }
+            else if (type == typeof(BaselineAbByYearModel))
+            {
+                ParseCsvData<BaselineAbByYearModel>(address);
+            }
+            else if (type == typeof(PerformanceRatingThresholdsModel))
+            {
+                ParseCsvData<PerformanceRatingThresholdsModel>(address);
+            }
+            else if (type == typeof(MatchTierDeltaModel))
+            {
+                ParseCsvData<MatchTierDeltaModel>(address);
+            }
+            else if (type == typeof(MatchInjBaseModel))
+            {
+                ParseCsvData<MatchInjBaseModel>(address);
+            }
+            else if (type == typeof(BaseDecayPerMonthModel))
+            {
+                ParseCsvData<BaseDecayPerMonthModel>(address);
+            }
+            else if (type == typeof(MatchMonthExtraDecayModel))
+            {
+                ParseCsvData<MatchMonthExtraDecayModel>(address);
+            }
+            else if (type == typeof(VeteranExtraDecayModel))
+            {
+                ParseCsvData<VeteranExtraDecayModel>(address);
             }
             else
             {

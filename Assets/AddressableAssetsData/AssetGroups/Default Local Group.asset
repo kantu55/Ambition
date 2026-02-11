@@ -39,6 +39,18 @@ MonoBehaviour:
     m_SerializedLabels:
     - MasterData
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 2effe8e5343f85d438d3d079be0e8dd2
+    m_Address: PerformanceRatingThresholds
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - MasterData
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 36fbe862c8ae42e4c918f3d78a698bb8
+    m_Address: MatchInjBase
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - MasterData
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 6f1e996e6106b554590971dbdd884d5d
     m_Address: WifeActions
     m_ReadOnly: 0
@@ -51,8 +63,43 @@ MonoBehaviour:
     m_SerializedLabels:
     - MasterData
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 8f15e82f7e3fec241973d6e915113ae9
+    m_Address: MatchTierDelta
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - MasterData
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 9e2d073571fb15b4480340620f201342
+    m_Address: VeteranExtraDecay
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - MasterData
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: ba2e589ad6e7c454d9ece5e01ed91759
+    m_Address: BaseDecayPerMonth
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: d735887e43e037c46976ef345b8eba50
+    m_Address: MatchMonthExtraDecay
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - MasterData
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: dcfec592c7b52eb4fac6b0aaa5e0952e
+    m_Address: MatchDifficulty
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - MasterData
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: dde5f68275f04804bbd0a110bf367f77
     m_Address: GameSettings
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - MasterData
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: df6c7eb14077f874b8c68d0150ca88df
+    m_Address: BaselineAbByYear
     m_ReadOnly: 0
     m_SerializedLabels:
     - MasterData

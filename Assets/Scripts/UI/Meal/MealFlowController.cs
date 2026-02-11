@@ -157,15 +157,6 @@ namespace Ambition.UI.Meal
                 resultBubble.ShowResult(menu);
             }
 
-            if (mainGameView != null)
-            {
-                mainGameView.UpdateSelectedMenu(menu);
-            }
-
-            // ここで実際の食事処理を実行する（コストの適用など）
-            // 例: RuntimeFixedCostの更新、プレイヤーステータスへの効果適用など
-            Debug.Log($"[MealFlowController] 食事を実行: {menu.MenuName}");
-
             // 全パネルを閉じる
             HideAllPanels();
             currentState = MealFlowState.Hidden;

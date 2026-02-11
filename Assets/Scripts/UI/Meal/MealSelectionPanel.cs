@@ -13,6 +13,7 @@ namespace Ambition.UI.Meal
     {
         [Header("Main View")]
         [SerializeField] private MainGameView mainView;
+
         [Header("UI Components")]
         [SerializeField] private GameObject panelRoot;
         [SerializeField] private Transform menuButtonContainer;
@@ -35,9 +36,9 @@ namespace Ambition.UI.Meal
         /// </summary>
         public event Action OnBackPressed;
 
-        private List<Button> instantiatedButtons = new List<Button>();
+        private List<Button>  instantiatedButtons = new List<Button>();
         private StringBuilder stringBuilder = new StringBuilder(256);
-        private FoodMitModel currentlyDisplayedMenu;
+        private FoodMitModel  currentlyDisplayedMenu;
 
         private void Awake()
         {
