@@ -18,7 +18,7 @@ namespace Ambition.Core.Managers
         /// </summary>
         private WifeActionModel pendingAction = null;
 
-        private FoodMitModel pendingFood = null;
+        private FoodModel pendingFood = null;
 
         private void Start()
         {
@@ -197,7 +197,7 @@ namespace Ambition.Core.Managers
         /// <summary>
         /// 食事詳細メニューから食事が選択された時
         /// </summary>
-        private void OnSelectFoodFromMenu(FoodMitModel food)
+        private void OnSelectFoodFromMenu(FoodModel food)
         {
             Debug.Log($"食事選択: {food.MenuName}");
 

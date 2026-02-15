@@ -231,7 +231,7 @@ namespace Ambition.UI.MainGame
             cachedActionDeltaAbility = 0;
         }
 
-        public void UpdateSelectedMenu(FoodMitModel menu)
+        public void UpdateSelectedMenu(FoodModel menu)
         {
             cachedActionDeltaHP += menu.MitigHP;
             cachedActionDeltaMP += menu.MitigMP;

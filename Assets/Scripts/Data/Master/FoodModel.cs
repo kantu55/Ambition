@@ -10,41 +10,28 @@ namespace Ambition.Data.Master
     [Serializable]
     public class FoodModel : IDataModel
     {
-        // --- メンバ変数 ---
-        private int kind;
-        private int id;
-        private string tier;
-        private string name;
-        private int primary;
-        private int type;
-        private int monthlyCost;
-        private int costLimit;
-        private int mitigTotal;
-        private string notes;
-
-        // --- プロパティ ---
-        public int Kind => kind;
-        public string Tier => tier;
-        public int Id => id;
-        public string Name => name;
-        public int Primary => primary;
-        public int Type => type;
-        public int MonthlyCost => monthlyCost;
-        public int CostLimit => costLimit;
-        public int MitigTotal => mitigTotal;
-        public string Notes => notes;
+        public int Id { get; private set; }
+        public int TierType { get; private set; }
+        public string TierName { get; private set; }
+        public int Price { get; private set; }
+        public string MenuName { get; private set; }
+        public int MenuType { get; private set; }
+        public int MitigHP { get; private set; }
+        public int MitigMP { get; private set; }
+        public int MitigCOND { get; private set; }
+        public string Notes { get; private set; }
         public void Initialize(CsvData data, int rowIndex)
         {
-            kind = CsvHelper.ConvertToInt(data.GetValue(rowIndex, "kind"));
-            id = CsvHelper.ConvertToInt(data.GetValue(rowIndex, "id"));
-            tier = data.GetValue(rowIndex, "tier");
-            name = data.GetValue(rowIndex, "name");
-            primary = CsvHelper.ConvertToInt(data.GetValue(rowIndex, "primary"));
-            type = CsvHelper.ConvertToInt(data.GetValue(rowIndex, "type"));
-            monthlyCost = CsvHelper.ConvertToInt(data.GetValue(rowIndex, "monthly_cost"));
-            costLimit = CsvHelper.ConvertToInt(data.GetValue(rowIndex, "cost_limit"));
-            mitigTotal = CsvHelper.ConvertToInt(data.GetValue(rowIndex, "mitig_total"));
-            notes = data.GetValue(rowIndex, "notes");
+            Id = CsvHelper.ConvertToInt(data.GetValue(rowIndex, "Id"));
+            TierType = CsvHelper.ConvertToInt(data.GetValue(rowIndex, "TierType"));
+            TierName = CsvHelper.SanitizeString(data.GetValue(rowIndex, "TierName"));
+            Price = CsvHelper.ConvertToInt(data.GetValue(rowIndex, "Price"));
+            MenuType = CsvHelper.ConvertToInt(data.GetValue(rowIndex, "MenuType"));
+            MenuName = CsvHelper.SanitizeString(data.GetValue(rowIndex, "MenuName"));
+            MitigHP = CsvHelper.ConvertToInt(data.GetValue(rowIndex, "MitigHP"));
+            MitigMP = CsvHelper.ConvertToInt(data.GetValue(rowIndex, "MitigMP"));
+            MitigCOND = CsvHelper.ConvertToInt(data.GetValue(rowIndex, "MitigCOND"));
+            Notes = data.GetValue(rowIndex, "Note");
         }
     }
 }

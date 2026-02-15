@@ -29,7 +29,7 @@ namespace Ambition.UI.Meal
         /// <summary>
         /// メニューが選択された時のコールバック
         /// </summary>
-        public event Action<FoodMitModel> OnMenuSelected;
+        public event Action<FoodModel> OnMenuSelected;
 
         /// <summary>
         /// 戻るボタンが押された時のコールバック
@@ -38,7 +38,7 @@ namespace Ambition.UI.Meal
 
         private List<Button>  instantiatedButtons = new List<Button>();
         private StringBuilder stringBuilder = new StringBuilder(256);
-        private FoodMitModel  currentlyDisplayedMenu;
+        private FoodModel  currentlyDisplayedMenu;
 
         private void Awake()
         {
@@ -70,7 +70,7 @@ namespace Ambition.UI.Meal
         /// <summary>
         /// メニュー選択パネルを表示
         /// </summary>
-        public void Show(List<FoodMitModel> menus)
+        public void Show(List<FoodModel> menus)
         {
             if (panelRoot != null)
             {
@@ -114,7 +114,7 @@ namespace Ambition.UI.Meal
         /// <summary>
         /// メニューボタンを生成
         /// </summary>
-        private void CreateMenuButton(FoodMitModel menu)
+        private void CreateMenuButton(FoodModel menu)
         {
             if (menuButtonPrefab == null || menuButtonContainer == null)
             {
@@ -142,7 +142,7 @@ namespace Ambition.UI.Meal
         /// <summary>
         /// メニューがクリックされた時の処理（詳細表示とメニュー選択を兼ねる）
         /// </summary>
-        private void HandleMenuHovered(FoodMitModel menu)
+        private void HandleMenuHovered(FoodModel menu)
         {
             // 詳細パネルを表示
             ShowMenuDetails(menu);
@@ -154,7 +154,7 @@ namespace Ambition.UI.Meal
         /// <summary>
         /// メニュー詳細を表示
         /// </summary>
-        private void ShowMenuDetails(FoodMitModel menu)
+        private void ShowMenuDetails(FoodModel menu)
         {
             if (detailsPanelRoot != null)
             {
@@ -192,7 +192,7 @@ namespace Ambition.UI.Meal
         /// <summary>
         /// メニュー効果のテキストを生成
         /// </summary>
-        private string BuildEffectText(FoodMitModel menu)
+        private string BuildEffectText(FoodModel menu)
         {
             stringBuilder.Clear();
             stringBuilder.Append("【効果】\n");

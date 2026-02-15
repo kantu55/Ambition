@@ -7,19 +7,19 @@ namespace Ambition.UI.Meal
     /// 食事選択メニューコントローラー
     /// 詳細パネル付きの汎用コントローラーを継承
     /// </summary>
-    public class MealDetailPanelController : DetailPanelController<FoodMitModel>
+    public class MealDetailPanelController : DetailPanelController<FoodModel>
     {
         [UnityEngine.SerializeField] private MainGameView mainGameView;
 
         /// <summary>
         /// メニューが選択された時のコールバック（互換性のため）
         /// </summary>
-        public event System.Action<FoodMitModel> OnMenuSelected;
+        public event System.Action<FoodModel> OnMenuSelected;
 
         /// <summary>
         /// メニューが確定された時のコールバック（互換性のため）
         /// </summary>
-        public event System.Action<FoodMitModel> OnMenuConfirmed;
+        public event System.Action<FoodModel> OnMenuConfirmed;
 
         protected override void Awake()
         {
@@ -33,7 +33,7 @@ namespace Ambition.UI.Meal
         /// <summary>
         /// メニューを選択して詳細パネルを更新（互換性のため）
         /// </summary>
-        public void SelectMenu(FoodMitModel menu)
+        public void SelectMenu(FoodModel menu)
         {
             SelectItem(menu);
         }
@@ -41,7 +41,7 @@ namespace Ambition.UI.Meal
         /// <summary>
         /// パネルを表示（互換性のため）
         /// </summary>
-        public void Show(System.Collections.Generic.List<FoodMitModel> menus)
+        public void Show(System.Collections.Generic.List<FoodModel> menus)
         {
             Open(menus);
         }
@@ -56,18 +56,18 @@ namespace Ambition.UI.Meal
 
         // === 基底クラスの抽象メソッド実装 ===
 
-        protected override string GetItemName(FoodMitModel menu)
+        protected override string GetItemName(FoodModel menu)
         {
             return menu.MenuName;
         }
 
-        protected override string BuildCostText(FoodMitModel menu)
+        protected override string BuildCostText(FoodModel menu)
         {
             // 食事にはコストがないため空を返す
             return string.Empty;
         }
 
-        protected override string BuildEffectsText(FoodMitModel menu)
+        protected override string BuildEffectsText(FoodModel menu)
         {
             stringBuilder.Clear();
             stringBuilder.Append(EFFECTS_HEADER);
@@ -95,7 +95,7 @@ namespace Ambition.UI.Meal
             return stringBuilder.ToString();
         }
 
-        protected override void UpdateItemImage(FoodMitModel menu)
+        protected override void UpdateItemImage(FoodModel menu)
         {
             // 画像（将来的に実装される場合のため）
             // if (detailImage != null)
@@ -104,7 +104,7 @@ namespace Ambition.UI.Meal
             // }
         }
 
-        protected override void ShowPreview(FoodMitModel menu)
+        protected override void ShowPreview(FoodModel menu)
         {
             // プレビュー表示を更新
             if (mainGameView != null)

@@ -23,10 +23,6 @@ namespace Ambition.UI.Meal
 
         private RuntimeFixedCost runtimeFixedCost;
         private List<FoodModel> foodModels;
-        private List<FoodMitModel> foodMitModels;
-
-        private string currentSelectedTier;
-        private FoodMitModel currentSelectedMenu;
 
         /// <summary>
         /// 食事機能の状態
@@ -91,14 +87,13 @@ namespace Ambition.UI.Meal
             if (DataManager.Instance != null)
             {
                 foodModels = DataManager.Instance.GetDatas<FoodModel>();
-                foodMitModels = DataManager.Instance.GetDatas<FoodMitModel>();
             }
             else
             {
                 Debug.LogWarning("[MealFlowController] DataManager.Instance is null");
                 foodModels = new List<FoodModel>();
-                foodMitModels = new List<FoodMitModel>();
             }
+
             ShowTierSelection();
         }
 
@@ -123,7 +118,6 @@ namespace Ambition.UI.Meal
         /// </summary>
         private void OnTierSelected(string tier)
         {
-            currentSelectedTier = tier;
             ShowMenuSelection(tier);
         }
 
@@ -139,7 +133,7 @@ namespace Ambition.UI.Meal
             if (mealDetailPanel != null)
             {
                 // 選択されたティアのメニューのみをフィルタリング
-                List<FoodMitModel> menusForTier = foodMitModels.FindAll(m => m.Tier == tier);
+                List<FoodModel> menusForTier = foodModels.FindAll(m => m.TierName == tier);
                 mealDetailPanel.Show(menusForTier);
             }
         }
@@ -147,10 +141,8 @@ namespace Ambition.UI.Meal
         /// <summary>
         /// メニューが選択された時の処理
         /// </summary>
-        private void OnMenuConfirmed(FoodMitModel menu)
+        private void OnMenuConfirmed(FoodModel menu)
         {
-            currentSelectedMenu = menu;
-
             // 結果バブルを表示
             if (resultBubble != null)
             {

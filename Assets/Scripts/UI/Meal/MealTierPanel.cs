@@ -15,6 +15,16 @@ namespace Ambition.UI.Meal
     /// </summary>
     public class MealTierPanel : MonoBehaviour
     {
+        public enum TierType
+        {
+            POVERTY,
+            Q0,
+            Q1,
+            Q2,
+            Q3,
+            Q4,
+        }
+
         [Header("UI Components")]
         [SerializeField] private GameObject panelRoot;
         [SerializeField] private Button tierButtonPrefab;
@@ -82,13 +92,9 @@ namespace Ambition.UI.Meal
             }
 
             // Tier 0-4 のボタンを生成
-            for (int tier = 0; tier <= 4; tier++)
+            foreach (var tier in Enum.GetValues(typeof(TierType)))
             {
-                stringBuilder.Clear();
-                stringBuilder.Append("Q");
-                stringBuilder.Append(tier);
-                string tierString = stringBuilder.ToString();
-                CreateTierButton(tierString, foodModels);
+                CreateTierButton(tier.ToString(), foodModels);
             }
         }
 
@@ -105,10 +111,10 @@ namespace Ambition.UI.Meal
             if (buttonText != null)
             {
                 // FoodModelからティアに対応する名前を取得
-                FoodModel foodModel = foodModels.Find(f => f.Tier == tier);
+                FoodModel foodModel = foodModels.Find(f => f.TierName == tier);
                 if (foodModel != null)
                 {
-                    buttonText.text = foodModel.Name;
+                    buttonText.text = foodModel.TierName;
                 }
                 else
                 {

@@ -25,14 +25,14 @@ namespace Ambition.UI.Meal
         /// <summary>
         /// 確認ボタンが押された時のコールバック
         /// </summary>
-        public event Action<FoodMitModel> OnConfirmPressed;
+        public event Action<FoodModel> OnConfirmPressed;
 
         /// <summary>
         /// 戻るボタンが押された時のコールバック
         /// </summary>
         public event Action OnBackPressed;
 
-        private FoodMitModel currentMenu;
+        private FoodModel currentMenu;
         private StringBuilder stringBuilder = new StringBuilder(256);
 
         private void Awake()
@@ -70,7 +70,7 @@ namespace Ambition.UI.Meal
         /// <summary>
         /// 確認ダイアログを表示
         /// </summary>
-        public void Show(FoodMitModel menu)
+        public void Show(FoodModel menu)
         {
             if (menu == null)
             {
@@ -140,7 +140,7 @@ namespace Ambition.UI.Meal
         /// <summary>
         /// メニュー効果のテキストを生成
         /// </summary>
-        private string BuildEffectText(FoodMitModel menu)
+        private string BuildEffectText(FoodModel menu)
         {
             stringBuilder.Clear();
             stringBuilder.Append("【効果】\n");

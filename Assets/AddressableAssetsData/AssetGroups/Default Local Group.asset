@@ -36,7 +36,8 @@ MonoBehaviour:
   - m_GUID: 1f34d8404f0872b4f98c18ff6420f6fe
     m_Address: AbGrowthMultByFoodPlan
     m_ReadOnly: 0
-    m_SerializedLabels: []
+    m_SerializedLabels:
+    - MasterData
     FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 2965779a3c39da34fae9c4f22fdd40f6
     m_Address: Housing
@@ -124,6 +125,12 @@ MonoBehaviour:
     FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: dfe99a42e67e80d4282e927f6498ccf8
     m_Address: MasterFood
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - MasterData
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: ebbd262d0bd3a2949a921a9342307bd0
+    m_Address: Food
     m_ReadOnly: 0
     m_SerializedLabels:
     - MasterData

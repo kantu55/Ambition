@@ -25,7 +25,7 @@ namespace Ambition.UI.Meal
             }
         }
 
-        public void ShowResult(FoodMitModel menu)
+        public void ShowResult(FoodModel menu)
         {
             if (menu == null)
             {
@@ -51,12 +51,9 @@ namespace Ambition.UI.Meal
             }
         }
 
-        private string BuildResultText(FoodMitModel menu)
+        private string BuildResultText(FoodModel menu)
         {
-            var list = DataManager.Instance.GetDatas<FoodModel>();
-            var food = list.FirstOrDefault(v => v.Id.ToString() == menu.Tier);
-            int cost = food != null ? food.MonthlyCost : 0;
-
+            int cost = menu.Price;
             stringBuilder.Clear();
             stringBuilder.Append(menu.MenuName);
             return stringBuilder.ToString();

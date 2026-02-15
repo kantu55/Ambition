@@ -34,8 +34,7 @@ namespace Ambition.Core.Managers
             { typeof(HousingModel), "Housing" },
             { typeof(GameSettingModel), "GameSettings" },
             { typeof(WifeActionModel), "WifeActions" },
-            { typeof(FoodMitModel), "FoodMit" },
-            { typeof(FoodModel), "MasterFood" },
+            { typeof(FoodModel), "Food" },
             { typeof(EventModel), "EventsRandom" },
 
             // 試合関連
@@ -134,10 +133,6 @@ namespace Ambition.Core.Managers
             else if (type == typeof(FoodModel))
             {
                  ParseCsvData<FoodModel>(address);
-            }
-            else if (type == typeof(FoodMitModel))
-            {
-                ParseCsvData<FoodMitModel>(address);
             }
             else if (type == typeof(EventModel))
             {

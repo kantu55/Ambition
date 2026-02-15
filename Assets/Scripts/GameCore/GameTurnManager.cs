@@ -119,7 +119,7 @@ namespace Ambition.GameCore
         /// <summary>
         /// ターン進行を一元管理する非同期メソッド
         /// </summary>
-        public async UniTask ExecuteTurnAsync(WifeActionModel action, FoodMitModel food)
+        public async UniTask ExecuteTurnAsync(WifeActionModel action, FoodModel food)
         {
             if (isProcessingTurn)
             {
@@ -318,7 +318,7 @@ namespace Ambition.GameCore
         /// <summary>
         /// Phase 4: パラメータ変動の表示
         /// </summary>
-        private async UniTask ShowParameterChangePhaseAsync(WifeActionModel action, FoodMitModel food)
+        private async UniTask ShowParameterChangePhaseAsync(WifeActionModel action, FoodModel food)
         {
             Debug.Log("[GameTurnManager] Phase 4: Parameter changes");
 
