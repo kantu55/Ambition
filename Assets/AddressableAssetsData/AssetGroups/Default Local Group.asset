@@ -27,8 +27,14 @@ MonoBehaviour:
     m_SerializedLabels:
     - MasterData
     FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: 1bef48b4da88c6d4db445730471f8b88
-    m_Address: FoodMit
+  - m_GUID: 1a0ad8de88dccf64d93957eb71dd908c
+    m_Address: EventMaster
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - MasterData
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 1dc8b0cf48f792d4585f5d0a7a149320
+    m_Address: EventOption
     m_ReadOnly: 0
     m_SerializedLabels:
     - MasterData
@@ -69,6 +75,12 @@ MonoBehaviour:
     m_SerializedLabels:
     - MasterData
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 720ed7e37e2b1e8418d5afe4979bfff5
+    m_Address: EventBlock
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - MasterData
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 8f15e82f7e3fec241973d6e915113ae9
     m_Address: MatchTierDelta
     m_ReadOnly: 0
@@ -82,13 +94,19 @@ MonoBehaviour:
     - MasterData
     FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: a3f1fa8b4a5c96a40978d7ce4da58aaf
-    m_Address: Assets/GameAssets/MasterData/Csv/AbBaseGrowthPerMonth.csv
+    m_Address: AbBaseGrowthPerMonth
     m_ReadOnly: 0
     m_SerializedLabels:
     - MasterData
     FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: b15a8e189416d604e931ef8699eefd2b
-    m_Address: Assets/GameAssets/MasterData/Csv/AbGrowthMultByCondStage.csv
+    m_Address: AbGrowthMultByCondStage
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - MasterData
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: b3cef2f75423cf44aaf8b2be95c235a9
+    m_Address: EventDialog
     m_ReadOnly: 0
     m_SerializedLabels:
     - MasterData
@@ -123,12 +141,6 @@ MonoBehaviour:
     m_SerializedLabels:
     - MasterData
     FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: dfe99a42e67e80d4282e927f6498ccf8
-    m_Address: MasterFood
-    m_ReadOnly: 0
-    m_SerializedLabels:
-    - MasterData
-    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: ebbd262d0bd3a2949a921a9342307bd0
     m_Address: Food
     m_ReadOnly: 0
@@ -136,7 +148,7 @@ MonoBehaviour:
     - MasterData
     FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: f0deac2266a434e46ad7dc153bd5140b
-    m_Address: Assets/GameAssets/MasterData/Csv/AbGrowthCapPerMonth.csv
+    m_Address: AbGrowthCapPerMonth
     m_ReadOnly: 0
     m_SerializedLabels:
     - MasterData

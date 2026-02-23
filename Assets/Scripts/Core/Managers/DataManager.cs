@@ -1,4 +1,5 @@
 ﻿using Ambition.Data.Master;
+using Ambition.Data.Master.Event;
 using Ambition.Utility;
 using Cysharp.Threading.Tasks;
 using System;
@@ -52,6 +53,12 @@ namespace Ambition.Core.Managers
             { typeof(AbGrowthMultByFoodPlanModel), "AbGrowthMultByFoodPlan"  },
             { typeof(AbGrowthMultByCondStageModel), "AbGrowthMultByCondStage" },
             { typeof(AbGrowthCapPerMonth), "AbGrowthCapPerMonth" },
+
+            // イベント関連
+            { typeof(EventMaster), "EventMaster"  },
+            { typeof(EventBlock), "EventBlock" },
+            { typeof(EventDialog), "EventDialog" },
+            { typeof(EventOption), "EventOption" },
         };
 
         /// <summary>
@@ -185,6 +192,22 @@ namespace Ambition.Core.Managers
             else if (type == typeof(AbGrowthCapPerMonth))
             {
                 ParseCsvData<AbGrowthCapPerMonth>(address);
+            }
+            else if (type == typeof(EventMaster))
+            {
+                ParseCsvData<EventMaster>(address);
+            }
+            else if (type == typeof(EventBlock))
+            {
+                ParseCsvData<EventBlock>(address);
+            }
+            else if (type == typeof(EventDialog))
+            {
+                ParseCsvData<EventDialog>(address);
+            }
+            else if (type == typeof(EventOption))
+            {
+                ParseCsvData<EventOption>(address);
             }
             else
             {
