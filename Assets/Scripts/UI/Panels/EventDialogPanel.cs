@@ -4,6 +4,10 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 using System.Collections.Generic;
+using Cysharp.Threading.Tasks;
+using UnityEngine.InputSystem.iOS;
+using Ambition.Core.Managers;
+using System.Linq;
 
 namespace Ambition.UI.Panels
 {
@@ -29,6 +33,8 @@ namespace Ambition.UI.Panels
         public event System.Action OnEventCancelled;
 
         private EventMaster currentEvent;
+        private UniTaskCompletionSource nextTcs;
+        private UniTaskCompletionSource<EventOption> optionTcs;
 
         protected override void Awake()
         {
@@ -56,6 +62,82 @@ namespace Ambition.UI.Panels
             {
                 cancelButton.onClick.RemoveListener(HandleCancelClicked);
             }
+        }
+
+        public async UniTask ShowEventAsync(EventMaster eventData)
+        {
+            if (eventData == null)
+            {
+                return;
+            }
+
+            currentEvent = eventData;
+            if (eventTitleText != null)
+            {
+                eventTitleText.enabled = true;
+                eventTitleText.SetText(eventData.Title);
+            }
+
+            Show();
+
+            var allDialogs = DataManager.Instance.GetDatas<EventDialog>();
+            var allOptions = DataManager.Instance.GetDatas<EventOption>();
+
+            int currentGroupId = eventData.FirstDialogGroupId;
+
+            while (currentGroupId != 0)
+            {
+                var dialogs = allDialogs.Where(v => v.DialogGroupId == currentGroupId).OrderBy(vv => vv.PageNumber).ToList();
+                if (dialogs.Count == 0)
+                {
+                    break;
+                }
+
+                int nextGroupId = 0;
+
+                foreach (var dialog in dialogs)
+                {
+                    ShowDialog(dialog);
+
+                    if (dialog.OptionGroupId > 0)
+                    {
+                        var options = allOptions.Where(v => v.OptionGroupId == dialog.OptionGroupId).ToList();
+                        if (confirmButton != null)
+                        {
+                            confirmButton.gameObject.SetActive(false);
+                        }
+
+                        optionTcs = new UniTaskCompletionSource<EventOption>();
+                        ShowOptions(options, selectedOption =>
+                        {
+                            ClearOptions();
+                            optionTcs?.TrySetResult(selectedOption);
+                        });
+
+                        var selectedOption = await optionTcs.Task;
+                        optionTcs = null;
+
+                        nextGroupId = selectedOption.NextDialogGroupId;
+                        break;
+                    }
+                    else
+                    {
+                        if (confirmButton != null)
+                        {
+                            confirmButton.gameObject.SetActive(true);
+                        }
+
+                        nextTcs = new UniTaskCompletionSource();
+                        await nextTcs.Task; // 確認ボタンが押されるまで待機
+                        nextTcs = null;
+                    }
+                }
+
+                currentGroupId = nextGroupId;
+            }
+
+            HideAll();
+            OnEventConfirmed?.Invoke(eventData);
         }
 
         public void ShowDialog(EventDialog dialogData)
@@ -113,6 +195,12 @@ namespace Ambition.UI.Panels
 
         private void HandleConfirmClicked()
         {
+            if (nextTcs != null)
+            {
+                nextTcs?.TrySetResult();
+                return;
+            }
+
             OnEventConfirmed?.Invoke(currentEvent);
             Hide();
         }

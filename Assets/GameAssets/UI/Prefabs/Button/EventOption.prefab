@@ -34,11 +34,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6246920191443084322, guid: c804ea31399a1c54fbbfe5b1167eab74, type: 3}
       propertyPath: m_SizeDelta.x
-      value: 200
+      value: 500
       objectReference: {fileID: 0}
     - target: {fileID: 6246920191443084322, guid: c804ea31399a1c54fbbfe5b1167eab74, type: 3}
       propertyPath: m_SizeDelta.y
-      value: 50
+      value: 80
       objectReference: {fileID: 0}
     - target: {fileID: 6246920191443084322, guid: c804ea31399a1c54fbbfe5b1167eab74, type: 3}
       propertyPath: m_LocalPosition.x
@@ -90,7 +90,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6351712780745617087, guid: c804ea31399a1c54fbbfe5b1167eab74, type: 3}
       propertyPath: m_Name
-      value: GenericButton
+      value: EventOption
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []

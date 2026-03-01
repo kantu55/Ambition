@@ -305,11 +305,7 @@ namespace Ambition.GameCore
                 var eventData = DataManager.Instance.GetDatas<EventMaster>().FirstOrDefault(e => e.EventId == scheduledEventId);
                 if (eventData != null)
                 {
-                    Debug.Log($"[GameTurnManager] Showing scheduled event: {eventData.Title}");
-                    var tcs = new UniTaskCompletionSource();
-                    currentEventTask = tcs;
-                    await tcs.Task;
-                    currentEventTask = null;
+                    await eventDialogPanel.ShowEventAsync(eventData);
                 }
             }
 
