@@ -1,5 +1,6 @@
 using Ambition.Core.Managers;
 using Ambition.Data.Master;
+using Ambition.Data.Master.Event;
 using Ambition.UI.Panels;
 using Cysharp.Threading.Tasks;
 using System;
@@ -295,21 +296,22 @@ namespace Ambition.GameCore
                 return;
             }
 
-            // Pick random event
-            EventModel randomEvent = PickRandomEvent();
+            int currentMonth = GameSimulationManager.Instance.Date.Month;
+            var schedule = GameSimulationManager.Instance.EventSchedule;
+            int scheduledEventId = schedule != null ? schedule.GetEventIdForMonth(currentMonth) : -1;
 
-            if (randomEvent != null && eventDialogPanel != null)
+            if (scheduledEventId != -1)
             {
-                Debug.Log($"[GameTurnManager] Showing event: {randomEvent.Title}");
-
-                // Show event dialog and wait for user to confirm
-                var tcs = new UniTaskCompletionSource();
-                currentEventTask = tcs;
-
-                eventDialogPanel.ShowEvent(randomEvent);
-
-                await tcs.Task;
-                currentEventTask = null;
+                var eventData = DataManager.Instance.GetDatas<EventMaster>().FirstOrDefault(e => e.EventId == scheduledEventId);
+                if (eventData != null)
+                {
+                    Debug.Log($"[GameTurnManager] Showing scheduled event: {eventData.Title}");
+                    var tcs = new UniTaskCompletionSource();
+                    currentEventTask = tcs;
+                    eventDialogPanel.ShowEvent(eventData);
+                    await tcs.Task;
+                    currentEventTask = null;
+                }
             }
 
             await UniTask.Yield();
@@ -536,6 +538,7 @@ namespace Ambition.GameCore
                 return;
             }
 
+            GameSimulationManager.Instance.ProceedTurn();
         }
 
         private EventModel PickRandomEvent()
@@ -557,7 +560,7 @@ namespace Ambition.GameCore
             currentMatchTask?.TrySetResult();
         }
 
-        private void OnEventConfirmed(EventModel eventData)
+        private void OnEventConfirmed(EventMaster eventData)
         {
             if (eventData == null || GameSimulationManager.Instance == null)
             {

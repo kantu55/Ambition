@@ -1,4 +1,5 @@
 ﻿using Ambition.Data.Master;
+using Ambition.Data.Master.Event;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -16,10 +17,10 @@ namespace Ambition.UI.Panels
         [SerializeField] private Button confirmButton;
         [SerializeField] private Button cancelButton;
 
-        public event System.Action<EventModel> OnEventConfirmed;
+        public event System.Action<EventMaster> OnEventConfirmed;
         public event System.Action OnEventCancelled;
 
-        private EventModel currentEvent;
+        private EventMaster currentEvent;
 
         protected override void Awake()
         {
@@ -50,7 +51,7 @@ namespace Ambition.UI.Panels
         }
 
 
-        public void ShowEvent(EventModel eventModel)
+        public void ShowEvent(EventMaster eventModel)
         {
             if (eventModel == null)
             {
@@ -68,12 +69,12 @@ namespace Ambition.UI.Panels
 
             if (eventDescriptionText != null)
             {
-                eventDescriptionText.SetText(eventModel.Note);
+                eventDescriptionText.SetText(eventModel.EventType.ToString());
             }
 
             if (eventEffectsText != null)
             {
-                eventEffectsText.SetText(eventModel.Effect);
+                //eventEffectsText.SetText(eventModel.Effect);
             }
 
             if (confirmButton != null)
