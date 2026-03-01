@@ -3,6 +3,7 @@ using Ambition.Data.Master.Event;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
+using System.Collections.Generic;
 
 namespace Ambition.UI.Panels
 {
@@ -11,11 +12,18 @@ namespace Ambition.UI.Panels
     /// </summary>
     public class EventDialogPanel : BaseGamePanel
     {
+        private const int SPEAKER_HUSBAND = 1;
+        private const int SPEAKER_WIFE = 2;
+
         [SerializeField] private TextMeshProUGUI eventTitleText;
-        [SerializeField] private TextMeshProUGUI eventDescriptionText;
-        [SerializeField] private TextMeshProUGUI eventEffectsText;
+        [SerializeField] private TextMeshProUGUI eventSpeakerText;
+        [SerializeField] private TextMeshProUGUI eventMessageText;
         [SerializeField] private Button confirmButton;
         [SerializeField] private Button cancelButton;
+
+        [Header("Options")]
+        [SerializeField] private Transform optionGroup;
+        [SerializeField] private Button optionButtonPrefab;
 
         public event System.Action<EventMaster> OnEventConfirmed;
         public event System.Action OnEventCancelled;
@@ -50,41 +58,42 @@ namespace Ambition.UI.Panels
             }
         }
 
-
-        public void ShowEvent(EventMaster eventModel)
+        public void ShowDialog(EventDialog dialogData)
         {
-            if (eventModel == null)
+            eventSpeakerText.enabled = true;
+            eventMessageText.enabled = true;
+
+            switch (dialogData.SpeakerId)
             {
-                Debug.LogWarning("[EventDialogPanel]イベントデータがない");
-                return;
+                case SPEAKER_HUSBAND:
+                    eventSpeakerText.SetText("夫");
+                    break;
+
+                case SPEAKER_WIFE:
+                    eventSpeakerText.SetText("妻");
+                    break;
             }
 
-            currentEvent = eventModel;
-            Show();
+            eventMessageText.SetText(dialogData.Text);
+        }
 
-            if (eventTitleText != null)
-            {
-                eventTitleText.SetText(eventModel.Title);
-            }
+        public void ShowOptions(List<EventOption> options, System.Action<EventOption> onOptionSelected)
+        {
+            ClearOptions();
+            optionGroup.gameObject.SetActive(true);
 
-            if (eventDescriptionText != null)
+            foreach (EventOption option in options)
             {
-                eventDescriptionText.SetText(eventModel.EventType.ToString());
-            }
+                GameObject buttonObj = Instantiate(optionButtonPrefab.gameObject, optionGroup);
+                TextMeshProUGUI buttonText = buttonObj.GetComponentInChildren<TextMeshProUGUI>();
+                Button button = buttonObj.GetComponent<Button>();
+                if (buttonText != null)
+                {
+                    buttonText.SetText(option.Text);
+                }
 
-            if (eventEffectsText != null)
-            {
-                //eventEffectsText.SetText(eventModel.Effect);
-            }
-
-            if (confirmButton != null)
-            {
-                confirmButton.gameObject.SetActive(true);
-            }
-
-            if (cancelButton != null)
-            {
-                cancelButton.gameObject.SetActive(false);
+                EventOption capturedOption = option; // クロージャ対策
+                button.onClick.AddListener(() => onOptionSelected(capturedOption));
             }
         }
 
@@ -112,6 +121,24 @@ namespace Ambition.UI.Panels
         {
             OnEventCancelled?.Invoke();
             Hide();
+        }
+
+        public void ClearOptions()
+        {
+            foreach (Transform child in optionGroup)
+            {
+                Destroy(child.gameObject);
+            }
+
+            optionGroup.gameObject.SetActive(false);
+        }
+
+        private void HideAll()
+        {
+            base.Hide();
+            eventTitleText.enabled = false;
+            eventSpeakerText.enabled = false;
+            eventMessageText.enabled = false;
         }
     }
 }

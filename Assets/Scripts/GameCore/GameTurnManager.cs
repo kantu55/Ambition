@@ -308,7 +308,6 @@ namespace Ambition.GameCore
                     Debug.Log($"[GameTurnManager] Showing scheduled event: {eventData.Title}");
                     var tcs = new UniTaskCompletionSource();
                     currentEventTask = tcs;
-                    eventDialogPanel.ShowEvent(eventData);
                     await tcs.Task;
                     currentEventTask = null;
                 }
