@@ -2,6 +2,7 @@
 using Ambition.Core.Constants;
 using Ambition.Core.Managers;
 using Ambition.Data.Master;
+using Ambition.Data.Master.Event;
 using Ambition.Data.Runtime;
 using Cysharp.Threading.Tasks;
 using System.IO;
@@ -60,6 +61,11 @@ namespace Ambition.GameCore
         private RuntimeReputation reputation;
 
         /// <summary>
+        /// 年間イベントスケジュール
+        /// </summary>
+        private RuntimeEventSchedule eventSchedule;
+
+        /// <summary>
         /// ゲーム進行度
         /// </summary>
         private int currentTurn;
@@ -79,6 +85,7 @@ namespace Ambition.GameCore
         public RuntimeDate Date => date;
         public RuntimeReputation Reputation => reputation;
         public EventModel CurrentEventData => currentEventData;
+        public RuntimeEventSchedule EventSchedule => eventSchedule;
 
         /// <summary>
         /// 夫の名前を取得するヘルパープロパティ
@@ -158,6 +165,9 @@ namespace Ambition.GameCore
             this.budget.FixedCost.RecalculateFoodCost(this.environment.MealRank);
 
             this.currentTurn = 1;
+
+            // 年間イベントスケジュールの生成
+            GenerateEventSchedule(this.date.Year);
 
             Debug.Log($"新規ゲーム開始: 選手 {playerMaster.Name} (年俸:{initialSalary:N0}円)");
         }
@@ -317,9 +327,26 @@ namespace Ambition.GameCore
         {
             this.currentTurn++;
 
+            int previousYear = this.date.Year;
             this.date.AdvanceMonth();
 
+            // 年が変わった場合、新しい年のイベントスケジュールを生成する
+            if (this.date.Year != previousYear)
+            {
+                GenerateEventSchedule(this.date.Year);
+            }
+
             Debug.Log($"ターンが進みました: {this.currentTurn}ターン目");
+        }
+
+        /// <summary>
+        /// 指定した年のイベントスケジュールをランダム生成する
+        /// </summary>
+        private void GenerateEventSchedule(int year)
+        {
+            var eventBlocks = DataManager.Instance.GetDatas<EventBlock>();
+            var eventMasters = DataManager.Instance.GetDatas<EventMaster>();
+            this.eventSchedule = new RuntimeEventSchedule(year, eventBlocks, eventMasters);
         }
 
         private void ProcessMonthlyEvents(WifeActionModel action)
@@ -537,7 +564,10 @@ namespace Ambition.GameCore
                 EnvironmentData = this.environment.ToSaveData(),
                 BudgetData = this.budget.ToSaveData(),
                 DateData = this.date.ToSaveData(),
-                ReputationData = this.reputation.ToSaveData()
+                ReputationData = this.reputation.ToSaveData(),
+                EventScheduleData = this.eventSchedule != null
+                    ? this.eventSchedule.ToSaveData()
+                    : new EventScheduleSaveData()
             };
 
             string json = JsonUtility.ToJson(saveData, prettyPrint: true);
@@ -576,6 +606,7 @@ namespace Ambition.GameCore
             this.budget = new RuntimeHouseholdBudget(saveData.BudgetData);
             this.date = new RuntimeDate(saveData.DateData);
             this.reputation = new RuntimeReputation(saveData.ReputationData);
+            this.eventSchedule = new RuntimeEventSchedule(saveData.EventScheduleData);
 
             Debug.Log("ロード完了。ゲームを再開します。");
             return true;

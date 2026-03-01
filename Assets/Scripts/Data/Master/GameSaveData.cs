@@ -18,6 +18,7 @@ namespace Ambition.Data.Master
         public BudgetSaveData BudgetData;
         public DateSaveData DateData;
         public ReputationSaveData ReputationData;
+        public EventScheduleSaveData EventScheduleData;
     }
 
     /// <summary>
@@ -106,5 +107,17 @@ namespace Ambition.Data.Master
         public int TeamEvaluation;
         public int PublicEye;
         public int CP;
+    }
+
+    /// <summary>
+    /// 年間イベントスケジュールのセーブデータ構造体
+    /// </summary>
+    [Serializable]
+    public struct EventScheduleSaveData
+    {
+        /// <summary>
+        /// 月（インデックス0=1月）ごとのEventId。-1はイベントなし。
+        /// </summary>
+        public int[] EventIdByTurn;
     }
 }
