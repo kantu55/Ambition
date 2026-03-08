@@ -8,6 +8,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 2239927504260275767, guid: c804ea31399a1c54fbbfe5b1167eab74, type: 3}
+      propertyPath: m_sharedMaterial
+      value: 
+      objectReference: {fileID: 8813762287146869222, guid: d5a909982d2c78b4e996f687c8bcb975, type: 2}
     - target: {fileID: 6246920191443084322, guid: c804ea31399a1c54fbbfe5b1167eab74, type: 3}
       propertyPath: m_Pivot.x
       value: 0.5
@@ -34,7 +38,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6246920191443084322, guid: c804ea31399a1c54fbbfe5b1167eab74, type: 3}
       propertyPath: m_SizeDelta.x
-      value: 500
+      value: 800
       objectReference: {fileID: 0}
     - target: {fileID: 6246920191443084322, guid: c804ea31399a1c54fbbfe5b1167eab74, type: 3}
       propertyPath: m_SizeDelta.y
@@ -92,6 +96,14 @@ PrefabInstance:
       propertyPath: m_Name
       value: EventOption
       objectReference: {fileID: 0}
+    - target: {fileID: 7185055459069496135, guid: c804ea31399a1c54fbbfe5b1167eab74, type: 3}
+      propertyPath: m_Type
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 7185055459069496135, guid: c804ea31399a1c54fbbfe5b1167eab74, type: 3}
+      propertyPath: m_Sprite
+      value: 
+      objectReference: {fileID: 6583316626285096144, guid: acaa06c5251d9bc43974c402f2f59019, type: 3}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []

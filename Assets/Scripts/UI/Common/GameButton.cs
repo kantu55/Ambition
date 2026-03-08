@@ -1,4 +1,5 @@
 ﻿using DG.Tweening;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
@@ -15,6 +16,13 @@ namespace Ambition.UI.Common
         ISelectHandler, IDeselectHandler,          // キーボード・コントローラー用
         IPointerDownHandler, IPointerUpHandler
     {
+        public enum SelectType
+        {
+            None,
+            Hover,      // ホバー状態（マウスオーバー、キーボード・コントローラー選択）
+            Pressed,    // 押下状態（クリック、決定ボタン）
+        }
+
         [Header("Component")]
         [SerializeField]
         private Button targetButton;
@@ -42,6 +50,9 @@ namespace Ambition.UI.Common
         [SerializeField]
         private Color selectedColor = new Color(0.9f, 0.9f, 0.9f, 1f);
 
+        [SerializeField]
+        private List<Sprite> selectSpriteList = new List<Sprite>();
+
         // 元のスケールと色を保持
         private Vector3 defaultScale;
         private Color defaultColor;
@@ -63,18 +74,15 @@ namespace Ambition.UI.Common
             {
                 defaultColor = targetImage.color;
             }
+
+            targetImage.sprite = selectSpriteList[(int)SelectType.None];
         }
 
         private void OnDisable()
         {
             transform.DOKill();
             transform.localScale = defaultScale;
-
-            if (targetImage != null)
-            {
-                targetImage.DOKill();
-                targetImage.color = defaultColor;
-            }
+            targetImage.sprite = selectSpriteList[(int)SelectType.None];
         }
 
         // --- インターフェース実装 ---
@@ -89,7 +97,7 @@ namespace Ambition.UI.Common
                 targetButton.Select();
             }
 
-            PlayScaleAnimation(hoverScale, selectedColor);
+            PlayScaleAnimation(hoverScale, SelectType.Hover);
         }
 
         /// <summary>
@@ -97,7 +105,7 @@ namespace Ambition.UI.Common
         /// </summary>
         public void OnPointerExit(PointerEventData eventData)
         {
-            PlayScaleAnimation(1.0f, defaultColor);
+            PlayScaleAnimation(1.0f, SelectType.None);
         }
 
         /// <summary>
@@ -105,7 +113,7 @@ namespace Ambition.UI.Common
         /// </summary>
         public void OnSelect(BaseEventData eventData)
         {
-            PlayScaleAnimation(hoverScale, selectedColor);
+            PlayScaleAnimation(hoverScale, SelectType.Hover);
         }
 
         /// <summary>
@@ -113,7 +121,7 @@ namespace Ambition.UI.Common
         /// </summary>
         public void OnDeselect(BaseEventData eventData)
         {
-            PlayScaleAnimation(1.0f, defaultColor);
+            PlayScaleAnimation(1.0f, SelectType.None);
         }
 
         /// <summary>
@@ -123,7 +131,7 @@ namespace Ambition.UI.Common
         {
             if (IsButtonInteractable())
             {
-                PlayScaleAnimation(pressedScale, selectedColor);
+                PlayScaleAnimation(pressedScale, SelectType.Pressed);
             }
         }
 
@@ -134,7 +142,7 @@ namespace Ambition.UI.Common
         {
             if (IsButtonInteractable())
             {
-                PlayScaleAnimation(hoverScale, selectedColor);
+                PlayScaleAnimation(hoverScale, SelectType.Hover);
             }
         }
 
@@ -143,17 +151,12 @@ namespace Ambition.UI.Common
         /// <summary>
         /// 指定したスケールと色へ滑らかに変化させる
         /// </summary>
-        private void PlayScaleAnimation(float targetScaleMultiplier, Color targetColor)
+        private void PlayScaleAnimation(float targetScaleMultiplier, SelectType selectType)
         {
             transform.DOKill();
             Vector3 endValue = defaultScale * targetScaleMultiplier;
             transform.DOScale(endValue, animationDuration).SetEase(animEase).SetLink(gameObject).SetUpdate(true);
-
-            if (targetImage != null && enableColorChange)
-            {
-                targetImage.DOKill();
-                targetImage.DOColor(targetColor, animationDuration).SetEase(animEase).SetLink(gameObject).SetUpdate(true);
-            }
+            targetImage.sprite = selectSpriteList[(int)selectType];
         }
 
         /// <summary>

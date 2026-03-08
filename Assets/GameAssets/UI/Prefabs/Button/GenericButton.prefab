@@ -143,7 +143,7 @@ MonoBehaviour:
   m_text: New Text
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: d5a909982d2c78b4e996f687c8bcb975, type: 2}
-  m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
+  m_sharedMaterial: {fileID: 8813762287146869222, guid: d5a909982d2c78b4e996f687c8bcb975, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -315,6 +315,10 @@ MonoBehaviour:
   animEase: 6
   enableColorChange: 1
   selectedColor: {r: 0.2688679, g: 0.6748302, b: 1, a: 1}
+  selectSpriteList:
+  - {fileID: 6583316626285096144, guid: acaa06c5251d9bc43974c402f2f59019, type: 3}
+  - {fileID: 3777908990813537090, guid: 76d54533640dda24f9c78f476c238a62, type: 3}
+  - {fileID: -6992450535198522548, guid: f2133089c61bcec49be9069923191b37, type: 3}
 --- !u!222 &3682122650551632558
 CanvasRenderer:
   m_ObjectHideFlags: 0
