@@ -14,7 +14,7 @@ using static UnityEngine.Rendering.DebugUI.Table;
 namespace Ambition.GameCore
 {
     /// <summary>
-    /// ѓQЃ[ѓЂ‚Мѓ^Ѓ[ѓ“ЉЗ—ќ‚рЌs‚¤ѓNѓ‰ѓX
+    /// пїЅQпїЅ[пїЅпїЅпїЅМѓ^пїЅ[пїЅпїЅпїЅЗ—пїЅпїЅпїЅпїЅsпїЅпїЅпїЅNпїЅпїЅпїЅX
     /// </summary>
     public class GameTurnManager : MonoBehaviour
     {
@@ -74,17 +74,17 @@ namespace Ambition.GameCore
         [SerializeField] private MonthlyReportPanel monthlyReportPanel;
 
         /// <summary>
-        /// ѓ^Ѓ[ѓ“Љ®—№Ћћ‚Й”­ђ¶‚·‚йѓCѓxѓ“ѓg
+        /// пїЅ^пїЅ[пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅЙ”пїЅпїЅпїЅпїЅпїЅпїЅпїЅCпїЅxпїЅпїЅпїЅg
         /// </summary>
         public event Action OnTurnCompleted;
 
         /// <summary>
-        /// ѓ^Ѓ[ѓ“ђiЌsЉJЋnЋћ‚Й”­ђ¶‚·‚йѓCѓxѓ“ѓg
+        /// пїЅ^пїЅ[пїЅпїЅпїЅiпїЅsпїЅJпїЅnпїЅпїЅпїЅЙ”пїЅпїЅпїЅпїЅпїЅпїЅпїЅCпїЅxпїЅпїЅпїЅg
         /// </summary>
         public event Action OnTurnFlowStarted;
 
         /// <summary>
-        /// ѓ^Ѓ[ѓ“ђiЌs’†‚©‚З‚¤‚©
+        /// пїЅ^пїЅ[пїЅпїЅпїЅiпїЅsпїЅпїЅпїЅпїЅпїЅЗ‚пїЅпїЅпїЅ
         /// </summary>
         private bool isProcessingTurn = false;
 
@@ -92,6 +92,10 @@ namespace Ambition.GameCore
         private UniTaskCompletionSource currentMatchTask;
         private UniTaskCompletionSource currentParamTask;
         private UniTaskCompletionSource currentReportTask;
+
+        private int _pendingEventMitigHP;
+        private int _pendingEventMitigMP;
+        private int _pendingEventMitigCOND;
 
         private void Awake()
         {
@@ -118,7 +122,7 @@ namespace Ambition.GameCore
         }
 
         /// <summary>
-        /// ѓ^Ѓ[ѓ“ђiЌs‚р€кЊіЉЗ—ќ‚·‚й”с“ЇЉъѓЃѓ\ѓbѓh
+        /// пїЅ^пїЅ[пїЅпїЅпїЅiпїЅsпїЅпїЅпїЅкЊіпїЅЗ—пїЅпїЅпїЅпїЅпїЅс“ЇЉпїЅпїЅпїЅпїЅ\пїЅbпїЅh
         /// </summary>
         public async UniTask ExecuteTurnAsync(WifeActionModel action, FoodModel food)
         {
@@ -196,12 +200,12 @@ namespace Ambition.GameCore
         }
 
         /// <summary>
-        /// Phase 2: ЋЋЌ‡Њ‹‰К‚М•\Ћ¦
+        /// Phase 2: пїЅпїЅпїЅпїЅпїЅпїЅпїЅК‚М•\пїЅпїЅ
         /// </summary>
         private async UniTask ShowMatchResultPhaseAsync()
         {
             // effective_AB = AB + cond_coef * (COND - 50) + mp_coef * (MP - 50)
-            var difficulty = MatchDifficulty.NORMAL; // ‰ј‚ЙNORMALЊЕ’и
+            var difficulty = MatchDifficulty.NORMAL; // пїЅпїЅпїЅпїЅNORMALпїЅЕ’пїЅ
             var difficultyDatas = DataManager.Instance.GetDatas<MatchDifficultyModel>();
             if (difficultyDatas == null || difficultyDatas.Count == 0)
             {
@@ -235,8 +239,8 @@ namespace Ambition.GameCore
             var rating = effectiveAB - baselineAB;
             Debug.Log($"[Year:{year}] rating[{rating}] = effective_AB[{effectiveAB}] - baseline_ab[{baselineAB}]");
 
-            // Tier”»’и
-            //rating ‚р performance_rating_thresholds ‚Ми‡’l‚Е GREAT/ GOOD / NORMAL / BAD / TERRIBLE ‚Й•Є—Ю
+            // TierпїЅпїЅпїЅпїЅ
+            //rating пїЅпїЅ performance_rating_thresholds пїЅпїЅи‡’lпїЅпїЅ GREAT/ GOOD / NORMAL / BAD / TERRIBLE пїЅЙ•пїЅпїЅпїЅ
             MatchResultTier tier = MatchResultTier.TERRIBLE;
             var performanceThresholds = DataManager.Instance.GetDatas<PerformanceRatingThresholdsModel>();
             if (performanceThresholds == null || performanceThresholds.Count == 0)
@@ -254,18 +258,18 @@ namespace Ambition.GameCore
                 }
             }
 
-            // ЋЋЌ‡Њ‹‰К
+            // пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
             Debug.Log($"[GameTurnManager] Phase 2: Match results {tier}");
 
             var tcs = new UniTaskCompletionSource();
             currentMatchTask = tcs;
 
-            matchPanel.ShowMatchResult("ЋЋЌ‡Њ‹‰К", tier.ToString());
+            matchPanel.ShowMatchResult("пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ", tier.ToString());
 
             await tcs.Task;
             currentMatchTask = null;
 
-            // ѓ`Ѓ[ѓЂ•]‰ї / Њ_–с—p‚М•]‰їѓ|ѓCѓ“ѓg •П“®‚М“K—p
+            // пїЅ`пїЅ[пїЅпїЅпїЅ]пїЅпїЅ / пїЅ_пїЅпїЅpпїЅМ•]пїЅпїЅпїЅ|пїЅCпїЅпїЅпїЅg пїЅП“пїЅпїЅМ“KпїЅp
             var matchTierDelta = DataManager.Instance.GetDatas<MatchTierDeltaModel>();
             if (matchTierDelta == null || matchTierDelta.Count == 0)
             {
@@ -279,13 +283,13 @@ namespace Ambition.GameCore
             GameSimulationManager.Instance.Reputation.ChangeTeamEvaluation(deltaT);
             GameSimulationManager.Instance.Reputation.ChangeCP(deltaCP);
 
-            //’З‰Б‚Е‰ц‰д”»’и‚Є‘–‚иЃA‰ц‰д‚И‚зЃu‰ц‰дЏу‘ФЃv‚ЦЃi”Ѕ‰f‚НЊЋ––‘¤Ѓj
+            //пїЅЗ‰пїЅпїЅЕ‰пїЅпїЅд”»пїЅи‚ЄпїЅпїЅпїЅпїЅAпїЅпїЅпїЅпїЅИ‚пїЅuпїЅпїЅпїЅпїЅпїЅФЃvпїЅЦЃiпїЅпїЅпїЅfпїЅНЊпїЅпїЅпїЅпїЅпїЅпїЅj
 
             await UniTask.Yield();
         }
 
         /// <summary>
-        /// Phase 3: ѓCѓxѓ“ѓg‚М•\Ћ¦
+        /// Phase 3: пїЅCпїЅxпїЅпїЅпїЅgпїЅМ•\пїЅпїЅ
         /// </summary>
         private async UniTask ShowEventPhaseAsync()
         {
@@ -305,7 +309,8 @@ namespace Ambition.GameCore
                 var eventData = DataManager.Instance.GetDatas<EventMaster>().FirstOrDefault(e => e.EventId == scheduledEventId);
                 if (eventData != null)
                 {
-                    await eventDialogPanel.ShowEventAsync(eventData);
+                    var selectedOptions = await eventDialogPanel.ShowEventAsync(eventData);
+                    ApplyEventOptionEffects(selectedOptions);
                 }
             }
 
@@ -313,15 +318,15 @@ namespace Ambition.GameCore
         }
 
         /// <summary>
-        /// Phase 4: ѓpѓ‰ѓЃЃ[ѓ^•П“®‚М•\Ћ¦
+        /// Phase 4: пїЅpпїЅпїЅпїЅпїЅпїЅ[пїЅ^пїЅП“пїЅпїЅМ•\пїЅпїЅ
         /// </summary>
         private async UniTask ShowParameterChangePhaseAsync(WifeActionModel action, FoodModel food)
         {
             Debug.Log("[GameTurnManager] Phase 4: Parameter changes");
 
-            // ѓLѓѓѓЉѓA
+            // пїЅLпїЅпїЅпїЅпїЅпїЅA
             // phase_id = f(career_month, rookie_graduation, veteran_threshold)
-            // TODO:ђі‚µ‚ўѓLѓѓѓЉѓA”»’иѓЌѓWѓbѓN‚Й’u‚«Љ·‚¦
+            // TODO:пїЅпїЅпїЅпїЅпїЅпїЅпїЅLпїЅпїЅпїЅпїЅпїЅAпїЅпїЅпїЅиѓЌпїЅWпїЅbпїЅNпїЅЙ’uпїЅпїЅпїЅпїЅпїЅпїЅ
             int year = GameSimulationManager.Instance.Date.Year;
             CareerType careerType = CareerType.ROOKIE;
             if (year > 12)
@@ -336,14 +341,14 @@ namespace Ambition.GameCore
 
 
 
-            // 3 - A) Љо‘bЊёЏ­ЃiѓhѓЉѓtѓgЃj‚рЌм‚йЃiHP / MP / CONDЃj
-            // phase_base_deltaЃiђVђl / ’КЏн / ђ^ѓGѓ“ѓh‚И‚З‚ЕЌ·‚µ‘Ц‚н‚иЃj
-            // match_extra_deltaЃiЋЋЌ‡ЊЋ‚М‚Э‰БЋZЃj
-            // veteran_extra_deltaЃiѓxѓeѓ‰ѓ“‚И‚з‰БЋZЃj
-            // Љо‘bЊёЏ­‚М‘fЃiђHЋ–‚ЕЊyЊё‚і‚к‚й‘ОЏЫЃj
+            // 3 - A) пїЅпїЅbпїЅпїЅпїЅпїЅпїЅiпїЅhпїЅпїЅпїЅtпїЅgпїЅjпїЅпїЅпїЅпїЅпїЅiHP / MP / CONDпїЅj
+            // phase_base_deltaпїЅiпїЅVпїЅl / пїЅКЏпїЅ / пїЅ^пїЅGпїЅпїЅпїЅhпїЅИ‚З‚ЕЌпїЅпїЅпїЅпїЅЦ‚пїЅпїЅj
+            // match_extra_deltaпїЅiпїЅпїЅпїЅпїЅпїЅпїЅпїЅМ‚Э‰пїЅпїЅZпїЅj
+            // veteran_extra_deltaпїЅiпїЅxпїЅeпїЅпїЅпїЅпїЅпїЅИ‚пїЅпїЅпїЅZпїЅj
+            // пїЅпїЅbпїЅпїЅпїЅпїЅпїЅМ‘fпїЅiпїЅHпїЅпїЅпїЅЕЊyпїЅпїЅпїЅпїЅпїЅпїЅпїЅОЏЫЃj
             // base_delta_for_food[s] = phase_base_delta[s] + match_extra_delta[s] + veteran_extra_delta[s]
-            // s Ѓё { HP, MP, COND}
-            // Ѓ¦POVERTY‚М‚ЭЃA‚і‚з‚Йѓyѓiѓ‹ѓeѓB‚рЃuЉо‘bЊёЏ­‚Й‰БЋZЃi€«‰»ЃjЃv
+            // s пїЅпїЅ { HP, MP, COND}
+            // пїЅпїЅPOVERTYпїЅМ‚ЭЃAпїЅпїЅпїЅпїЅЙѓyпїЅiпїЅпїЅпїЅeпїЅBпїЅпїЅпїЅuпїЅпїЅbпїЅпїЅпїЅпїЅпїЅЙ‰пїЅпїЅZпїЅiпїЅпїЅпїЅпїЅпїЅjпїЅv
 
             var phaseBaseDecayDatas = DataManager.Instance.GetDatas<BaseDecayPerMonthModel>();
             if (phaseBaseDecayDatas == null || phaseBaseDecayDatas.Count == 0)
@@ -390,28 +395,28 @@ namespace Ambition.GameCore
             var baseDeltaForFoodCOND = (int)(phaseBaseDecayCOND + matchExtraDecayCOND + veteranExtraDecayCOND);
             Debug.Log($"Base Delta for Food - HP: {baseDeltaForFoodHP}, MP: {baseDeltaForFoodMP}, COND: {baseDeltaForFoodCOND}");
 
-            // 3 - B) ђHЋ–ЊyЊёЃimitigЃj‚рЋZЏoЃiHP / MP / CONDЃj
+            // 3 - B) пїЅHпїЅпїЅпїЅyпїЅпїЅпїЅimitigпїЅjпїЅпїЅпїЅZпїЅoпїЅiHP / MP / CONDпїЅj
             // mitig_total = plan.mitig_total
-            // mitig_dist = menu ‚М”z•ЄЃiHP / MP / CONDЌ‡Њv = mitig_totalЃj
-            // mitig[s] = mitig_dist[s]Ѓi•K—v‚И‚зCookingLv‚МЋеЋІѓ{Ѓ[ѓiѓX‚р‰БЋZЃj
+            // mitig_dist = menu пїЅМ”zпїЅпїЅпїЅiHP / MP / CONDпїЅпїЅпїЅv = mitig_totalпїЅj
+            // mitig[s] = mitig_dist[s]пїЅiпїЅKпїЅvпїЅИ‚пїЅCookingLvпїЅМЋеЋІпїЅ{пїЅ[пїЅiпїЅXпїЅпїЅпїЅпїЅпїЅZпїЅj
             var mitigHP = food.MitigHP;
             var mitigMP = food.MitigMP;
             var mitigCOND = food.MitigCOND;
             Debug.Log($"Mitigation - HP: {mitigHP}, MP: {mitigMP}, COND: {mitigCOND}");
 
-            // 3 - C) ђHЋ–‚М“K—pЃiЏd—vЃFђHЋ–‚Н‰с•њ‚µ‚И‚ўЃj
-            // ђHЋ–“K—pЊг‚МѓhѓЉѓtѓg
+            // 3 - C) пїЅHпїЅпїЅпїЅМ“KпїЅpпїЅiпїЅdпїЅvпїЅFпїЅHпїЅпїЅпїЅН‰с•њ‚пїЅпїЅИ‚пїЅпїЅj
+            // пїЅHпїЅпїЅпїЅKпїЅpпїЅпїЅМѓhпїЅпїЅпїЅtпїЅg
             // food_delta_applied[s] = min(0, base_delta_for_food[s] + mitig[s])
-            // ЏгЊА‚Є 0 ‚И‚М‚ЕЃAђHЋ–‚ѕ‚Ї‚Еѓvѓ‰ѓX‰с•њЃiHP + ‚И‚ЗЃj‚Й‚Н‚И‚з‚И‚ў
+            // пїЅпїЅпїЅпїЅпїЅ 0 пїЅИ‚М‚ЕЃAпїЅHпїЅпїЅпїЅпїЅпїЅпїЅпїЅЕѓvпїЅпїЅпїЅXпїЅс•њЃiHP + пїЅИ‚ЗЃjпїЅЙ‚Н‚И‚пїЅИ‚пїЅ
             var foogDeltaAppliedHP = Math.Min(0, baseDeltaForFoodHP + mitigHP);
             var foogDeltaAppliedMP = Math.Min(0, baseDeltaForFoodMP + mitigMP);
             var foogDeltaAppliedCOND = Math.Min(0, baseDeltaForFoodCOND + mitigCOND);
             Debug.Log($"Food Delta Applied - HP: {foogDeltaAppliedHP}, MP: {foogDeltaAppliedMP}, COND: {foogDeltaAppliedCOND}");
 
-            // 5) ABђ¬’·Ѓi•КgЃBЊЋ––‚ЕЉm’иЃj
-            // AB‚НЃuЌs“®‚Й‚ж‚йђ¬’·•вђіЃvЃuђHЋ–”{—¦ЃvЃuCOND’iЉK”{—¦Ѓv‚ЄЏж‚и‚Ь‚·ЃB
+            // 5) ABпїЅпїЅпїЅпїЅпїЅiпїЅКgпїЅBпїЅпїЅпїЅпїЅпїЅЕЉmпїЅпїЅj
+            // ABпїЅНЃuпїЅsпїЅпїЅпїЅЙ‚пїЅйђ¬пїЅпїЅпїЅвђіпїЅvпїЅuпїЅHпїЅпїЅпїЅ{пїЅпїЅпїЅvпїЅuCONDпїЅiпїЅKпїЅ{пїЅпїЅпїЅvпїЅпїЅпїЅпїЅпїЅЬ‚пїЅпїЅB
             // base = ab_base_growth_per_month[phase]
-            // raw = base + AB_growth_from_actionЃiЃЃЌs“®‚М growth_addЃj
+            // raw = base + AB_growth_from_actionпїЅiпїЅпїЅпїЅsпїЅпїЅпїЅпїЅ growth_addпїЅj
             // mult = ab_growth_mult_by_food_plan[food_plan] * ab_growth_mult_by_cond_stage[cond_stage]
             // pos = min(ab_growth_cap_per_month.cap, raw * mult)
             // AB_next = clamp(0..100, AB + pos + (is_veteran ? veteran_extra_decay.AB : 0))
@@ -454,12 +459,15 @@ namespace Ambition.GameCore
 
 
             // param_next[x] = param_prev[x] + food_delta_applied[x] + action_delta[x] + event_param_delta[x] + match_param_delta[x] + abnormal_delta[x]...
-            // ’Ќ€У“_ЃF
-            // food_delta_applied ‚Є‚ ‚й‚М‚Н HP / MP / COND‚М‚Э
-            // T, RL, RP, CP ‚И‚З‚Н ђHЋ–‚Е‘ЉЋE‚і‚к‚И‚ўЃiЌs“® / ѓCѓxѓ“ѓg / ЋЋЌ‡‚Е‚М‚Э“®‚­Ѓj
-            var paramNextHP = foogDeltaAppliedHP + action.DeltaHP;
-            var paramNextMP = foogDeltaAppliedMP + action.DeltaMP;
-            var paramNextCOND = foogDeltaAppliedCOND + action.DeltaCOND;
+            // пїЅпїЅпїЅУ“_пїЅF
+            // food_delta_applied пїЅпїЅпїЅпїЅпїЅпїЅМ‚пїЅ HP / MP / CONDпїЅМ‚пїЅ
+            // T, RL, RP, CP пїЅИ‚З‚пїЅ пїЅHпїЅпїЅпїЅЕ‘пїЅпїЅEпїЅпїЅпїЅпїЅИ‚пїЅпїЅiпїЅsпїЅпїЅ / пїЅCпїЅxпїЅпїЅпїЅg / пїЅпїЅпїЅпїЅпїЅЕ‚М‚Э“пїЅпїЅпїЅпїЅj
+            var paramNextHP = foogDeltaAppliedHP + action.DeltaHP + _pendingEventMitigHP;
+            var paramNextMP = foogDeltaAppliedMP + action.DeltaMP + _pendingEventMitigMP;
+            var paramNextCOND = foogDeltaAppliedCOND + action.DeltaCOND + _pendingEventMitigCOND;
+            _pendingEventMitigHP = 0;
+            _pendingEventMitigMP = 0;
+            _pendingEventMitigCOND = 0;
 
             var husband = GameSimulationManager.Instance.Husband;
             husband.ChangeHealth(paramNextHP);
@@ -470,16 +478,16 @@ namespace Ambition.GameCore
             if (parameterChangePanel != null && GameSimulationManager.Instance != null)
             {
                 Dictionary<string, double> changes = new Dictionary<string, double>();
-                changes["‘М—Н"] = paramNextHP;
-                changes["ѓЃѓ“ѓ^ѓ‹"] = paramNextMP;
-                changes["ѓRѓ“ѓfѓBѓVѓ‡ѓ“"] = paramNextCOND;
-                changes["”\—Н’l"] = AbNext;
+                changes["пїЅМ—пїЅ"] = paramNextHP;
+                changes["пїЅпїЅпїЅпїЅпїЅ^пїЅпїЅ"] = paramNextMP;
+                changes["пїЅRпїЅпїЅпїЅfпїЅBпїЅVпїЅпїЅпїЅпїЅ"] = paramNextCOND;
+                changes["пїЅ\пїЅН’l"] = AbNext;
 
                 if (changes.Count > 0)
                 {
                     var tcs = new UniTaskCompletionSource();
                     currentParamTask = tcs;
-                    parameterChangePanel.ShowChanges("ѓpѓ‰ѓЃЃ[ѓ^•П“®", changes);
+                    parameterChangePanel.ShowChanges("пїЅpпїЅпїЅпїЅпїЅпїЅ[пїЅ^пїЅП“пїЅ", changes);
                     await tcs.Task;
                     currentParamTask = null;
                 }
@@ -489,7 +497,7 @@ namespace Ambition.GameCore
         }
 
         /// <summary>
-        /// Phase 5: ЊЋЋџ•сЌђ‚М•\Ћ¦
+        /// Phase 5: пїЅпїЅпїЅпїЅпїЅсЌђ‚М•\пїЅпїЅ
         /// </summary>
         private async UniTask ShowMonthlyReportPhaseAsync()
         {
@@ -502,17 +510,17 @@ namespace Ambition.GameCore
                 var husband = GameSimulationManager.Instance.Husband;
                 var wife = GameSimulationManager.Instance.Wife;
 
-                string dateStr = $"{date.Year}”N {date.Month}ЊЋ";
+                string dateStr = $"{date.Year}пїЅN {date.Month}пїЅпїЅ";
                 int income = 0; // Calculate from budget history
                 int expenses = (int)budget.FixedCost.TotalCost;
                 int savings = (int)budget.CurrentSavings;
 
-                string playerStats = $"‘М—Н: {husband.CurrentHealth}/{husband.MAX_HEALTH}\n" +
-                                    $"ѓЃѓ“ѓ^ѓ‹: {husband.CurrentMental}/{husband.MAX_MENTAL}";
+                string playerStats = $"пїЅМ—пїЅ: {husband.CurrentHealth}/{husband.MAX_HEALTH}\n" +
+                                    $"пїЅпїЅпїЅпїЅпїЅ^пїЅпїЅ: {husband.CurrentMental}/{husband.MAX_MENTAL}";
 
-                string wifeStats = $"ѓPѓAѓЊѓxѓ‹: {wife.CareLevel}\n" +
-                                  $"PRѓЊѓxѓ‹: {wife.PRLevel}\n" +
-                                  $"ѓRЃ[ѓ`ѓЊѓxѓ‹: {wife.CoachLevel}";
+                string wifeStats = $"пїЅPпїЅAпїЅпїЅпїЅxпїЅпїЅ: {wife.CareLevel}\n" +
+                                  $"PRпїЅпїЅпїЅxпїЅпїЅ: {wife.PRLevel}\n" +
+                                  $"пїЅRпїЅ[пїЅ`пїЅпїЅпїЅxпїЅпїЅ: {wife.CoachLevel}";
 
                 var tcs = new UniTaskCompletionSource();
                 currentReportTask = tcs;
@@ -545,7 +553,7 @@ namespace Ambition.GameCore
             }
 
             var eventData = eventDataList[UnityEngine.Random.Range(0, eventDataList.Count)];
-            Debug.Log($"ѓ‰ѓ“ѓ_ѓЂѓCѓxѓ“ѓg”­ђ¶: {eventData.Title} (ID:{eventData.EventId})");
+            Debug.Log($"пїЅпїЅпїЅпїЅпїЅ_пїЅпїЅпїЅCпїЅxпїЅпїЅпїЅgпїЅпїЅпїЅпїЅ: {eventData.Title} (ID:{eventData.EventId})");
             return eventData;
         }
 
@@ -562,9 +570,40 @@ namespace Ambition.GameCore
                 return;
             }
 
-            // todo: ѓCѓxѓ“ѓgѓfЃ[ѓ^‚ЙЉо‚Г‚­Џ€—ќ‚рЋА‘•
-
             currentEventTask?.TrySetResult();
+        }
+
+        private void ApplyEventOptionEffects(List<EventOption> selectedOptions)
+        {
+            _pendingEventMitigHP = 0;
+            _pendingEventMitigMP = 0;
+            _pendingEventMitigCOND = 0;
+
+            if (selectedOptions == null || selectedOptions.Count == 0)
+            {
+                return;
+            }
+
+            foreach (var option in selectedOptions)
+            {
+                if (option.CostMoney > 0)
+                {
+                    if (!GameSimulationManager.Instance.Budget.TrySpend(option.CostMoney))
+                    {
+                        Debug.LogWarning($"[GameTurnManager] Insufficient funds for event option cost: {option.CostMoney}");
+                    }
+                }
+                else if (option.CostMoney < 0)
+                {
+                    GameSimulationManager.Instance.Budget.AddIncome(Mathf.Abs(option.CostMoney));
+                }
+
+                _pendingEventMitigHP += option.MitigHp;
+                _pendingEventMitigMP += option.MitigMp;
+                _pendingEventMitigCOND += option.MitigCond;
+            }
+
+            Debug.Log($"[GameTurnManager] Event option effects applied - CostMoney processed, MitigHP: {_pendingEventMitigHP}, MitigMP: {_pendingEventMitigMP}, MitigCOND: {_pendingEventMitigCOND}");
         }
 
         private void OnEventCancelled()
