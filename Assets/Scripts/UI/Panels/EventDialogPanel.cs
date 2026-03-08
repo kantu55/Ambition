@@ -64,11 +64,13 @@ namespace Ambition.UI.Panels
             }
         }
 
-        public async UniTask ShowEventAsync(EventMaster eventData)
+        public async UniTask<List<EventOption>> ShowEventAsync(EventMaster eventData)
         {
+            var selectedOptions = new List<EventOption>();
+
             if (eventData == null)
             {
-                return;
+                return selectedOptions;
             }
 
             currentEvent = eventData;
@@ -117,6 +119,7 @@ namespace Ambition.UI.Panels
                         var selectedOption = await optionTcs.Task;
                         optionTcs = null;
 
+                        selectedOptions.Add(selectedOption);
                         nextGroupId = selectedOption.NextDialogGroupId;
                         break;
                     }
@@ -138,6 +141,7 @@ namespace Ambition.UI.Panels
 
             HideAll();
             OnEventConfirmed?.Invoke(eventData);
+            return selectedOptions;
         }
 
         public void ShowDialog(EventDialog dialogData)

@@ -6,6 +6,7 @@ using Cysharp.Threading.Tasks;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Xml.Serialization;
 using UnityEditor;
 using UnityEngine;
 using static UnityEditor.PlayerSettings;
@@ -92,6 +93,11 @@ namespace Ambition.GameCore
         private UniTaskCompletionSource currentMatchTask;
         private UniTaskCompletionSource currentParamTask;
         private UniTaskCompletionSource currentReportTask;
+
+        private int pendingEventMitigHP;
+        private int pendingEventMitigMP;
+        private int pendingEventMitigCOND;
+        private int pendingEventMitigCost;
 
         private void Awake()
         {
@@ -305,7 +311,8 @@ namespace Ambition.GameCore
                 var eventData = DataManager.Instance.GetDatas<EventMaster>().FirstOrDefault(e => e.EventId == scheduledEventId);
                 if (eventData != null)
                 {
-                    await eventDialogPanel.ShowEventAsync(eventData);
+                    var selectedOptions = await eventDialogPanel.ShowEventAsync(eventData);
+                    ApplyEventOptionEffects(selectedOptions);
                 }
             }
 
@@ -457,9 +464,13 @@ namespace Ambition.GameCore
             // 注意点：
             // food_delta_applied があるのは HP / MP / CONDのみ
             // T, RL, RP, CP などは 食事で相殺されない（行動 / イベント / 試合でのみ動く）
-            var paramNextHP = foogDeltaAppliedHP + action.DeltaHP;
-            var paramNextMP = foogDeltaAppliedMP + action.DeltaMP;
-            var paramNextCOND = foogDeltaAppliedCOND + action.DeltaCOND;
+            var paramNextHP = foogDeltaAppliedHP + action.DeltaHP + pendingEventMitigHP;
+            var paramNextMP = foogDeltaAppliedMP + action.DeltaMP + pendingEventMitigMP;
+            var paramNextCOND = foogDeltaAppliedCOND + action.DeltaCOND + pendingEventMitigCOND;
+
+            pendingEventMitigHP = 0;
+            pendingEventMitigMP = 0;
+            pendingEventMitigCOND = 0;
 
             var husband = GameSimulationManager.Instance.Husband;
             husband.ChangeHealth(paramNextHP);
@@ -536,19 +547,40 @@ namespace Ambition.GameCore
             GameSimulationManager.Instance.ProceedTurn();
         }
 
-        private EventModel PickRandomEvent()
+        private void ApplyEventOptionEffects(List<EventOption> selectedOptions)
         {
-            var eventDataList = DataManager.Instance.GetDatas<EventModel>();
-            if (eventDataList == null || eventDataList.Any() == false)
+            pendingEventMitigHP = 0;
+            pendingEventMitigMP = 0;
+            pendingEventMitigCOND = 0;
+            pendingEventMitigCost = 0;
+
+            if (selectedOptions == null)
             {
-                return null;
+                return;
             }
 
-            var eventData = eventDataList[UnityEngine.Random.Range(0, eventDataList.Count)];
-            Debug.Log($"ランダムイベント発生: {eventData.Title} (ID:{eventData.EventId})");
-            return eventData;
-        }
+            foreach (var option in selectedOptions)
+            {
+                if (option.CostMoney > 0)
+                {
+                    if (GameSimulationManager.Instance.Budget.TrySpend(option.CostMoney) == false)
+                    {
+                        Debug.LogWarning($"[GameTurnManager] Failed to spend money for event option {option.Id}");
 
+                    }
+                }
+                else if (option.CostMoney < 0)
+                {
+                    GameSimulationManager.Instance.Budget.AddIncome(Math.Abs(option.CostMoney));
+                }
+
+                pendingEventMitigHP += option.MitigHp;
+                pendingEventMitigMP += option.MitigMp;
+                pendingEventMitigCOND += option.MitigCond;
+            }
+
+            Debug.Log($"[GameTurnManager] Event option effects applied - CostMoney processed, MitigHP: {pendingEventMitigHP}, MitigMP: {pendingEventMitigMP}, MitigCOND: {pendingEventMitigCOND}");
+        }
 
         private void OnMatchResultContinue()
         {
