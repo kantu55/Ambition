@@ -102,6 +102,20 @@ namespace Ambition.Utility
         }
 
         /// <summary>
+        /// 指定した行・列名の値をulong型で取得
+        /// </summary>
+        public ulong GetValueToUlong(int rowIndex, string columnName)
+        {
+            string value = GetValue(rowIndex, columnName);
+            if (ulong.TryParse(value, out ulong result))
+            {
+                return result;
+            }
+
+            return 0;
+        }
+
+        /// <summary>
         /// 指定した行・列名の値をfloat型で取得
         /// </summary>
         public float GetValueToFloat(int rowIndex, string columnName)

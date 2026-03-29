@@ -59,6 +59,9 @@ namespace Ambition.Core.Managers
             { typeof(EventBlock), "EventBlock" },
             { typeof(EventDialog), "EventDialog" },
             { typeof(EventOption), "EventOption" },
+
+            // 設備
+            {  typeof(EquipmentModel), "Equipment" },
         };
 
         /// <summary>
@@ -208,6 +211,10 @@ namespace Ambition.Core.Managers
             else if (type == typeof(EventOption))
             {
                 ParseCsvData<EventOption>(address);
+            }
+            else if (type == typeof(EquipmentModel))
+            {
+                ParseCsvData<EquipmentModel>(address);
             }
             else
             {

@@ -63,6 +63,12 @@ MonoBehaviour:
     m_SerializedLabels:
     - MasterData
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 69d05b161e6d7bd4db8af64f1b7133b6
+    m_Address: Equipment
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - MasterData
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 6f1e996e6106b554590971dbdd884d5d
     m_Address: WifeActions
     m_ReadOnly: 0

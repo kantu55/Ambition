@@ -1,5 +1,7 @@
 ﻿using Ambition.Data.Master;
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 namespace Ambition.Data.Runtime
@@ -11,6 +13,7 @@ namespace Ambition.Data.Runtime
         public int BedLevel { get; private set; }
         public int GymLevel { get; private set; }
         public int MealRank { get; private set; }
+        public List<RuntimeOwnedEquipment> OwnedEquipments { get; private set; }
 
         public RuntimeEnvironmentStatus(int initialHouseId)
         {
@@ -18,6 +21,7 @@ namespace Ambition.Data.Runtime
             BedLevel = 1;
             GymLevel = 0; // 初期は購入していない想定なのでレベル0
             MealRank = 0;
+            OwnedEquipments = new List<RuntimeOwnedEquipment>();
         }
 
         public RuntimeEnvironmentStatus(EnvironmentSaveData saveData)
@@ -26,16 +30,23 @@ namespace Ambition.Data.Runtime
             BedLevel = saveData.BedLevel;
             GymLevel = saveData.GymLevel;
             MealRank = saveData.MealRank;
+            OwnedEquipments = saveData.OwnedEquipments != null
+                ? saveData.OwnedEquipments.Select(e => new RuntimeOwnedEquipment(e.EquipmentLevel, e.DurabilityMonths)).ToList()
+                : new List<RuntimeOwnedEquipment>();
         }
 
         public EnvironmentSaveData ToSaveData()
         {
+            var ownedEquipmentsSaveData = OwnedEquipments != null && OwnedEquipments.Count > 0
+                ? OwnedEquipments.Select(e => new OwnedEquipmentSaveData { EquipmentLevel = e.EquipId, DurabilityMonths = e.RemainingDurabilityMonths }).ToArray()
+                : Array.Empty<OwnedEquipmentSaveData>();
             return new EnvironmentSaveData
             {
                 CurrentHouseId = CurrentHouseId,
                 BedLevel = BedLevel,
                 GymLevel = GymLevel,
                 MealRank = MealRank,
+                OwnedEquipments = ownedEquipmentsSaveData
             };
         }
 
@@ -54,6 +65,19 @@ namespace Ambition.Data.Runtime
         public void ChangeMealRank(int newRank)
         {
             MealRank = Mathf.Clamp(newRank, 0, 3);
+        }
+
+        /// <summary>
+        /// 設備の追加
+        /// </summary>
+        public void AddEquipment(EquipmentModel equipment)
+        {
+            if (OwnedEquipments == null)
+            {
+                OwnedEquipments = new List<RuntimeOwnedEquipment>();
+            }
+
+            OwnedEquipments.Add(new RuntimeOwnedEquipment(equipment.Id, equipment.DurabilityMonths));
         }
     }
 }

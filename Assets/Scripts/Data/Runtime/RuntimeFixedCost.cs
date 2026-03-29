@@ -2,6 +2,7 @@
 using Ambition.Core.Constants;
 using Ambition.Data.Master;
 using System;
+using System.Linq;
 
 namespace Ambition.Data.Runtime
 {
@@ -86,6 +87,12 @@ namespace Ambition.Data.Runtime
 
             // 設備のレベルに応じて維持費がかかる設定
             cost += environmentStatus.GymLevel * costGym;
+
+            // 設備費用
+            if (environmentStatus.OwnedEquipments != null && environmentStatus.OwnedEquipments.Any())
+            {
+                cost += environmentStatus.OwnedEquipments.Select(e => e.RemainingDurabilityMonths).Sum();
+            }
 
             // memo:車の維持費などをここに追加可能
 

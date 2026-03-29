@@ -62,6 +62,7 @@ namespace Ambition.Data.Master
         public int BedLevel;
         public int GymLevel;
         public int MealRank;
+        public OwnedEquipmentSaveData[] OwnedEquipments;
     }
 
     /// <summary>
@@ -119,5 +120,16 @@ namespace Ambition.Data.Master
         /// 月（インデックス0=1月）ごとのEventId。-1はイベントなし。
         /// </summary>
         public int[] EventIdByTurn;
+    }
+
+    /// <summary>
+    /// 所持している設備のセーブデータ構造体
+    /// </summary>
+    [Serializable]
+    public struct OwnedEquipmentSaveData
+    {
+        public int EquipmentLevel;
+        public ulong MonthlyCostYen;
+        public int DurabilityMonths;
     }
 }

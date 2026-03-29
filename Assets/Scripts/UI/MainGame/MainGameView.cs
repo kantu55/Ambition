@@ -45,6 +45,9 @@ namespace Ambition.UI.MainGame
         [SerializeField] private TextMeshProUGUI dateText;
         [SerializeField] private TextMeshProUGUI totalMoneyText;
         [SerializeField] private TextMeshProUGUI fixedCostText;
+        [SerializeField] private TextMeshProUGUI foodCostText;
+        [SerializeField] private TextMeshProUGUI actionCostText;
+        [SerializeField] private TextMeshProUGUI facilityCostText;
 
         [Header("Reputation UI")]
         [SerializeField] private TextMeshProUGUI loveText;
@@ -62,6 +65,7 @@ namespace Ambition.UI.MainGame
         [SerializeField] private Button buttonDiscipline;
         [SerializeField] private Button buttonTalk;
         [SerializeField] private Button buttonRest;
+        [SerializeField] private Button buttonEquipmentShop;
 
         [Header("Confirm Button")]
         [SerializeField] private Button confirmButton;
@@ -70,6 +74,7 @@ namespace Ambition.UI.MainGame
         [SerializeField] private SubMenuController subMenuController;
         [SerializeField] private ActionFlowController actionFlowController;
         [SerializeField] private MealDetailPanelController foodMenuController;
+        [SerializeField] private Equipment.EquipmentShopFlowController equipmentShopController;
 
         [Header("Preview UI")]
 
@@ -151,6 +156,11 @@ namespace Ambition.UI.MainGame
         private void Start()
         {
             HidePreview();
+
+            if (equipmentShopController != null && GameSimulationManager.Instance != null)
+            {
+                equipmentShopController.SetContext(GameSimulationManager.Instance.Budget, GameSimulationManager.Instance.Environment);
+            }
         }
 
         // --- 公開メソッド ---
@@ -183,6 +193,17 @@ namespace Ambition.UI.MainGame
             if (buttonTalk != null)
             {
                 buttonTalk.onClick.AddListener(onTalk);
+            }
+
+            if (buttonEquipmentShop != null)
+            {
+                buttonEquipmentShop.onClick.AddListener(() =>
+                {
+                    if (equipmentShopController != null)
+                    {
+                        equipmentShopController.Open();
+                    }
+                });
             }
         }
 

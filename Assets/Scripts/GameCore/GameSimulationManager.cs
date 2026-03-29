@@ -513,7 +513,16 @@ namespace Ambition.GameCore
         private void ProcessExpenses()
         {
             Debug.Log("--- (4-G)支出確定 ---");
+            ApplyMonthlyEquipmentEffectsAndTick();
             this.budget.PayMonthlyFixedCosts();
+        }
+
+        /// <summary>
+        /// 設備の月次効果 + 期間減算 + Maintenance再計算
+        /// </summary>
+        private void ApplyMonthlyEquipmentEffectsAndTick()
+        {
+
         }
 
         /// <summary>
