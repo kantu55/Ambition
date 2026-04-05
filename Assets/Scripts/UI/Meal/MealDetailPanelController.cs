@@ -115,8 +115,6 @@ namespace Ambition.UI.Meal
 
         protected override void HandleBackPressed()
         {
-            base.HandleBackPressed();
-
             // プレビューを非表示
             if (mainGameView != null)
             {

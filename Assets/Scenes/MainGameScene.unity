@@ -12722,6 +12722,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cbba700d5b4514544b03068a2f21376e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  backgroundImage: {fileID: 1306531137}
   panelRoot: {fileID: 1326423139}
   itemButtonPrefab: {fileID: 2347667025081042990, guid: 2088841761f72394e83a587e645d1233, type: 3}
   closeButton: {fileID: 607898410}

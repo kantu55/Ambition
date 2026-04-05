@@ -159,6 +159,8 @@ namespace Ambition.UI.Meal
         /// </summary>
         private void OnSelectionBackPressed()
         {
+            HideAllPanels();
+            currentState = MealFlowState.Hidden;
         }
 
         /// <summary>

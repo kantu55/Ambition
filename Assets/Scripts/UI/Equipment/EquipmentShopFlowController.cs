@@ -26,6 +26,7 @@ namespace Ambition.UI.Equipment
             {
                 listPanel.OnEquipmentSelected += OnSelected;
                 listPanel.OnClosePressed += Close;
+                listPanel.Hide();
             }
             if (confirmPanel != null)
             {
