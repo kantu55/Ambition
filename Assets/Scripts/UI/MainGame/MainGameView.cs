@@ -35,6 +35,11 @@ namespace Ambition.UI.MainGame
         /// </summary>
         private const float MAX_BLINK_ALPHA = 1.0f;
 
+        /// <summary>
+        /// 行動コストが未選択の場合に表示するプレースホルダーテキスト
+        /// </summary>
+        private const string ACTION_COST_PLACEHOLDER = "行動コスト: -";
+
         // --- UIコンポーネントへの参照 ---
 
         [Header("Layer")]
@@ -118,6 +123,7 @@ namespace Ambition.UI.MainGame
         private int cachedActionDeltaLove = 0;
         private int cachedActionDeltaPublicEye = 0;
         private int cachedActionDeltaAbility = 0;
+        private int cachedActionCashCost = 0;
 
         // --- プレビュー点滅制御 ---
         private Image husbandHealthPreviewFillImage;
@@ -240,6 +246,8 @@ namespace Ambition.UI.MainGame
                 cachedActionDeltaLove = 0;
                 cachedActionDeltaPublicEye = 0;
                 cachedActionDeltaAbility = 0;
+                cachedActionCashCost = 0;
+                UpdateActionCostDisplay();
                 return;
             }
 
@@ -250,6 +258,9 @@ namespace Ambition.UI.MainGame
             cachedActionDeltaLove = action.DeltaLove;
             cachedActionDeltaPublicEye = action.DeltaPublicEye;
             cachedActionDeltaAbility = 0;
+            // アクションの金銭コストはHP/MP/CONDと同様に累積する（複数サブアクション対応）
+            cachedActionCashCost += action.CashCost;
+            UpdateActionCostDisplay();
         }
 
         public void UpdateSelectedMenu(FoodModel menu)
@@ -392,6 +403,8 @@ namespace Ambition.UI.MainGame
             cachedActionDeltaLove = 0;
             cachedActionDeltaPublicEye = 0;
             cachedActionDeltaAbility = 0;
+            cachedActionCashCost = 0;
+            UpdateActionCostDisplay();
 
             // 点滅処理を停止
             StopBlinking();
@@ -475,13 +488,35 @@ namespace Ambition.UI.MainGame
             stringBuilder.Append(budget.CurrentSavings.ToString("N0"));
             totalMoneyText.SetText(stringBuilder);
 
-            // 固定費表示
+            // 固定費表示（家賃・税金・保険料）
             stringBuilder.Clear();
             stringBuilder.Append("固定費: ¥-");
-            stringBuilder.Append(budget.FixedCost.TotalCost.ToString("N0"));
+            stringBuilder.Append(budget.FixedCost.CoreFixedCost.ToString("N0"));
             stringBuilder.Append(" / 月");
             fixedCostText.SetText(stringBuilder);
             fixedCostText.color = Color.red;
+
+            // 食費表示
+            if (foodCostText != null)
+            {
+                stringBuilder.Clear();
+                stringBuilder.Append("食費: ¥-");
+                stringBuilder.Append(budget.FixedCost.FoodCost.ToString("N0"));
+                stringBuilder.Append(" / 月");
+                foodCostText.SetText(stringBuilder);
+                foodCostText.color = Color.red;
+            }
+
+            // 設備費表示
+            if (facilityCostText != null)
+            {
+                stringBuilder.Clear();
+                stringBuilder.Append("設備費: ¥-");
+                stringBuilder.Append(budget.FixedCost.Maintenance.ToString("N0"));
+                stringBuilder.Append(" / 月");
+                facilityCostText.SetText(stringBuilder);
+                facilityCostText.color = Color.red;
+            }
         }
 
         private void UpdateEvaluationInfo(RuntimeReputation reputation)
@@ -500,6 +535,31 @@ namespace Ambition.UI.MainGame
             stringBuilder.Clear();
             stringBuilder.Append(reputation.CurrentPublicEye.ToString("F1"));
             publicEyeText.SetText(stringBuilder);
+        }
+
+        /// <summary>
+        /// アクションによるコスト表示を更新
+        /// </summary>
+        private void UpdateActionCostDisplay()
+        {
+            if (actionCostText == null)
+            {
+                return;
+            }
+
+            if (cachedActionCashCost == 0)
+            {
+                actionCostText.SetText(ACTION_COST_PLACEHOLDER);
+                actionCostText.color = Color.white;
+            }
+            else
+            {
+                stringBuilder.Clear();
+                stringBuilder.Append("行動コスト: ¥-");
+                stringBuilder.Append(cachedActionCashCost.ToString("N0"));
+                actionCostText.SetText(stringBuilder);
+                actionCostText.color = Color.red;
+            }
         }
 
         private void UpdatePreviewSlider(Slider mainSlider, Slider previewSlider, TextMeshProUGUI previewText, int current, int max, int delta)
