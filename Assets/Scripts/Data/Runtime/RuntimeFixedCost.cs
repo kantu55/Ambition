@@ -17,6 +17,11 @@ namespace Ambition.Data.Runtime
 
         public int TotalCost => Rent + Tax + Insurance + Maintenance + FoodCost;
 
+        /// <summary>
+        /// 固定費の基本コスト（家賃・税金・保険料の合計）
+        /// </summary>
+        public int CoreFixedCost => Rent + Tax + Insurance;
+
         public RuntimeFixedCost()
         {
             this.Rent = 0;
